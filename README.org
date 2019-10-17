@@ -1,0 +1,40 @@
+* Transportation Mode Classification Detection
+** Schedule
+*** 06.11
+**** TODO Data Extraction
+***** TODO Utility function that extracts data of all sensors given a =user= and a =leg=
+**** TODO Write Visualisation Pipeline
+***** TODO Dashboard to select data and plot it
+**** TODO Data Analysis
+***** TODO Denoising
+***** TODO Fourier Transform -> some kind of periodicity
+***** TODO Extract useful features and optimal window size(s)
+*** 13.11
+**** TODO App Frontend
+***** TODO MVP UI
+***** TODO Interaction with ML backend (decision tree only)
+***** TODO Wireframes for MVP and final UX/UI (final should contain the additional things we want to do on top of MVP)
+**** TODO App Backend
+***** TODO Footprint calculator (still need to define the API for this)
+***** TODO Database to store sensor readings for statistics
+**** TODO ML Pipeline and training
+***** TODO Data preprocessing based on the previously deterimned features
+***** TODO Decision Tree classification
+*** 20.11
+**** TODO Implement final app wireframes
+**** TODO Refine decision tree + app (solve any issues/bugs)
+** MVP
+*** Features and functionalities (scope)
+**** Start/Stop journey (via slider)
+**** Display currently used mode of transport
+**** Option to get feedback on performance
+**** Share trip/progress -> comptetion
+**** End of trip summary
+***** Distance travelled
+***** Total time elapsed
+***** CO2 footprint
+***** Calories burned/grade maybe?
+***** Most prevalent detected mode of transportation
+**** Summary over time (statistics) of performance and travels
+***** DB & API we can call
+**** Notification with information about current journey
