@@ -38,3 +38,7 @@
 **** Summary over time (statistics) of performance and travels
 ***** DB & API we can call
 **** Notification with information about current journey
+*** Wireframe
+#+CAPTION: Wireframe of MVP app
+#+NAME: fig-mvp-app-wireframe
+ [[./dox/imgs/mvp_wireframe.jpeg]]
