@@ -1,0 +1,5 @@
+*.html
+.ipynb_checkpoints/
+examples/
+processed_data/
+example_data/
