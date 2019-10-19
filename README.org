@@ -1,10 +1,10 @@
 * Transportation Mode Classification Detection
 ** Schedule
 *** 06.11
-**** TODO Data Extraction
-***** TODO Utility function that extracts data of all sensors given a =user= and a =leg=
-**** TODO Write Visualisation Pipeline
-***** TODO Dashboard to select data and plot it
+**** DONE Data Extraction
+***** DONE Utility function that extracts data of all sensors given a =user= and a =leg=
+**** DONE Write Visualisation Pipeline
+***** DONE Dashboard to select data and plot it
 **** TODO Data Analysis
 ***** TODO Denoising
 ***** TODO Fourier Transform -> some kind of periodicity
@@ -42,3 +42,52 @@
 #+CAPTION: Wireframe of MVP app
 #+NAME: fig-mvp-app-wireframe
  [[./dox/imgs/mvp_wireframe.jpeg]]
+** Usage
+*** Data visualization
+Data processing and visualization is done via python scripts. In order to have
+everything working, you must have the following dependencies installed:
+
++ =bokeh=: visualization library
++ =pandas=: processing and querying csv data
++ =tqdm=: displaying a progress bar
+
+You can install all these packages using =conda=:
+#+BEGIN_SRC
+conda install bokeh pandas tqdm
+#+END_SRC
+
+**** Data Processing
+To visualize the data, first process it. This can be done using the
+=process_data.py= script. It will parse the =legs.csv= folder, extract all the
+user ids, then ask which user you would like to process. Then it will ask which
+journey of the selected user you would like to process. You can of course both
+times say all.
+
+It will then output the sensor data in one csv file per user and per journey, in
+the =processed_data= folder (which will be created if necessary). This folder
+follows the following hierarchy:
+
++ =./processed_data=
+  + =user_id=
+    + =leg_id=
+      + =acc_readings.csv==
+      + =bluetooth_scans.csv==
+      + =gyro_readings.csv==
+      + =locations_scans.csv==
+      + =magn_readings.csv==
+      + =wifi_scans.csv==
+       
+**** Data Visualization
+Once the data has been processes, visualizing it can be done via the
+=visualization.py= script. The script will first ask which user's journey and
+which journey in particular you want to see. It will then plot the data from
+each sensor into a separate figure. You have the option to visualize the plots
+in a column layout, grid layout or both (default). This can be specified as command line
+arguments.
+
++ =-c= or =-column= to view column layout
++ =-g= or =-grid= to view grid layout
+
+The script will open the generated plots in a new browser tab. You can play
+around (pan and zoom) with the graph in the grid mode (for some reason, tools are not available
+yet in the column view).

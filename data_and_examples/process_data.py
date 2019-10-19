@@ -78,5 +78,7 @@ for user_id in user_ids:
             # Create csv file with all sensor readings of the user's trip
             leg_sensor_fp = leg_fp + "/" + data_df[0];
             df = data_df[1]
-            leg_sensor_data = df.loc[(df.user == user_id) & (df.leg == leg_id)].drop(["leg", "user", "Unnamed: 0"], axis=1)
+            drop_cols = ["leg", "user", "Unnamed: 0", "acc"]
+            drop_cols = [c for c in drop_cols if c in df.columns]
+            leg_sensor_data = df.loc[(df.user == user_id) & (df.leg == leg_id)].drop(drop_cols, axis=1)
             leg_sensor_data.to_csv(leg_sensor_fp)
