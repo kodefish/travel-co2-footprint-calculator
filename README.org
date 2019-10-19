@@ -70,12 +70,17 @@ follows the following hierarchy:
 + =./processed_data=
   + =user_id=
     + =leg_id=
-      + =acc_readings.csv==
-      + =bluetooth_scans.csv==
-      + =gyro_readings.csv==
+      + =acc_readings.csv=
+      + =bluetooth_scans.csv=
+      + =gyro_readings.csv=
       + =locations_scans.csv==
-      + =magn_readings.csv==
-      + =wifi_scans.csv==
+      + =magn_readings.csv=
+      + =wifi_scans.csv=
+
+To start processing the data, call:
+#+BEGIN_SRC
+python process_data.py
+#+END_SRC
        
 **** Data Visualization
 Once the data has been processes, visualizing it can be done via the
@@ -85,8 +90,19 @@ each sensor into a separate figure. You have the option to visualize the plots
 in a column layout, grid layout or both (default). This can be specified as command line
 arguments.
 
+To visualize the data, call:
+#+BEGIN_SRC
+python visualization.py
+#+END_SRC
+
 + =-c= or =-column= to view column layout
+  #+BEGIN_SRC
+  python visualization.py -c
+  #+END_SRC
 + =-g= or =-grid= to view grid layout
+  #+BEGIN_SRC
+  python visualization.py -g
+  #+END_SRC
 
 The script will open the generated plots in a new browser tab. You can play
 around (pan and zoom) with the graph in the grid mode (for some reason, tools are not available
