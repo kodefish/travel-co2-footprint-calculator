@@ -47,7 +47,14 @@ data_dataframes = []
 print("Loading sensor csvs")
 for file in tqdm(os.listdir(DATA_FILE_PATH)):
     if not file == LEGS_FILENAME:
-         data_dataframes.append((file, pd.read_csv(DATA_FILE_PATH + '/' + file)))
+        # Read in data
+        df = pd.read_csv(DATA_FILE_PATH + '/' + file)
+        # Rename time reading column (to have the same names everywhere, right now there is 3 different keys for the same value)
+        df.rename(columns={
+            'reading': 'reading_time',
+            'time_of_reading_since_start': 'reading_time'
+        }, inplace=True)
+        data_dataframes.append((file, df))
 
 print("")
 
@@ -71,5 +78,5 @@ for user_id in user_ids:
             # Create csv file with all sensor readings of the user's trip
             leg_sensor_fp = leg_fp + "/" + data_df[0];
             df = data_df[1]
-            leg_sensor_data = df.loc[(df.user == user_id) & (df.leg == leg_id)].copy()
+            leg_sensor_data = df.loc[(df.user == user_id) & (df.leg == leg_id)].drop(["leg", "user", "Unnamed: 0"], axis=1)
             leg_sensor_data.to_csv(leg_sensor_fp)
