@@ -5,39 +5,39 @@ processed_data/
 example_data/
 
 #built application files
-app/*.apk
-app/*.ap_
+smartenergy/*.apk
+smartenergy/*.ap_
 
 # files for the dex VM
-app/*.dex
+smartenergy/*.dex
 
 # Java class files
-app/*.class
+smartenergy/*.class
 
 # generated files
-app/bin/
-app/gen/
+smartenergy/bin/
+smartenergy/gen/
 
 # Local configuration file (sdk path, etc)
-app/local.properties
+smartenergy/local.properties
 
 # Windows thumbnail db
-app/Thumbs.db
+smartenergy/Thumbs.db
 
 # OSX files
 .DS_Store
 
 # Android Studio
-app/*.iml
-app/.idea
-app/.idea/workspace.xml
-app/.gradle
-app/gradle
-app/build/
-app/.navigation
-app/captures/
-app/output.json 
+smartenergy/*.iml
+smartenergy/.idea
+smartenergy/.idea/workspace.xml
+smartenergy/.gradle
+smartenergy/gradle
+smartenergy/build/
+smartenergy/.navigation
+smartenergy/captures/
+smartenergy/output.json 
 
 #NDK
-app/obj/
-app/.externalNativeBuild
+smartenergy/obj/
+smartenergy/.externalNativeBuild
