@@ -41,3 +41,7 @@ smartenergy/output.json
 #NDK
 smartenergy/obj/
 smartenergy/.externalNativeBuild
+
+# python
+venv/
+.se_visualization.html
