@@ -2,12 +2,14 @@
 import os
 import pandas as pd
 from tqdm import tqdm
+import numpy as np
 
 # data files
 DATA_FILE_PATH = "./example_data"
 PROCESSED_DATA_FILE_PATH = "./processed_data"
 LEGS_FILENAME = "legs.csv"
 LEGS_FILEPATH = DATA_FILE_PATH + "/" + LEGS_FILENAME
+OUTPUT_FILENAME = "features.csv"
 
 # map transport mode ID from raw data to machine learning suitable indides (according to the README)
 tmode_map = {
@@ -23,7 +25,7 @@ tmode_map = {
 
 leg_df = pd.read_csv(LEGS_FILEPATH, index_col=0)
 
-window_size_sec = 30
+window_size = 10000
 keep_unfinished = False
 
 # ask which user we want to select (default is all)
@@ -47,35 +49,14 @@ else:
     print ("Selected user", user_ids[user_id_idx])
     user_ids = [user_ids[user_id_idx]]
 
-# helper functions that:
-#   Given a DataFrame of the corresponding sensor
-#   Does aggregate (in window_size blocks) the data and stores it in the global Data Frames for the given transport!
+# DataFrame to store all features. One row equals one window
+features_df = pd.DataFrame()
 
-def parseAcc(df, tmode):
-    # iterate over all columns..
-    # while `time passed` < `window_size`
-    #   aggregate that shit (min, max, median, ...)
-    # save that window as a new row into the global DataFrame for that mode (together with the other sensors --> HOW!?)
-    print ("todo..")
-
-def parseBT(df, tmode):
-    print ("todo..")
-
-
-def parseGyro(df, tmode):
-    print ("todo..")
-
-
-def parseLoc(df, tmode):
-    print ("todo..")
-
-
-def parseMagn(df, tmode):
-    print ("todo..")
-
-
-def parseWifi(df, tmode):
-    print ("todo..")
+def getWindow(df, start, end):
+    return df.loc[
+            (df["reading_time"] > start) &
+            (df["reading_time"] <= end)
+            ].copy()
 
 # for every selected user, go through all processed legs
 selected_ids = {}
@@ -83,28 +64,63 @@ for user_id in user_ids:
     user_fp = PROCESSED_DATA_FILE_PATH + "/user_" + user_id
     for file in tqdm(os.listdir(user_fp)):
         leg_id = int(file[4:])
-        # totally-not-hacky mode extraction:
-        raw_tmode = int(leg_df.loc[(leg_df.user == user_id) & (leg_df.id == leg_id)].iloc[0]["mode"])
-        tmode = tmode_map[raw_tmode]
 
-        print("Parsing leg [id=" + str(leg_id) + ", mode=" + str(tmode) + "]")
+        # totally-not-hacky mode extraction:
+        leg_row = leg_df.loc[(leg_df.user == user_id) & (leg_df.id == leg_id)].iloc[0]
+        raw_tmode = int(leg_row["mode"])
+        tmode = tmode_map[raw_tmode]
 
         cur_fp = user_fp + "/" + file
 
-        parseAcc(pd.read_csv(cur_fp + "/acc_readings.csv"), tmode)
-        parseBT(pd.read_csv(cur_fp + "/bluetooth_scans.csv"), tmode)
-        parseGyro(pd.read_csv(cur_fp + "/gyro_readings.csv"), tmode)
-        parseLoc(pd.read_csv(cur_fp + "/locations_scans.csv"), tmode)
-        parseMagn(pd.read_csv(cur_fp + "/magn_readings.csv"), tmode)
-        parseWifi(pd.read_csv(cur_fp + "/wifi_scans.csv"), tmode)
+        # load csv for this leg
+        acc_df = pd.read_csv(cur_fp + "/acc_readings.csv", index_col=0)
+        bt_df = pd.read_csv(cur_fp + "/bluetooth_scans.csv", index_col=0)
+        gyro_df = pd.read_csv(cur_fp + "/gyro_readings.csv", index_col=0)
+        loc_df = pd.read_csv(cur_fp + "/locations_scans.csv", index_col=0)
+        magn_df = pd.read_csv(cur_fp + "/magn_readings.csv", index_col=0)
+        wifi_df = pd.read_csv(cur_fp + "/wifi_scans.csv", index_col=0)
 
-        # TODO:
-        # go through all csvs of that leg w/ the given mode..
+        boundary_left = leg_row["start"]
+        boundary_right = boundary_left + window_size
 
-            # aggregate the file based on manual rules (i.e. mean, median, min, max, ..)
+        while boundary_right < leg_row["end"]:
+            features = {}
+            
+            ## TODO: add more feature extraction here
 
-            # save all aggregated windows in the DataFrame for that transport mode
-            # s.t. in the end we have one DataFrame per mode containing all windows we have for a given mode
-            # (independent of the user or actual leg)
+            ## Accelerator
+            acc_window = getWindow(acc_df, boundary_left, boundary_right)
 
+            # mean magnitude
+            acc_window["magnitude"] = np.linalg.norm(acc_window[['x','y','z']].values,axis=1)
+            features["acc_mean"] = acc_window["magnitude"].mean()
 
+            ## Bluetooth
+            # TODO: average connected devices?
+
+            ## Gyro
+            # TODO: average "shakiness"?
+
+            ## Location
+            loc_window = getWindow(loc_df, boundary_left, boundary_right)
+            
+            # maximum speed
+            features["max_speed"] = min(0, loc_window["speed"].max())
+
+            ## Magnetic Field
+            # TODO: How much you turn around
+            # (i.e. in a train it should be very stable but on foot you turn left right alot)
+
+            ## WiFi
+            # TODO: reading times are scuffed as fuck here. if possible extract avg nearby access points..?
+
+            ## TARGET
+            features["mode"] = tmode
+
+            features_df = features_df.append(features, ignore_index=True)
+
+            # New boundaries
+            boundary_left = boundary_right
+            boundary_right = boundary_right + window_size
+
+features_df.to_csv(OUTPUT_FILENAME)

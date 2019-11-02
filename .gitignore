@@ -45,3 +45,4 @@ smartenergy/.externalNativeBuild
 # python
 venv/
 .se_visualization.html
+features.csv
