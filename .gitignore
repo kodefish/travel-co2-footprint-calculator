@@ -1,5 +1,48 @@
-*.html
+html
 .ipynb_checkpoints/
 examples/
 processed_data/
 example_data/
+
+#built application files
+smartenergy/*.apk
+smartenergy/*.ap_
+
+# files for the dex VM
+smartenergy/*.dex
+
+# Java class files
+smartenergy/*.class
+
+# generated files
+smartenergy/bin/
+smartenergy/gen/
+
+# Local configuration file (sdk path, etc)
+smartenergy/local.properties
+
+# Windows thumbnail db
+smartenergy/Thumbs.db
+
+# OSX files
+.DS_Store
+
+# Android Studio
+smartenergy/*.iml
+smartenergy/.idea
+smartenergy/.idea/workspace.xml
+smartenergy/.gradle
+smartenergy/gradle
+smartenergy/build/
+smartenergy/.navigation
+smartenergy/captures/
+smartenergy/output.json 
+
+#NDK
+smartenergy/obj/
+smartenergy/.externalNativeBuild
+
+# python
+venv/
+.se_visualization.html
+features.csv
