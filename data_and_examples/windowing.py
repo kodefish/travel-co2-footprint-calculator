@@ -92,7 +92,6 @@ for user_id in user_ids:
             acc_window = getWindow(acc_df, boundary_left, boundary_right)
 
             # mean magnitude
-            acc_window["magnitude"] = np.linalg.norm(acc_window[['x','y','z']].values,axis=1)
             features["acc_mean"] = acc_window["magnitude"].mean()
 
             ## Bluetooth
