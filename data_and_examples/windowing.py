@@ -1,8 +1,13 @@
 #!usr/bin/env python
+import sys
 import os
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
+
+### FUNCTIONALITY ###
+# This script will parse all (selected) processed data and aggregate all legs into windows.
+# All defined features will be aggregated over the time of one window and the ground truth set according to the mode
 
 # data files
 DATA_FILE_PATH = "./example_data"
@@ -25,8 +30,14 @@ tmode_map = {
 
 leg_df = pd.read_csv(LEGS_FILEPATH, index_col=0)
 
-window_size = 10000
-keep_unfinished = False
+# check if window_size is passed as argument
+
+window_size = 30000
+
+if len(sys.argv) > 1:
+    window_size = int(sys.argv[1])
+
+print("Using window_size = " + str(window_size))
 
 # ask which user we want to select (default is all)
 user_ids = []
@@ -40,7 +51,7 @@ for idx, user in enumerate(user_ids):
 
 # TODO: for debugging :)
 #user_id_idx = int(input("User idx (default is 0): ") or 0) - 1
-user_id_idx = 0
+user_id_idx = -1
 
 # If all, then user_ids contains all the user ids, otherwise just the one we want
 if user_id_idx < 0:
@@ -115,6 +126,8 @@ for user_id in user_ids:
             # TODO: reading times are scuffed as fuck here. if possible extract avg nearby access points..?
 
             ## TARGET
+            features["legID"] = leg_id
+            features["userID"] = user_id
             features["mode"] = tmode
 
             features_df = features_df.append(features, ignore_index=True)
