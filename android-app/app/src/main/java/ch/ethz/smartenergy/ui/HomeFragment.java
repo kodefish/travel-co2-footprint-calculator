@@ -322,10 +322,11 @@ public class HomeFragment extends Fragment {
     public void startScanning(View view) {
         view.setEnabled(false);
         Intent serviceIntent = new Intent(getContext(), DataCollectionService.class);
+        Log.i("HomeFragment", "starting scanning service");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getContext().startForegroundService(serviceIntent);
+            getActivity().startForegroundService(serviceIntent);
         } else {
-            getContext().startService(serviceIntent);
+            getActivity().startService(serviceIntent);
         }
     }
 }

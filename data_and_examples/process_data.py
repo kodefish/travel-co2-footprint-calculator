@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 from tqdm import tqdm
+import numpy as np
 
 # Get all data files
 DATA_FILE_PATH = "./example_data"
@@ -42,7 +43,7 @@ for user_id in user_ids:
     else:
         selected_ids[user_id] = [leg_ids[leg_id_idx]]
 
-# Init data files
+# Init data files (filename, dataframe) tuple
 data_dataframes = []
 print("Loading sensor csvs")
 for file in tqdm(os.listdir(DATA_FILE_PATH)):
@@ -78,7 +79,14 @@ for user_id in user_ids:
             # Create csv file with all sensor readings of the user's trip
             leg_sensor_fp = leg_fp + "/" + data_df[0];
             df = data_df[1]
+
+            # Drop unwanted columns
             drop_cols = ["leg", "user", "Unnamed: 0", "acc"]
             drop_cols = [c for c in drop_cols if c in df.columns]
             leg_sensor_data = df.loc[(df.user == user_id) & (df.leg == leg_id)].drop(drop_cols, axis=1)
+
+            # If sensor data contains x, y, z columns, then compute the mean
+            if all([item in leg_sensor_data.columns for item in ['x', 'y', 'z']]):
+                leg_sensor_data["magnitude"] = np.linalg.norm(leg_sensor_data[['x','y','z']].values,axis=1)
+
             leg_sensor_data.to_csv(leg_sensor_fp)
