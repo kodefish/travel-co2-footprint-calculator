@@ -32,7 +32,7 @@ leg_df = pd.read_csv(LEGS_FILEPATH, index_col=0)
 
 # check if window_size is passed as argument
 
-window_size = 30000
+window_size = 20000
 
 if len(sys.argv) > 1:
     window_size = int(sys.argv[1])
@@ -44,12 +44,11 @@ user_ids = []
 for file in os.listdir(PROCESSED_DATA_FILE_PATH):
     user_ids.append(file[5:]) # cut off "user_"
 
-print("Please select a user:")
-print(0, ":",  "all")
-for idx, user in enumerate(user_ids):
-    print(idx + 1, ":",  user)
+#print("Please select a user:")
+#print(0, ":",  "all")
+#for idx, user in enumerate(user_ids):
+#    print(idx + 1, ":",  user)
 
-# TODO: for debugging :)
 #user_id_idx = int(input("User idx (default is 0): ") or 0) - 1
 user_id_idx = -1
 
@@ -106,7 +105,11 @@ for user_id in user_ids:
             features["acc_mean"] = acc_window["magnitude"].mean()
 
             ## Bluetooth
-            # TODO: average connected devices?
+            bt_window = getWindow(bt_df, boundary_left, boundary_right)
+
+            # average connected devices
+            bt_grp = bt_window.groupby("scan")
+            features["avg_con_bt"] = bt_grp.size().mean()
 
             ## Gyro
             # TODO: average "shakiness"?
@@ -116,6 +119,15 @@ for user_id in user_ids:
             
             # maximum speed
             features["max_speed"] = min(0, loc_window["speed"].max())
+
+            # mean speed
+            features["avg_speed"] = loc_window["speed"].mean()
+
+            # maximum altitude "speed" TODO
+            #bucket_array = np.linspace(boundary_left, boundary_right, 9) # 8 buckets
+            #alt_cut = pd.cut(loc_window["reading_time"], bucket_array)
+            #features["max_alt_speed"] = loc_window.groupby(alt_cut)["alt"].mean().diff().max()
+
 
             ## Magnetic Field
             # TODO: How much you turn around
