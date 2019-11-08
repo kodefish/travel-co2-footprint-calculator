@@ -107,3 +107,12 @@ python visualization.py
 The script will open the generated plots in a new browser tab. You can play
 around (pan and zoom) with the graph in the grid mode (for some reason, tools are not available
 yet in the column view).
+       
+**** Windowing
+To aggregate the data into windows of a fixed size call the script windowing.py (with the optional parameter "window_size" which is the window lenght in milliseconds).
+This will read out the folder "processed_data" so make sure you have all data processed before!
+The resulting windows will be saved in the file "features.csv".
+
+    
+**** Machine Learning
+To test the accuracy of the features extracted from the data and saved in "features.csv" you can simply invoke machine.py which will split the data into test and training set and then perform ML and report the resulting accuracy.
