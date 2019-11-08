@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -71,6 +72,8 @@ public class HomeFragment extends Fragment {
     private TextView probabilityEbike;
     private TextView probabilityMotorcycle;
 
+    private Intent serviceIntent;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -95,7 +98,8 @@ public class HomeFragment extends Fragment {
         probabilityMotorcycle.setText(getString(R.string.motorcycle, 0.00));
 
         // Register button clicks to start scanning
-        root.findViewById(R.id.button_start).setOnClickListener(this::startScanning);
+        ((ToggleButton)root.findViewById(R.id.button_start)).setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {if (isChecked) startScanning(); else stopScanning();});
 
         // Load ML stuff
         Log.d("CREATED MODEL", "TEST");
@@ -319,14 +323,16 @@ public class HomeFragment extends Fragment {
      *
      * @param view
      */
-    public void startScanning(View view) {
-        view.setEnabled(false);
-        Intent serviceIntent = new Intent(getContext(), DataCollectionService.class);
-        Log.i("HomeFragment", "starting scanning service");
+    public void startScanning() {
+        serviceIntent = new Intent(getContext(), DataCollectionService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getActivity().startForegroundService(serviceIntent);
         } else {
             getActivity().startService(serviceIntent);
         }
+    }
+
+    public void stopScanning() {
+            getActivity().stopService(serviceIntent);
     }
 }
