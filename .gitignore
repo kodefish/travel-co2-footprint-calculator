@@ -2,6 +2,7 @@ html
 .ipynb_checkpoints/
 examples/
 processed_data/
+processed_data_*
 example_data/
 
 #built application files

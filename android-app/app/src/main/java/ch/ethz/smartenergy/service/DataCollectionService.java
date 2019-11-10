@@ -92,6 +92,7 @@ public class DataCollectionService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i("DataCollectionService", "onBind");
         return null;
     }
 
