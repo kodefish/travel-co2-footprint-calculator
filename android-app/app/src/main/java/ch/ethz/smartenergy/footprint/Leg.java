@@ -1,12 +1,35 @@
 package ch.ethz.smartenergy.footprint;
 
-public class Leg {
-    double distance; // Given in km
-    TripType type;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Leg(double distance, TripType type) {
-        this.distance = distance;
-        this.type = type;
+import ch.ethz.smartenergy.model.FeatureVector;
+
+public class Leg {
+    private List<FeatureVector> featureVectorList;
+
+    public Leg(List<FeatureVector> featureVectors) {
+        this.featureVectorList = new ArrayList<>(featureVectors);
+    }
+
+    /**
+     * Computes total distance covered by leg by summing the distance between each
+     * sensor reading
+     * @return distance covered during the leg
+     */
+    public double getLegLength() {
+        double totalLegDistance = 0;
+        for (FeatureVector featureVector : featureVectorList)
+            totalLegDistance += featureVector.getDistanceCovered();
+
+        return totalLegDistance;
+    }
+
+
+    public TripType getMostProbableLegType() {
+        // TODO more sophisticated way of computing the trip type (most frequent)
+        TripType mostProbableLegType = featureVectorList.get(0).mostProbableTripType();
+        return mostProbableLegType;
     }
 
     /**
@@ -14,6 +37,7 @@ public class Leg {
      * @return the footprint of this leg
      */
     public double getFootprint() {
-        return Footprint.getEFof(this.type) * this.distance;
+        return Footprint.getEFof(getMostProbableLegType()) * getLegLength();
     }
+
 }

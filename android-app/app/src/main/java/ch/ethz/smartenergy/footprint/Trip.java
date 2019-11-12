@@ -1,15 +1,24 @@
 package ch.ethz.smartenergy.footprint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Trip {
-    ArrayList<Leg> legs;
+    List<Leg> legs;
 
     /**
      * Constructs a trip with no legs
      */
     public Trip() {
         legs = new ArrayList<Leg>();
+    }
+
+    /**
+     * Constructs a trip with one or more legs
+     * @param legs the legs to add to the trip
+     */
+    public Trip(List<Leg> legs) {
+        this.legs = new ArrayList<>(legs);
     }
 
     /**
@@ -45,4 +54,6 @@ public class Trip {
         }
         return footprint;
     }
+
+
 }
