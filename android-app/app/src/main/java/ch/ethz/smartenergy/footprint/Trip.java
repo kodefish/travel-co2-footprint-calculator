@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Trip {
-    List<Leg> legs;
-    Double totalFootprint = null;
-    Double totalDistance = null;
+    private List<Leg> legs;
+    private Double totalFootprint = null;
+    private Double totalDistance = null;
 
     /**
      * Constructs a trip with no legs
