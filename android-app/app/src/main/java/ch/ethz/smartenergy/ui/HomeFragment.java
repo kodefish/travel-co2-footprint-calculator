@@ -49,6 +49,7 @@ import ch.ethz.smartenergy.model.FeatureVector;
 import ch.ethz.smartenergy.model.LocationScan;
 import ch.ethz.smartenergy.model.ScanResult;
 import ch.ethz.smartenergy.model.SensorReading;
+import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.service.DataCollectionService;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
 
@@ -75,6 +76,7 @@ public class HomeFragment extends Fragment {
 
     // App background
     private Intent serviceIntent;
+    private TripStorage tripStorage;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -118,6 +120,9 @@ public class HomeFragment extends Fragment {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
+        // Load trip storage utility
+        tripStorage = new TripStorage(getContext());
 
         // Start listening for sensor scans
         registerReceiver();
@@ -370,10 +375,15 @@ public class HomeFragment extends Fragment {
     public Trip stopScanning() {
         getActivity().stopService(serviceIntent);
 
-        // TODO convert trip's sensor readings into a proper trip
+        // Convert trip's sensor readings into a proper trip
         Trip trip = computeTripFromReadings();
 
-        // TODO persist the trip
+        // Persist the trip
+        try {
+            tripStorage.persistTrip(trip);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return trip;
     }
