@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,12 +19,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -33,36 +31,41 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import biz.k11i.xgboost.Predictor;
 import biz.k11i.xgboost.util.FVec;
 import ch.ethz.smartenergy.Constants;
-import ch.ethz.smartenergy.MainActivity;
 import ch.ethz.smartenergy.R;
+import ch.ethz.smartenergy.TripCompletedActivity;
+import ch.ethz.smartenergy.footprint.Leg;
+import ch.ethz.smartenergy.footprint.Trip;
+import ch.ethz.smartenergy.footprint.TripType;
+import ch.ethz.smartenergy.model.FeatureVector;
 import ch.ethz.smartenergy.model.LocationScan;
 import ch.ethz.smartenergy.model.ScanResult;
 import ch.ethz.smartenergy.model.SensorReading;
+import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.service.DataCollectionService;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
 
 public class HomeFragment extends Fragment {
 
+    // Constants
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final int PERMISSION_ALL = 4242;
     private int locationRequestCount = 0;
 
+    // ML classifier
     private Predictor predictor;
+    private List<FeatureVector> tripReadings;
 
-    private List<Double> train_mean;
-    private List<Double> train_std;
-
-
+    // UI
     private TextView probabilityOnFoot;
     private TextView probabilityTrain;
     private TextView probabilityTramway;
@@ -72,7 +75,9 @@ public class HomeFragment extends Fragment {
     private TextView probabilityEbike;
     private TextView probabilityMotorcycle;
 
+    // App background
     private Intent serviceIntent;
+    private TripStorage tripStorage;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -99,7 +104,13 @@ public class HomeFragment extends Fragment {
 
         // Register button clicks to start scanning
         ((ToggleButton)root.findViewById(R.id.button_start)).setOnCheckedChangeListener(
-                (buttonView, isChecked) -> {if (isChecked) startScanning(); else stopScanning();});
+                (buttonView, isChecked) -> {
+                    if (isChecked) {
+                        startScanning();
+                    } else {
+                        Trip completedTrip = stopScanning();
+                        showTripSummary(completedTrip);
+                    }});
 
         // Load ML stuff
         Log.d("CREATED MODEL", "TEST");
@@ -111,9 +122,27 @@ public class HomeFragment extends Fragment {
             ex.printStackTrace();
         }
 
+        // Load trip storage utility
+        tripStorage = new TripStorage(getContext());
+
         // Start listening for sensor scans
         registerReceiver();
         return root;
+    }
+
+    private void showTripSummary(Trip completedTrip) {
+        // Serialize completed trip
+        Gson gson = new Gson();
+        String tripJson = gson.toJson(completedTrip, Trip.class);
+
+        // Create intent for summary activity
+        Intent startTripSummaryActivity = new Intent(getActivity(), TripCompletedActivity.class);
+        // Pass completed trip as serialized extra
+        startTripSummaryActivity.putExtra(
+                TripCompletedActivity.EXTRA_TRIP, tripJson);
+
+        // Start summary activity
+        startActivity(startTripSummaryActivity);
     }
 
     @Override
@@ -125,6 +154,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        stopScanning();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
     }
 
@@ -137,36 +167,35 @@ public class HomeFragment extends Fragment {
             if (data.containsKey(Constants.WindowBroadcastExtraName)) {
                 ScanResult scan = (ScanResult) data.getSerializable(Constants.WindowBroadcastExtraName);
                 if (scan != null) {
+                    // Build feature vector
+                    FeatureVector featureVec = new FeatureVector();
+
                     double meanMagnitude = calculateMeanMagnitude(scan.getAccReadings());
-                    double maxSpeed = calculateMaxSpead(scan.getLocationScans());
-                    predict(meanMagnitude, maxSpeed);
+                    featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
+                    double maxSpeed = calculateMaxSpeed(scan.getLocationScans());
+                    featureVec.addFeature(FeatureVector.FEATURE_KEY_MAX_SPEED, maxSpeed);
+                    double distanceCovered = calculateDistanceCovered(scan.getLocationScans());
+                    featureVec.addFeature(FeatureVector.FEATURE_KEY_DISTANCE_COVERED, distanceCovered);
+
+                    // Get prediction results
+                    float[] predictions = predict(featureVec);
+                    featureVec.setPredictions(predictions);
+                    showResult(predictions);
+
+                    tripReadings.add(featureVec);
                 }
             }
         }
     };
 
-    private void predict(double meanMagnitude, double maxSpeed) {
+    private float[] predict(FeatureVector features) {
         // build features vector
-        double[] features = {meanMagnitude, maxSpeed};
-        FVec features_vector = FVec.Transformer.fromArray(features, false);
+        FVec features_vector = FVec.Transformer.fromArray(features.getFeatureVec(), false);
 
         //predict
         float[] predictions = predictor.predict(features_vector);
-        showResult(predictions);
+        return predictions;
     }
-
-    private void appendResult(float[] predictions) {
-        Log.d("PROBABILITIES: ", Arrays.toString(predictions));
-        probabilityOnFoot.append(String.format("%s %.2f %s", " vs" , predictions[0] * 100, " %"));
-        probabilityTrain.append(String.format("%s %.2f %s", " vs", predictions[1] * 100, " %"));
-        probabilityBus.append(String.format("%s %.2f %s", " vs", predictions[2] * 100," %"));
-        probabilityCar.append(String.format("%s %.2f %s", " vs", predictions[3] * 100," %"));
-        probabilityTramway.append(String.format("%s %.2f %s", " vs", predictions[4] * 100," %"));
-        probabilityBicycle.append(String.format("%s %.2f %s", " vs", predictions[5] * 100," %"));
-        probabilityEbike.append(String.format("%s %.2f %s", " vs", predictions[6] * 100," %"));
-        probabilityMotorcycle.append(String.format("%s %.2f %s", " vs", predictions[7] * 100," %"));
-    }
-
 
     private void showResult(float[] predictions) {
 
@@ -180,7 +209,7 @@ public class HomeFragment extends Fragment {
         probabilityMotorcycle.setText(getString(R.string.motorcycle, predictions[7] * 100));
     }
 
-    private double calculateMaxSpead(ArrayList<LocationScan> locationScans) {
+    private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {
         double maxSpeed = 0;
         for (LocationScan locationScan : locationScans) {
             if (locationScan.getSpeed() > maxSpeed) {
@@ -204,6 +233,28 @@ public class HomeFragment extends Fragment {
         }
 
         return sumOfMagnitudes / accReadings.size();
+    }
+
+    private double calculateDistanceCovered(ArrayList<LocationScan> locationScans) {
+        double distanceCovered = 0;
+        for (int i = 0; i < locationScans.size() - 1; i++) {
+            LocationScan locationScan1 = locationScans.get(i);
+            LocationScan locationScan2 = locationScans.get(i+1);
+            double lat1 = locationScan1.getLatitude(), lon1 = locationScan1.getLongitude();
+            double lat2 = locationScan2.getLatitude(), lon2 = locationScan2.getLongitude();
+
+            Location loc1 = new Location("");
+            loc1.setLatitude(lat1);
+            loc1.setLongitude(lon1);
+
+            Location loc2 = new Location("");
+            loc2.setLatitude(lat2);
+            loc2.setLongitude(lon2);
+
+            distanceCovered += loc1.distanceTo(loc2);
+        }
+
+        return distanceCovered;
     }
 
     /**
@@ -320,8 +371,6 @@ public class HomeFragment extends Fragment {
 
     /**
      * Start collecting data on button click
-     *
-     * @param view
      */
     public void startScanning() {
         serviceIntent = new Intent(getContext(), DataCollectionService.class);
@@ -330,9 +379,53 @@ public class HomeFragment extends Fragment {
         } else {
             getActivity().startService(serviceIntent);
         }
+
+        // Start new trip reading (collect all the feature vectors)
+        tripReadings = new ArrayList<>();
     }
 
-    public void stopScanning() {
-            getActivity().stopService(serviceIntent);
+    public Trip stopScanning() {
+        getActivity().stopService(serviceIntent);
+
+        // Convert trip's sensor readings into a proper trip
+        Trip trip = computeTripFromReadings();
+
+        // Persist the trip
+        try {
+            tripStorage.persistTrip(trip);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return trip;
+    }
+
+    private Trip computeTripFromReadings() {
+        List<Leg> legs = new ArrayList<>();
+
+        List<FeatureVector> legFeatures = new ArrayList<>();
+        TripType previousTripType = tripReadings.get(0).mostProbableTripType();
+
+        for (int i = 0; i < tripReadings.size(); i++) {
+            FeatureVector featureVec = tripReadings.get(i);
+            TripType currentTripType = featureVec.mostProbableTripType();
+
+            // TODO more sophisticated way of computing a leg
+            if (currentTripType.equals(previousTripType)) {
+                // If the current window is of the same type as the previous, then the leg is
+                // probably the same
+                legFeatures.add(featureVec);
+            } else {
+                // Finalize current leg
+                legs.add(new Leg(legFeatures));
+
+                // Reset leg and add current features to new leg
+                legFeatures.clear();
+                previousTripType = currentTripType;
+                legFeatures.add(featureVec);
+
+            }
+        }
+        return new Trip(legs);
     }
 }
