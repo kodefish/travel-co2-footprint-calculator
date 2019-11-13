@@ -8,6 +8,9 @@ import ch.ethz.smartenergy.model.FeatureVector;
 public class Leg {
     private List<FeatureVector> featureVectorList;
 
+    private Double totalLegDistance = null;
+    private TripType mostProbableLegType = null;
+
     public Leg(List<FeatureVector> featureVectors) {
         this.featureVectorList = new ArrayList<>(featureVectors);
     }
@@ -18,17 +21,19 @@ public class Leg {
      * @return distance covered during the leg
      */
     public double getLegLength() {
-        double totalLegDistance = 0;
-        for (FeatureVector featureVector : featureVectorList)
-            totalLegDistance += featureVector.getDistanceCovered();
-
+        if (totalLegDistance == null) {
+            double totalLegDistance = 0;
+            for (FeatureVector featureVector : featureVectorList)
+                totalLegDistance += featureVector.getDistanceCovered();
+        }
         return totalLegDistance;
     }
 
 
     public TripType getMostProbableLegType() {
         // TODO more sophisticated way of computing the trip type (most frequent)
-        TripType mostProbableLegType = featureVectorList.get(0).mostProbableTripType();
+        if (mostProbableLegType == null)
+            mostProbableLegType = featureVectorList.get(0).mostProbableTripType();
         return mostProbableLegType;
     }
 
