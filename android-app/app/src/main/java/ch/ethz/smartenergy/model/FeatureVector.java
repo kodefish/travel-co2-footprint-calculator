@@ -9,23 +9,42 @@ import ch.ethz.smartenergy.footprint.TripType;
 
 public class FeatureVector {
 
+    // Constants used to reference features
     public static final String FEATURE_KEY_MEAN_MAGNITUDE = "meanMagnitude";
     public static final String FEATURE_KEY_MAX_SPEED = "maxSpeed";
     public static final String FEATURE_KEY_DISTANCE_COVERED = "distanceCovered";
 
+    // Raw scan results from the sensor
+    private ScanResult scanResult;
+
+    // Computed features for decison tree
     private Map<String, Double> features;
 
     // Represents how sure we are that prediction[i] is of type TripType[i]
     private float[] predictions;
 
-    public FeatureVector() {
+    /**
+     * Construct a feature vector based on raw sensor values
+     * @param scanResult resulting scan values
+     */
+    public FeatureVector(ScanResult scanResult) {
+        this.scanResult = scanResult;
         features = new HashMap<>();
     }
 
+    /**
+     * Add feature to the feature vector
+     * @param name name of the feature
+     * @param value value of the feature
+     */
     public void addFeature(String name, Double value) {
         features.put(name, value);
     }
 
+    /**
+     * Get a list of the feature names, in the same order as if it were values
+     * @return list of feature names
+     */
     public List<String> getFeatureNames() {
         List<String> featureNames = new ArrayList<>();
         for (Map.Entry<String, Double> entry : features.entrySet()) {
@@ -34,6 +53,10 @@ public class FeatureVector {
         return featureNames;
     }
 
+    /**
+     * Returns a vector containing the features
+     * @return
+     */
     public double[] getFeatureVec() {
         // TODO specify order in which the feature vec should be given to the decision tree
         double[] featureArr = new double[features.size()];

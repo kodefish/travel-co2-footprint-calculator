@@ -168,8 +168,9 @@ public class HomeFragment extends Fragment {
                 ScanResult scan = (ScanResult) data.getSerializable(Constants.WindowBroadcastExtraName);
                 if (scan != null) {
                     // Build feature vector
-                    FeatureVector featureVec = new FeatureVector();
+                    FeatureVector featureVec = new FeatureVector(scan);
 
+                    // TODO move this to Feature vec -> (maybe directly into the constructor?)
                     double meanMagnitude = calculateMeanMagnitude(scan.getAccReadings());
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
                     double maxSpeed = calculateMaxSpeed(scan.getLocationScans());
