@@ -31,17 +31,18 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import biz.k11i.xgboost.Predictor;
 import biz.k11i.xgboost.util.FVec;
 import ch.ethz.smartenergy.Constants;
 import ch.ethz.smartenergy.R;
+import ch.ethz.smartenergy.TripCompletedActivity;
 import ch.ethz.smartenergy.footprint.Leg;
 import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.footprint.TripType;
@@ -130,7 +131,18 @@ public class HomeFragment extends Fragment {
     }
 
     private void showTripSummary(Trip completedTrip) {
-        // TODO start trip summary screen
+        // Serialize completed trip
+        Gson gson = new Gson();
+        String tripJson = gson.toJson(completedTrip, Trip.class);
+
+        // Create intent for summary activity
+        Intent startTripSummaryActivity = new Intent(getActivity(), TripCompletedActivity.class);
+        // Pass completed trip as serialized extra
+        startTripSummaryActivity.putExtra(
+                TripCompletedActivity.EXTRA_TRIP, tripJson);
+
+        // Start summary activity
+        startActivity(startTripSummaryActivity);
     }
 
     @Override

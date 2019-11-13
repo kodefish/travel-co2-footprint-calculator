@@ -37,6 +37,9 @@ public class TripStorage {
         if (!jsonFile.exists()) {
             try {
                 jsonFile.createNewFile();
+                // Write an empty list to the the json file
+                List<Trip> emptyList = new ArrayList<>();
+                writeTrips(emptyList);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -53,7 +56,9 @@ public class TripStorage {
         Type listOfTripsType = new TypeToken<ArrayList<Trip>>() {}.getType();
         Gson gson = new Gson();
         BufferedReader bufferedReader = new BufferedReader(new FileReader(jsonFile));
-        return gson.fromJson(bufferedReader, listOfTripsType);
+        List<Trip> storedTrips = gson.fromJson(bufferedReader, listOfTripsType);
+        if (storedTrips == null) storedTrips = new ArrayList<>();
+        return storedTrips;
     }
 
     /**

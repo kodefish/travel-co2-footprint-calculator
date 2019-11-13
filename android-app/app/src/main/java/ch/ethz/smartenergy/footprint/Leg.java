@@ -22,7 +22,7 @@ public class Leg {
      */
     public double getLegLength() {
         if (totalLegDistance == null) {
-            double totalLegDistance = 0;
+            totalLegDistance = 0.;
             for (FeatureVector featureVector : featureVectorList)
                 totalLegDistance += featureVector.getDistanceCovered();
         }

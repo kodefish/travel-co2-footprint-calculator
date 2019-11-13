@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Trip {
     List<Leg> legs;
+    Double totalFootprint = null;
+    Double totalDistance = null;
 
     /**
      * Constructs a trip with no legs
@@ -44,15 +46,34 @@ public class Trip {
      * Returns the cumulated footprint of all the legs of this trip
      * @return the footprint of this trip
      */
-    public double getFootprint() {
-        // Doesn't work because Android is bad and doesn't recognise funprog
-        // this.legs.stream().forEach(leg -> leg.getFootprint()).reduce((double a, double b) -> a + b);
-
-        double footprint = 0;
-        for (Leg leg: this.legs) {
-            footprint += leg.getFootprint();
+    public double getTotalFootprint() {
+        if (totalFootprint == null) {
+            totalFootprint = 0.;
+            for (Leg leg: this.legs)
+                totalFootprint += leg.getFootprint();
         }
-        return footprint;
+        return totalFootprint;
+    }
+
+    /**
+     * Returns the total distance covered by the trip
+     * @return distance covered by the trip
+     */
+    public double getTotalDistance() {
+        if (totalDistance == null) {
+            totalDistance = 0.;
+            for (Leg leg : this.legs)
+                totalDistance += leg.getLegLength();
+        }
+        return totalDistance;
+    }
+
+    /**
+     * Get number of legs in the trip
+     * @return number of legs in the trip
+     */
+    public int getNumLegs() {
+        return this.legs.size();
     }
 
 
