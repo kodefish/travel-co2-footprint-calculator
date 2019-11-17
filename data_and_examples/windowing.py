@@ -57,6 +57,7 @@ for file in os.listdir(PROCESSED_DATA_FILE_PATH):
 
 #user_id_idx = int(input("User idx (default is 0): ") or 0) - 1
 # TODO: debug
+#user_id_idx = -1
 user_id_idx = -1
 
 # If all, then user_ids contains all the user ids, otherwise just the one we want
@@ -119,10 +120,16 @@ for user_id in user_ids:
 
                 acc_data = [acc_window["x"], acc_window["y"], acc_window["z"]]
                 acc_features = extract_features(acc_data, T, N, f_s, denominator)
-                print(len(acc_features))
-                features["acc_mixed"] = acc_features
+
+
+                if len(acc_features) != 90:
+                    print("Feature len != 90:  " + str(len(acc_features)))
+
+                for i in range(0, 90):
+                    features["acc_mixed_" + str(i)] = acc_features[i]
             else:
-                features["acc_mixed"] = np.array([0] * 9)
+                for i in range(0, 90):
+                    features["acc_mixed_" + str(i)] = 0
 
             # visualize!
             do_visualize = False
@@ -169,9 +176,11 @@ for user_id in user_ids:
 
                 gyro_data = [gyro_window["x"], gyro_window["y"], gyro_window["z"]]
                 gyro_features = extract_features(gyro_data, T, N, f_s, denominator)
-                features["gyro_mixed"] = gyro_features
+                for i in range(0, 90):
+                    features["gyro_mixed_" + str(i)] = acc_features[i]
             else:
-                features["gyro_mixed"] = np.array([0] * 9)
+                for i in range(0, 90):
+                    features["gyro_mixed_" + str(i)] = 0
 
             ## Location
             loc_window = getWindow(loc_df, boundary_left, boundary_right)

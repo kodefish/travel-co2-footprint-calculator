@@ -81,4 +81,4 @@ def extract_features(dataset, T, N, f_s, denominator):
         features += get_features(*get_fft_values(signal, T, N, f_s), mph)
         features += get_features(*get_autocorr_values(signal, T, N, f_s), mph)
 
-    return np.array(features)
+    return features
