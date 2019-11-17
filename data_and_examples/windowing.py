@@ -6,7 +6,6 @@ from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 
-#from siml.sk_utils import *
 from signal_analysis_utils import *
 
 ### FUNCTIONALITY ###
@@ -32,6 +31,7 @@ tmode_map = {
     605: 7, # motorcycle
 }
 
+# map transport to names (e.g. to easily put titles on graphs)
 tmode_names = ["On Foot", "Train", "Bus", "Car", "Tram", "Bicycle", "E-Bike", "Motorbike"]
 
 leg_df = pd.read_csv(LEGS_FILEPATH, index_col=0)
@@ -56,8 +56,6 @@ for file in os.listdir(PROCESSED_DATA_FILE_PATH):
 #    print(idx + 1, ":",  user)
 
 #user_id_idx = int(input("User idx (default is 0): ") or 0) - 1
-# TODO: debug
-#user_id_idx = -1
 user_id_idx = -1
 
 # If all, then user_ids contains all the user ids, otherwise just the one we want
@@ -121,10 +119,6 @@ for user_id in user_ids:
                 acc_data = [acc_window["x"], acc_window["y"], acc_window["z"]]
                 acc_features = extract_features(acc_data, T, N, f_s, denominator)
 
-
-                if len(acc_features) != 90:
-                    print("Feature len != 90:  " + str(len(acc_features)))
-
                 for i in range(0, 90):
                     features["acc_mixed_" + str(i)] = acc_features[i]
             else:
@@ -134,12 +128,13 @@ for user_id in user_ids:
             # visualize!
             do_visualize = False
             if do_visualize:
+                # if you want a certain mode, uncomment
+                #if tmode == 5:
+
                 fig, (axsX, axsY, axsZ) = plt.subplots(3)
                 f_values, fft_values = get_fft_values(acc_window["x"], T, N, f_s)
                 axsX.plot(f_values, fft_values, linestyle='-', color='blue')
                 axsX.title.set_text("Acc X axis")
-
-                print(T)
 
                 f_values, fft_values = get_fft_values(acc_window["y"], T, N, f_s)
                 axsY.plot(f_values, fft_values, linestyle='-', color='red')
