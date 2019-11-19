@@ -27,4 +27,5 @@
     <string name="bicycle">Bicycle: %1$.2f \%%</string>
     <string name="ebike">eBike: %1$.2f \%%</string>
     <string name="motorcycle">Motorcycle: %1$.2f \%%</string>
+    <string name="todo">TODO</string>
 </resources>

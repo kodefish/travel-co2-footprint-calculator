@@ -2,11 +2,15 @@ package ch.ethz.smartenergy.footprint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.util.Calendar;
 
 public class Trip {
     List<Leg> legs;
     Double totalFootprint = null;
     Double totalDistance = null;
+    List<TripType> modesUsed;
+    Date date;
 
     /**
      * Constructs a trip with no legs
@@ -21,6 +25,13 @@ public class Trip {
      */
     public Trip(List<Leg> legs) {
         this.legs = new ArrayList<>(legs);
+        for (Leg leg: legs) {
+            if (!modesUsed.contains(leg.getMostProbableLegType())) {
+                modesUsed.add(leg.getMostProbableLegType());
+            }
+        }
+
+        this.date = Calendar.getInstance().getTime();
     }
 
     /**
@@ -39,6 +50,10 @@ public class Trip {
     public void addLegs(Leg... legs) {
         for (Leg leg: legs) {
             this.legs.add(leg);
+
+            if (!modesUsed.contains(leg.getMostProbableLegType())) {
+                modesUsed.add(leg.getMostProbableLegType());
+            }
         }
     }
 
@@ -76,5 +91,19 @@ public class Trip {
         return this.legs.size();
     }
 
+    /**
+     * Returns the list of transportation modes used
+     * @return the list of transportation modes used
+     */
+    public List<TripType> getModesUsed() {
+        return (List<TripType>) ((ArrayList<TripType>) this.modesUsed).clone();
+    }
 
+    /**
+     * Returns the date on which the trip was made
+     * @return the date on which the trip was made
+     */
+    public Date getDate() {
+        return this.date;
+    }
 }
