@@ -25,6 +25,7 @@ public class Trip {
      */
     public Trip(List<Leg> legs) {
         this.legs = new ArrayList<>(legs);
+        this.modesUsed = new ArrayList<TripType>();
         for (Leg leg: legs) {
             if (!modesUsed.contains(leg.getMostProbableLegType())) {
                 modesUsed.add(leg.getMostProbableLegType());
