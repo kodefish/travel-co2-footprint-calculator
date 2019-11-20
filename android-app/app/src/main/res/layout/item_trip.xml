@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dip"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/item_trip_date"
+        android:layout_width="fill_parent"
+        android:layout_height="26dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:maxLines="1"
+        android:text="Date"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/item_trip_distance"
+        android:layout_width="fill_parent"
+        android:layout_height="26dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:maxLines="1"
+        android:text="Distance traveled"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/item_trip_modes"
+        android:layout_width="fill_parent"
+        android:layout_height="26dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:maxLines="1"
+        android:text="Modes used"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/item_trip_footprint"
+        android:layout_width="fill_parent"
+        android:layout_height="26dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:maxLines="1"
+        android:text="Emissions"
+        android:textSize="12sp" />
+</LinearLayout>

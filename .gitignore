@@ -47,3 +47,4 @@ smartenergy/.externalNativeBuild
 venv/
 .se_visualization.html
 features.csv
+__pycache__/

@@ -1,9 +1,10 @@
 package ch.ethz.smartenergy.footprint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Trip {
-    ArrayList<Leg> legs;
+    private ArrayList<Leg> legs;
 
     /**
      * Constructs a trip with no legs
@@ -26,9 +27,15 @@ public class Trip {
      * @param legs the legs to add to the trip
      */
     public void addLegs(Leg... legs) {
-        for (Leg leg: legs) {
-            this.legs.add(leg);
-        }
+        this.legs.addAll(Arrays.asList(legs));
+    }
+
+    /**
+     * Returns a copy of the legs of this trip
+     * @return the legs
+     */
+    public ArrayList<Leg> getLegs() {
+        return (ArrayList<Leg>) this.legs.clone();
     }
 
     /**

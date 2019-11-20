@@ -1,9 +1,12 @@
-#!usr/bin/env python
+#usr/bin/env python
 import sys
 import os
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
+import matplotlib.pyplot as plt
+
+from signal_analysis_utils import *
 
 ### FUNCTIONALITY ###
 # This script will parse all (selected) processed data and aggregate all legs into windows.
@@ -27,6 +30,9 @@ tmode_map = {
     602: 6, # ebike
     605: 7, # motorcycle
 }
+
+# map transport to names (e.g. to easily put titles on graphs)
+tmode_names = ["On Foot", "Train", "Bus", "Car", "Tram", "Bicycle", "E-Bike", "Motorbike"]
 
 leg_df = pd.read_csv(LEGS_FILEPATH, index_col=0)
 
@@ -95,14 +101,54 @@ for user_id in user_ids:
 
         while boundary_right < leg_row["end"]:
             features = {}
-            
-            ## TODO: add more feature extraction here
 
             ## Accelerator
             acc_window = getWindow(acc_df, boundary_left, boundary_right)
 
             # mean magnitude
             features["acc_mean"] = acc_window["magnitude"].mean()
+
+            # FFT of acc
+            N = acc_window.shape[0]
+            if N > 0:
+                t_n = window_size / 1000 # in sec
+                T = t_n / N
+                f_s = 1.0 / T # sample frequency
+                denominator = 10
+
+                acc_data = [acc_window["x"], acc_window["y"], acc_window["z"]]
+                acc_features = extract_features(acc_data, T, N, f_s, denominator)
+
+                for i in range(0, 90):
+                    features["acc_mixed_" + str(i)] = acc_features[i]
+            else:
+                for i in range(0, 90):
+                    features["acc_mixed_" + str(i)] = 0
+
+            # visualize!
+            do_visualize = False
+            if do_visualize:
+                # if you want a certain mode, uncomment
+                #if tmode == 5:
+
+                fig, (axsX, axsY, axsZ) = plt.subplots(3)
+                f_values, fft_values = get_fft_values(acc_window["x"], T, N, f_s)
+                axsX.plot(f_values, fft_values, linestyle='-', color='blue')
+                axsX.title.set_text("Acc X axis")
+
+                f_values, fft_values = get_fft_values(acc_window["y"], T, N, f_s)
+                axsY.plot(f_values, fft_values, linestyle='-', color='red')
+                axsY.title.set_text("Acc Y axis")
+
+                f_values, fft_values = get_fft_values(acc_window["z"], T, N, f_s)
+                axsZ.plot(f_values, fft_values, linestyle='-', color='green')
+                axsZ.title.set_text("Acc Z axis")
+
+                plt.xlabel('Frequency [Hz]', fontsize=16)
+                plt.ylabel('Amplitude', fontsize=16)
+
+                plt.suptitle("Transport mode = " + tmode_names[tmode])
+                plt.show()
 
             ## Bluetooth
             bt_window = getWindow(bt_df, boundary_left, boundary_right)
@@ -112,7 +158,24 @@ for user_id in user_ids:
             features["avg_con_bt"] = bt_grp.size().mean()
 
             ## Gyro
-            # TODO: average "shakiness"?
+            gyro_window = getWindow(gyro_df, boundary_left, boundary_right)
+            features["gyro_mean"] = gyro_window["magnitude"].mean()
+
+            # FFT magic for gyro
+            N = gyro_window.shape[0]
+            if N > 0:
+                t_n = window_size / 1000 # in sec
+                T = t_n / N
+                f_s = 1.0 / T # sample frequency
+                denominator = 10
+
+                gyro_data = [gyro_window["x"], gyro_window["y"], gyro_window["z"]]
+                gyro_features = extract_features(gyro_data, T, N, f_s, denominator)
+                for i in range(0, 90):
+                    features["gyro_mixed_" + str(i)] = acc_features[i]
+            else:
+                for i in range(0, 90):
+                    features["gyro_mixed_" + str(i)] = 0
 
             ## Location
             loc_window = getWindow(loc_df, boundary_left, boundary_right)
@@ -123,13 +186,23 @@ for user_id in user_ids:
             # mean speed
             features["avg_speed"] = loc_window["speed"].mean()
 
-            # maximum altitude "speed" TODO
-            #bucket_array = np.linspace(boundary_left, boundary_right, 9) # 8 buckets
-            #alt_cut = pd.cut(loc_window["reading_time"], bucket_array)
-            #features["max_alt_speed"] = loc_window.groupby(alt_cut)["alt"].mean().diff().max()
+            # maximum altitude "speed" 
+            # skip this feature if we're missing altitude infos..
+            min_alt = loc_window["alt"].min()
+            if min_alt > 0:
+                bucket_array = np.linspace(boundary_left, boundary_right, 9) # 8 buckets
+                alt_cut = pd.cut(loc_window["reading_time"], bucket_array)
+                features["max_alt_speed"] = loc_window.groupby(alt_cut)["alt"].mean().diff().max()
+
+            # min altitude / max altitude -> for debugging
+            #features["alt_max"] = loc_window["alt"].max()
+            #features["alt_min"] = loc_window["alt"].min()
 
 
             ## Magnetic Field
+            magn_window = getWindow(magn_df, boundary_left, boundary_right)
+            features["mag_mean"] = magn_window["magnitude"].mean()
+
             # TODO: How much you turn around
             # (i.e. in a train it should be very stable but on foot you turn left right alot)
 
