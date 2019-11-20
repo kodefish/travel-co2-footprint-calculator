@@ -74,10 +74,18 @@ public class FeatureVector {
         return featureArr;
     }
 
+    /**
+     * Set prediction vector
+     * @param predictions
+     */
     public void setPredictions(float[] predictions) {
         this.predictions = predictions;
     }
 
+    /**
+     * Return most likely trip type based on prediction
+     * @return most likely trip type
+     */
     public TripType mostProbableTripType() {
         TripType mostProbableType = null;
         float maxProbability = -1;
@@ -90,15 +98,27 @@ public class FeatureVector {
         return mostProbableType;
     }
 
+    /**
+     * Get distance covered by during the scan period
+     * @return
+     */
     public double getDistanceCovered() {
         Double distance = features.get(this.FEATURE_KEY_DISTANCE_COVERED);
         return distance;
     }
 
+    /**
+     * Get start time of the scan
+     * @return start time of the scan
+     */
     public long getStartTime() {
         return startTime;
     }
 
+    /**
+     * Get end time of the scan
+     * @return end time of the scan
+     */
     public long getEndTime() {
         return endTime;
     }
