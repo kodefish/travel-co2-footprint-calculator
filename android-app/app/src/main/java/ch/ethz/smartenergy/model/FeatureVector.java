@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.ethz.smartenergy.footprint.Footprint;
 import ch.ethz.smartenergy.footprint.TripType;
 
 public class FeatureVector {
@@ -105,6 +106,14 @@ public class FeatureVector {
     public double getDistanceCovered() {
         Double distance = features.get(this.FEATURE_KEY_DISTANCE_COVERED);
         return distance;
+    }
+
+    /**
+     * Get CO2 emissions of during the scan period
+     * @return CO2 emissions
+     */
+    public double getFootprint() {
+        return Footprint.getEFof(mostProbableTripType()) * getDistanceCovered();
     }
 
     /**

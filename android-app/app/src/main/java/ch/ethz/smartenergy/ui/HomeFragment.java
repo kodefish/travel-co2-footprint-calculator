@@ -69,7 +69,9 @@ public class HomeFragment extends Fragment {
 
     // UI
     private TextView tripEmissions;
+    private double tripEmissionsCounter = 0;
     private TextView tripDistanceTravelled;
+    private double tripDistanceCounter = 0;
     private Chronometer tripTimeChronometer;
 
     // App background
@@ -166,7 +168,7 @@ public class HomeFragment extends Fragment {
                     featureVec.setPredictions(predictions);
 
                     // Show live info
-                    showResult(featureVec);
+                    updateUI(featureVec);
 
                     tripReadings.add(featureVec);
                 }
@@ -183,8 +185,14 @@ public class HomeFragment extends Fragment {
         return predictions;
     }
 
-    private void showResult(FeatureVector featureVector) {
-        // TODO
+    private void updateUI(FeatureVector featureVector) {
+        // Update emissions
+        tripEmissionsCounter += featureVector.getFootprint();
+        tripEmissions.setText(Double.toString(tripEmissionsCounter));
+
+        // Update distance
+        tripDistanceCounter += featureVector.getDistanceCovered();
+        tripDistanceTravelled.setText(Double.toString(tripDistanceCounter));
     }
 
     private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {
@@ -351,9 +359,14 @@ public class HomeFragment extends Fragment {
      * Start collecting data on button click
      */
     public void startScanning() {
-        // Start timer
+        // Start timer, set emissions and distance counters to 0
         tripTimeChronometer.setBase(SystemClock.elapsedRealtime());
         tripTimeChronometer.start();
+
+        tripEmissions.setText("0");
+        tripEmissionsCounter = 0;
+        tripDistanceTravelled.setText("0");
+        tripDistanceCounter = 0;
 
         // Start data collection service
         serviceIntent = new Intent(getContext(), DataCollectionService.class);
