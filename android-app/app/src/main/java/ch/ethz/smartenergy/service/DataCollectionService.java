@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import java.util.Calendar;
+
 import ch.ethz.smartenergy.Constants;
 import ch.ethz.smartenergy.MainActivity;
 import ch.ethz.smartenergy.R;
@@ -41,6 +43,8 @@ public class DataCollectionService extends Service {
     private final Runnable broadcastCollectedData = new Runnable() {
         @Override
         public void run() {
+            // TODO add end timestamp
+
             Intent broadCastIntent = new Intent();
             broadCastIntent.setAction(Constants.WindowBroadcastActionName);
             broadCastIntent.putExtra(Constants.WindowBroadcastExtraName, scanResult.copy());

@@ -374,6 +374,8 @@ public class HomeFragment extends Fragment {
      * Start collecting data on button click
      */
     public void startScanning() {
+        // TODO: start timer, keep track of gloabl time and insert
+
         serviceIntent = new Intent(getContext(), DataCollectionService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getActivity().startForegroundService(serviceIntent);
@@ -386,6 +388,8 @@ public class HomeFragment extends Fragment {
     }
 
     public Trip stopScanning() {
+        // TODO: stop timer
+
         getActivity().stopService(serviceIntent);
 
         // Convert trip's sensor readings into a proper trip
