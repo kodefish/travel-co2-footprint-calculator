@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class Trip {
-
     private List<Leg> legs;
     private Double totalFootprint = null;
     private Double totalDistance = null;
@@ -78,7 +77,16 @@ public class Trip {
         return totalDistance;
     }
 
+    /**
+     * Returns the total time of the trip
+     * @return distance time of the trip
+     */
     public Double getTotalTime() {
+        if (totalTime == null) {
+            totalTime = 0.;
+            for (Leg leg: this.legs)
+                totalTime += leg.getLegTime();
+        }
         return totalTime;
     }
 
@@ -145,7 +153,7 @@ public class Trip {
      */
     public String getModesAsString() {
         StringBuilder sb = new StringBuilder();
-        for (TripType mode: this.modesUsedDescOrder) {
+        for (TripType mode: this.getModesUsed()) {
             sb.append(mode.toString().toLowerCase()).append(", ");
         }
 
@@ -174,28 +182,69 @@ public class Trip {
     }
 
     /**
-     * TODO Returns string representation (so pretty) of the total distance travelled
+     * Returns the string representation of the total distance travelled
      * @return String representation of distance travelled
      */
     public String getTotalDistanceAsString() {
-        return "1.5km";
+        int value;
+        String unit;
+        if (this.totalDistance > 1_000) {
+            // In kilometers
+            value = (this.totalDistance.intValue() * 100) / 100; // Diplay 2 decimals
+            unit = "km";
+        } else {
+            value = this.totalDistance.intValue();
+            unit = "m";
+        }
+        return value + " " + unit;
     }
 
     /**
-     * TODO Returns string representation (so pretty) of the total footprint
+     * Returns the string representation of the total footprint
      * @return String representation of distance travelled
      */
     public String getTotalFootprintAsString() {
-        return "200g";
+        int value;
+        String unit;
+        if (this.totalFootprint > 1_000) {
+            // In kilograms
+            value = (this.totalFootprint.intValue() * 100) / 100; // Diplay 2 decimals
+            unit = "kg";
+        } else {
+            value = this.totalFootprint.intValue();
+            unit = "g";
+        }
+        return value + " " + unit;
     }
 
 
     /**
-     * TODO Returns string representation (so pretty) of the total duration of trip
+     * Returns the string representation of the total duration of trip
      * @return String representation of distance travelled
      */
     public String getTotalTimeAsString() {
-        return "14 min";
+        int seconds = this.totalTime.intValue() % 60;
+        int minutes = (this.totalTime.intValue() / 60) % 60;
+        int hours = (this.totalTime.intValue() / 60) / 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (hours != 0) {
+            sb.append(hours).append(" h, ");
+        }
+        if (minutes != 0) {
+            sb.append(minutes).append(" min, ");
+        }
+        if (seconds != 0) {
+            sb.append(seconds).append(" s");
+        } else {
+            // Removing the last ", "
+            sb.deleteCharAt(sb.length() - 1);
+            sb.deleteCharAt(sb.length() - 1);
+
+            return sb.toString();
+        }
+
+        return sb.toString();
     }
 
 }

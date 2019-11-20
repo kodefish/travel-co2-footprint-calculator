@@ -10,6 +10,7 @@ public class Leg {
 
     private Double totalLegDistance = null;
     private TripType mostProbableLegType = null;
+    private Double totalLegTime = null;
 
     public Leg(List<FeatureVector> featureVectors) {
         this.featureVectorList = new ArrayList<>(featureVectors);
@@ -27,6 +28,19 @@ public class Leg {
                 totalLegDistance += featureVector.getDistanceCovered();
         }
         return totalLegDistance;
+    }
+
+    /**
+     * Computes total time elapsed by leg by summing the time between each
+     * sensor reading
+     * @return time elapsed during the leg
+     */
+    public double getLegTime() {
+        if (totalLegTime == null) {
+            totalLegTime = 0.;
+            // TODO: Get time from featureVector
+        }
+        return totalLegTime;
     }
 
 
