@@ -65,6 +65,25 @@ public class Trip {
     }
 
     /**
+     * Returns the string representation of the total footprint
+     * @return String representation of distance travelled
+     */
+    public String getTotalFootprintAsString() {
+        double footprint = this.getTotalFootprint();
+        int value;
+        String unit;
+        if (footprint > 1_000) {
+            // In kilograms
+            value = ((int) (footprint * 100)) / 100; // Diplay 2 decimals
+            unit = "kg";
+        } else {
+            value = (int) footprint;
+            unit = "g";
+        }
+        return value + " " + unit;
+    }
+
+    /**
      * Returns the total distance covered by the trip
      * @return distance covered by the trip
      */
@@ -78,6 +97,25 @@ public class Trip {
     }
 
     /**
+     * Returns the string representation of the total distance travelled
+     * @return String representation of distance travelled
+     */
+    public String getTotalDistanceAsString() {
+        double distance = this.getTotalDistance();
+        int value;
+        String unit;
+        if (distance > 1_000) {
+            // In kilometers
+            value = ((int) (distance * 100)) / 100; // Diplay 2 decimals
+            unit = "km";
+        } else {
+            value = (int) distance;
+            unit = "m";
+        }
+        return value + " " + unit;
+    }
+
+    /**
      * Returns the total time of the trip
      * @return distance time of the trip
      */
@@ -88,6 +126,35 @@ public class Trip {
                 totalTime += leg.getLegTime();
         }
         return totalTime;
+    }
+
+    /**
+     * Returns the string representation of the total duration of trip
+     * @return String representation of distance travelled
+     */
+    public String getTotalTimeAsString() {
+        int time = this.getTotalTime().intValue();
+
+        int seconds = time % 60;
+        int minutes = (time / 60) % 60;
+        int hours = (time / 60) / 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (hours != 0) {
+            sb.append(hours).append(" h, ");
+        }
+        if (minutes != 0) {
+            sb.append(minutes).append(" min, ");
+        }
+        if (seconds != 0) {
+            sb.append(seconds).append(" s");
+        } else {
+            // Removing the last ", "
+            sb.deleteCharAt(sb.length() - 1);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -178,73 +245,6 @@ public class Trip {
      */
     public String getDateAsString() {
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-        return df.format(this.date);
+        return df.format(this.getDate());
     }
-
-    /**
-     * Returns the string representation of the total distance travelled
-     * @return String representation of distance travelled
-     */
-    public String getTotalDistanceAsString() {
-        int value;
-        String unit;
-        if (this.totalDistance > 1_000) {
-            // In kilometers
-            value = (this.totalDistance.intValue() * 100) / 100; // Diplay 2 decimals
-            unit = "km";
-        } else {
-            value = this.totalDistance.intValue();
-            unit = "m";
-        }
-        return value + " " + unit;
-    }
-
-    /**
-     * Returns the string representation of the total footprint
-     * @return String representation of distance travelled
-     */
-    public String getTotalFootprintAsString() {
-        int value;
-        String unit;
-        if (this.totalFootprint > 1_000) {
-            // In kilograms
-            value = (this.totalFootprint.intValue() * 100) / 100; // Diplay 2 decimals
-            unit = "kg";
-        } else {
-            value = this.totalFootprint.intValue();
-            unit = "g";
-        }
-        return value + " " + unit;
-    }
-
-
-    /**
-     * Returns the string representation of the total duration of trip
-     * @return String representation of distance travelled
-     */
-    public String getTotalTimeAsString() {
-        int seconds = this.totalTime.intValue() % 60;
-        int minutes = (this.totalTime.intValue() / 60) % 60;
-        int hours = (this.totalTime.intValue() / 60) / 60;
-
-        StringBuilder sb = new StringBuilder();
-        if (hours != 0) {
-            sb.append(hours).append(" h, ");
-        }
-        if (minutes != 0) {
-            sb.append(minutes).append(" min, ");
-        }
-        if (seconds != 0) {
-            sb.append(seconds).append(" s");
-        } else {
-            // Removing the last ", "
-            sb.deleteCharAt(sb.length() - 1);
-            sb.deleteCharAt(sb.length() - 1);
-
-            return sb.toString();
-        }
-
-        return sb.toString();
-    }
-
 }
