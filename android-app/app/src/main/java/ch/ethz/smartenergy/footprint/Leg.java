@@ -10,7 +10,10 @@ public class Leg {
 
     private Double totalLegDistance = null;
     private TripType mostProbableLegType = null;
-    private Double totalLegTime = null;
+    private Long legStartTime = null;
+    private Long legEndTime = null;
+    private Long totalLegTime = null;
+    private Double totalLegFootprint = null;
 
     public Leg(List<FeatureVector> featureVectors) {
         this.featureVectorList = new ArrayList<>(featureVectors);
@@ -21,7 +24,7 @@ public class Leg {
      * sensor reading
      * @return distance covered during the leg
      */
-    public double getLegLength() {
+    public double getLegDistance() {
         if (totalLegDistance == null) {
             totalLegDistance = 0.;
             for (FeatureVector featureVector : featureVectorList)
@@ -31,57 +34,127 @@ public class Leg {
     }
 
     /**
-     * Computes total time elapsed by leg by summing the time between each
-     * sensor reading
-     * @return time elapsed during the leg
+     * Returns the leg length as a string
+     * @return the leg length as a string
      */
-    public double getLegTime() {
-        if (totalLegTime == null) {
-            totalLegTime = 0.;
-            // TODO: Get time from featureVector
-        }
-        return totalLegTime;
-    }
-
-
-    public TripType getMostProbableLegType() {
-        // TODO more sophisticated way of computing the trip type (most frequent)
-        if (mostProbableLegType == null)
-            mostProbableLegType = featureVectorList.get(0).mostProbableTripType();
-        return mostProbableLegType;
-    }
-
-    /**
-     * Returns the footprint of this leg in g cO2 / km
-     * @return the footprint of this leg
-     */
-    public double getFootprint() {
-        return Footprint.getEFof(getMostProbableLegType()) * getLegLength();
-    }
-
-    /**
-     * TODO Return leg length as pretty string (km or m)
-     * @return length as pretty string (km or m)
-     */
-    public String getLegLengthAsString() {
+    public String getLegDistanceAsString() {
+        double distance = this.getLegDistance();
         int value;
         String unit;
-        if (this.totalLegDistance > 1_000) {
+        if (distance > 1_000) {
             // In kilometers
-            value = (this.totalLegDistance.intValue() * 100) / 100; // Diplay 2 decimals
+            value = ((int) (distance * 100)) / 100; // Diplay 2 decimals
             unit = "km";
         } else {
-            value = this.totalLegDistance.intValue();
+            value = (int) distance;
             unit = "m";
         }
         return value + " " + unit;
     }
 
     /**
-     * TODO Return leg emissions as pretty string (kg or g)
-     * @return leg emissions as pretty string (kg or g)
+     * Returns the starting time of the leg (in seconds)
+     * @return the starting time of the leg (in seconds)
      */
-    public String getLegEmissionsAsString() {
-        return "200g";
+    public long getLegStartTime() {
+        if (legStartTime == null) {
+            legStartTime = 0L;
+            for (FeatureVector featureVector : featureVectorList)
+                legStartTime += featureVector.getStartTime();
+            legStartTime /= 1_000;
+        }
+        return legStartTime;
+    }
+
+    /**
+     * Returns the end time of the leg (in seconds)
+     * @return the end time of the leg (in seconds)
+     */
+    public long getLegEndTime() {
+        if (legEndTime == null) {
+            legEndTime = 0L;
+            for (FeatureVector featureVector : featureVectorList)
+                legEndTime += featureVector.getStartTime();
+            legEndTime /= 1_000;
+        }
+        return legEndTime;
+    }
+
+    /**
+     * Computes total time elapsed by leg by summing the time between each
+     * sensor reading  (in seconds)
+     * @return time elapsed during the leg (in seconds)
+     */
+    public long getLegTime() {
+        if (totalLegTime == null) {
+            totalLegTime = this.getLegEndTime() - this.getLegStartTime();
+        }
+        return totalLegTime;
+    }
+
+    /**
+     * Returns the leg time as a string (in seconds)
+     * @return the leg time as a string (in seconds)
+     */
+    public String getLegTimeAsString() {
+        int time = (int) this.getLegTime();
+
+        int seconds = time % 60;
+        int minutes = (time / 60) % 60;
+        int hours = (time / 60) / 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (hours != 0) {
+            sb.append(hours).append(" h, ");
+        }
+        if (minutes != 0) {
+            sb.append(minutes).append(" min, ");
+        }
+        if (seconds != 0) {
+            sb.append(seconds).append(" s");
+        } else {
+            // Removing the last ", "
+            sb.deleteCharAt(sb.length() - 1);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Returns the footprint of this leg in g cO2 / km
+     * @return the footprint of this leg
+     */
+    public double getLegFootprint() {
+        if (this.totalLegFootprint == null) {
+            this.totalLegFootprint = Footprint.getEFof(getMostProbableLegType()) * getLegDistance();
+        }
+        return this.totalLegFootprint;
+    }
+
+    /**
+     * Returns the leg emissions as a string
+     * @return the leg emissions as a string
+     */
+    public String getLegFootprintAsString() {
+        double footprint = this.getLegFootprint();
+        int value;
+        String unit;
+        if (footprint > 1_000) {
+            // In kilograms
+            value = ((int) (footprint * 100)) / 100; // Diplay 2 decimals
+            unit = "kg";
+        } else {
+            value = (int) footprint;
+            unit = "g";
+        }
+        return value + " " + unit;
+    }
+
+    public TripType getMostProbableLegType() {
+        // TODO more sophisticated way of computing the trip type (most frequent)
+        if (mostProbableLegType == null)
+            mostProbableLegType = featureVectorList.get(0).mostProbableTripType();
+        return mostProbableLegType;
     }
 }

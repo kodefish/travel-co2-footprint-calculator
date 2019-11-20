@@ -44,8 +44,8 @@ public class LegAdapter extends ArrayAdapter {
         Picasso.get().load(getIconResource(type)).into(legIcon);
 
         legType.setText(leg.getMostProbableLegType().toString());
-        legDistance.setText(leg.getLegLengthAsString());
-        legEmissions.setText(leg.getLegEmissionsAsString());
+        legDistance.setText(leg.getLegDistanceAsString());
+        legEmissions.setText(leg.getLegFootprintAsString());
 
         return v;
     }
