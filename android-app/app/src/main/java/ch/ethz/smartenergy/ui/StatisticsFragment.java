@@ -21,6 +21,7 @@ public class StatisticsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_statistics, container, false);
         final TextView textView = root.findViewById(R.id.text_statistics);
 
+        /*
         String[] timeframe = {"By day", "By week", "By month"};
         final Spinner spinnerTimeframe = root.findViewById(R.id.spinner1);
         ArrayAdapter<String> adapterTimeframe = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, timeframe);
@@ -30,6 +31,7 @@ public class StatisticsFragment extends Fragment {
         final Spinner spinnerMode = root.findViewById(R.id.spinner2);
         ArrayAdapter<String> adapterMode = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, mode);
         spinnerTimeframe.setAdapter(adapterMode);
+         */
 
         return root;
     }

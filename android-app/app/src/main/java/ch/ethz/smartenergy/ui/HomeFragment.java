@@ -12,10 +12,12 @@ import android.content.IntentSender;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -66,14 +68,9 @@ public class HomeFragment extends Fragment {
     private List<FeatureVector> tripReadings;
 
     // UI
-    private TextView probabilityOnFoot;
-    private TextView probabilityTrain;
-    private TextView probabilityTramway;
-    private TextView probabilityBus;
-    private TextView probabilityCar;
-    private TextView probabilityBicycle;
-    private TextView probabilityEbike;
-    private TextView probabilityMotorcycle;
+    private TextView tripEmissions;
+    private TextView tripDistanceTravelled;
+    private Chronometer tripTimeChronometer;
 
     // App background
     private Intent serviceIntent;
@@ -84,23 +81,9 @@ public class HomeFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Setup display
-        probabilityOnFoot = root.findViewById(R.id.text_predicted_foot);
-        probabilityTrain = root.findViewById(R.id.text_predicted_train);
-        probabilityTramway = root.findViewById(R.id.text_predicted_tramway);
-        probabilityBus = root.findViewById(R.id.text_predicted_bus);
-        probabilityCar = root.findViewById(R.id.text_predicted_car);
-        probabilityBicycle = root.findViewById(R.id.text_predicted_bicycle);
-        probabilityEbike = root.findViewById(R.id.text_predicted_ebike);
-        probabilityMotorcycle = root.findViewById(R.id.text_predicted_motorcycle);
-
-        probabilityOnFoot.setText(getString(R.string.on_foot, 0.00));
-        probabilityTrain.setText(getString(R.string.train, 0.00));
-        probabilityBus.setText(getString(R.string.bus, 0.00));
-        probabilityCar.setText(getString(R.string.car, 0.00));
-        probabilityTramway.setText(getString(R.string.tramway, 0.00));
-        probabilityBicycle.setText(getString(R.string.bicycle, 0.00));
-        probabilityEbike.setText(getString(R.string.ebike, 0.00));
-        probabilityMotorcycle.setText(getString(R.string.motorcycle, 0.00));
+        tripEmissions = root.findViewById(R.id.home_emissions);
+        tripDistanceTravelled = root.findViewById(R.id.home_distance_travelled);
+        tripTimeChronometer = root.findViewById(R.id.home_chronometer);
 
         // Register button clicks to start scanning
         ((ToggleButton)root.findViewById(R.id.button_start)).setOnCheckedChangeListener(
@@ -113,7 +96,6 @@ public class HomeFragment extends Fragment {
                     }});
 
         // Load ML stuff
-        Log.d("CREATED MODEL", "TEST");
         try {
             // load pretrained predictor
             InputStream model = getResources().openRawResource(R.raw.xgboost);
@@ -127,6 +109,7 @@ public class HomeFragment extends Fragment {
 
         // Start listening for sensor scans
         registerReceiver();
+        Log.i("HomeFragment", "done");
         return root;
     }
 
@@ -181,7 +164,9 @@ public class HomeFragment extends Fragment {
                     // Get prediction results
                     float[] predictions = predict(featureVec);
                     featureVec.setPredictions(predictions);
-                    showResult(predictions);
+
+                    // Show live info
+                    showResult(featureVec);
 
                     tripReadings.add(featureVec);
                 }
@@ -198,16 +183,8 @@ public class HomeFragment extends Fragment {
         return predictions;
     }
 
-    private void showResult(float[] predictions) {
-
-        probabilityOnFoot.setText(getString(R.string.on_foot, predictions[0] * 100));
-        probabilityTrain.setText(getString(R.string.train, predictions[1] * 100));
-        probabilityBus.setText(getString(R.string.bus, predictions[2] * 100));
-        probabilityCar.setText(getString(R.string.car, predictions[3] * 100));
-        probabilityTramway.setText(getString(R.string.tramway, predictions[4] * 100));
-        probabilityBicycle.setText(getString(R.string.bicycle, predictions[5] * 100));
-        probabilityEbike.setText(getString(R.string.ebike, predictions[6] * 100));
-        probabilityMotorcycle.setText(getString(R.string.motorcycle, predictions[7] * 100));
+    private void showResult(FeatureVector featureVector) {
+        // TODO
     }
 
     private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {
@@ -374,8 +351,11 @@ public class HomeFragment extends Fragment {
      * Start collecting data on button click
      */
     public void startScanning() {
-        // TODO: start timer, keep track of gloabl time and insert
+        // Start timer
+        tripTimeChronometer.setBase(SystemClock.elapsedRealtime());
+        tripTimeChronometer.start();
 
+        // Start data collection service
         serviceIntent = new Intent(getContext(), DataCollectionService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getActivity().startForegroundService(serviceIntent);
@@ -388,7 +368,8 @@ public class HomeFragment extends Fragment {
     }
 
     public Trip stopScanning() {
-        // TODO: stop timer
+        // Stop timer
+        tripTimeChronometer.stop();
 
         getActivity().stopService(serviceIntent);
 
@@ -407,28 +388,29 @@ public class HomeFragment extends Fragment {
 
     private Trip computeTripFromReadings() {
         List<Leg> legs = new ArrayList<>();
+        if (!tripReadings.isEmpty()) {
+            List<FeatureVector> legFeatures = new ArrayList<>();
+            TripType previousTripType = tripReadings.get(0).mostProbableTripType();
 
-        List<FeatureVector> legFeatures = new ArrayList<>();
-        TripType previousTripType = tripReadings.get(0).mostProbableTripType();
+            for (int i = 0; i < tripReadings.size(); i++) {
+                FeatureVector featureVec = tripReadings.get(i);
+                TripType currentTripType = featureVec.mostProbableTripType();
 
-        for (int i = 0; i < tripReadings.size(); i++) {
-            FeatureVector featureVec = tripReadings.get(i);
-            TripType currentTripType = featureVec.mostProbableTripType();
+                // TODO more sophisticated way of computing a leg
+                if (currentTripType.equals(previousTripType)) {
+                    // If the current window is of the same type as the previous, then the leg is
+                    // probably the same
+                    legFeatures.add(featureVec);
+                } else {
+                    // Finalize current leg
+                    legs.add(new Leg(legFeatures));
 
-            // TODO more sophisticated way of computing a leg
-            if (currentTripType.equals(previousTripType)) {
-                // If the current window is of the same type as the previous, then the leg is
-                // probably the same
-                legFeatures.add(featureVec);
-            } else {
-                // Finalize current leg
-                legs.add(new Leg(legFeatures));
+                    // Reset leg and add current features to new leg
+                    legFeatures.clear();
+                    previousTripType = currentTripType;
+                    legFeatures.add(featureVec);
 
-                // Reset leg and add current features to new leg
-                legFeatures.clear();
-                previousTripType = currentTripType;
-                legFeatures.add(featureVec);
-
+                }
             }
         }
         return new Trip(legs);

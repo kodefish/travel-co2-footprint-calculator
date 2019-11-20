@@ -1,112 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    tools:context="">
+    android:orientation="vertical" >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_title"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.143" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/text_predicted_foot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/on_foot"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_title" />
+            <RelativeLayout
+                android:layout_width="@dimen/circular_main_image"
+                android:layout_height="@dimen/circular_main_image"
+                android:layout_gravity="center"
+                android:background="@drawable/green_circle_background"
+                android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_predicted_train"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/train"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_predicted_foot" />
+                <TextView
+                    android:id="@+id/home_emissions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="250g"
+                    android:textColor="@color/primaryTextColor"
+                    android:textSize="40sp" />
 
-    <TextView
-        android:id="@+id/text_predicted_tramway"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tramway"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_predicted_train" />
+                <TextView
+                    style="@style/trip_summary_info_subtext"
+                    android:layout_below="@id/home_emissions"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/primaryTextColor"
+                    android:text="CO2 Emitted" />
+            </RelativeLayout>
 
-    <TextView
-        android:id="@+id/text_predicted_bus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bus"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_predicted_tramway" />
+        </FrameLayout>
 
-    <TextView
-        android:id="@+id/text_predicted_car"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/car"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_predicted_bus" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp">
 
-    <TextView
-        android:id="@+id/text_predicted_bicycle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bicycle"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_predicted_car" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_predicted_ebike"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/ebike"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_predicted_bicycle" />
+                <TextView
+                    android:id="@+id/home_distance_travelled"
+                    style="@style/trip_summary_info_title"
+                    android:text="15km" />
 
-    <TextView
-        android:id="@+id/text_predicted_motorcycle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/motorcycle"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_predicted_ebike" />
+                <TextView
+                    style="@style/trip_summary_info_subtext"
+                    android:text="Distance \nTraveled" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <Chronometer
+                    android:id="@+id/home_chronometer"
+                    style="@style/trip_summary_info_title"
+                    android:text="0:14" />
+
+                <TextView
+                    style="@style/trip_summary_info_subtext"
+                    android:text="Trip \nDuration" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
 
     <ToggleButton
         android:id="@+id/button_start"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginBottom="32dp"
+        android:layout_margin="@dimen/default_padding"
         android:background="@color/primaryColor"
         android:textColor="@color/primaryTextColor"
         android:text="@string/start_scanning"
@@ -114,4 +101,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

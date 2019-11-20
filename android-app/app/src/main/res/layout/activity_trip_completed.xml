@@ -110,6 +110,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/primaryColor"
         android:text="Cool, thanks!"
+        android:onClick="onDoneButtonPressed"
         android:textColor="@android:color/white" />
 </LinearLayout>
 

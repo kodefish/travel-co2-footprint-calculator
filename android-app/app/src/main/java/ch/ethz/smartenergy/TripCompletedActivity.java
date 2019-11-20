@@ -3,6 +3,8 @@ package ch.ethz.smartenergy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,10 +41,15 @@ public class TripCompletedActivity extends AppCompatActivity {
 
         textViewLength.setText(completedTrip.getTotalDistanceAsString());
         textViewFootprint.setText(completedTrip.getTotalFootprintAsString());
-        textViewDuration.setText(completedTrip.getTotalTimeAsString());
+        // textViewDuration.setText(completedTrip.getTotalTimeAsString());
 
         LegAdapter legAdapter = new LegAdapter(this, -1, completedTrip.getLegs());
         ListView legsListView = findViewById(R.id.trip_completed_legs_list);
         legsListView.setAdapter(legAdapter);
     }
+
+    public void onDoneButtonPressed(View v) {
+        finish();
+    }
 }
+
