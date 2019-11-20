@@ -17,6 +17,7 @@ import java.util.List;
 
 import ch.ethz.smartenergy.R;
 import ch.ethz.smartenergy.footprint.Leg;
+import ch.ethz.smartenergy.footprint.TripType;
 
 public class LegAdapter extends ArrayAdapter {
 
@@ -39,14 +40,42 @@ public class LegAdapter extends ArrayAdapter {
 
         Leg leg = legs.get(position);
 
-        int iconResourceId = R.drawable.icon_home;
-        Picasso.get().load(iconResourceId).into(legIcon);
+        TripType type = leg.getMostProbableLegType();
+        Picasso.get().load(getIconResource(type)).into(legIcon);
 
         legType.setText(leg.getMostProbableLegType().toString());
         legDistance.setText(leg.getLegLengthAsString());
         legEmissions.setText(leg.getLegEmissionsAsString());
 
         return v;
+    }
+
+    /**
+     * Get icon resource based on trip type
+     * @param type of trip
+     * @return resource id of icon trip
+     */
+    private int getIconResource(TripType type) {
+        int iconResource = 0;
+        switch (type) {
+            case FOOT:
+                iconResource = R.drawable.icon_foot; break;
+            case TRAIN:
+                iconResource = R.drawable.icon_train; break;
+            case BUS:
+                iconResource = R.drawable.icon_bus; break;
+            case CAR:
+                iconResource = R.drawable.icon_car; break;
+            case TRAM:
+                iconResource = R.drawable.icon_tram; break;
+            case BIKE:
+                iconResource = R.drawable.icon_bike; break;
+            case EBIKE:
+                iconResource = R.drawable.icon_ebike; break;
+            case MOTORCYCLE:
+                iconResource = R.drawable.icon_motorcycle; break;
+        }
+        return iconResource;
     }
 
     @Override
