@@ -1,0 +1,11 @@
+bus: https://thenounproject.com/search/?q=bus&i=2558398
+car: https://thenounproject.com/search/?q=car&i=1566240
+train: https://thenounproject.com/search/?q=train&i=1175692
+foot: https://thenounproject.com/search/?q=walking&i=574804
+history: https://thenounproject.com/search/?q=history%20&i=2242636
+home: https://thenounproject.com/search/?q=home%20&i=2980614
+statistics: https://thenounproject.com/search/?q=statistics&i=2201326
+tram: https://thenounproject.com/search/?q=tram&i=1751321
+bike: https://thenounproject.com/search/?q=bicycle&i=45229
+ebike: https://thenounproject.com/search/?q=ebike&i=905922
+motorcycle: https://thenounproject.com/search/?q=motorcycle&i=640498
