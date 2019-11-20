@@ -99,6 +99,7 @@
 
     <!-- List all the legs -->
     <ListView
+        android:id="@+id/trip_completed_legs_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1" />

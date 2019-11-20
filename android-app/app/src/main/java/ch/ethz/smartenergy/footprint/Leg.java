@@ -45,4 +45,19 @@ public class Leg {
         return Footprint.getEFof(getMostProbableLegType()) * getLegLength();
     }
 
+    /**
+     * TODO Return leg length as pretty string (km or m)
+     * @return length as pretty string (km or m)
+     */
+    public String getLegLengthAsString() {
+        return "200m";
+    }
+
+    /**
+     * TODO Return leg emissions as pretty string (kg or g)
+     * @return leg emissions as pretty string (kg or g)
+     */
+    public String getLegEmissionsAsString() {
+        return "200g";
+    }
 }

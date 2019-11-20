@@ -3,12 +3,14 @@ package ch.ethz.smartenergy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import ch.ethz.smartenergy.footprint.Trip;
+import ch.ethz.smartenergy.ui.adapters.LegAdapter;
 
 public class TripCompletedActivity extends AppCompatActivity {
 
@@ -38,5 +40,9 @@ public class TripCompletedActivity extends AppCompatActivity {
         textViewLength.setText(completedTrip.getTotalDistanceAsString());
         textViewFootprint.setText(completedTrip.getTotalFootprintAsString());
         textViewDuration.setText(completedTrip.getTotalTimeAsString());
+
+        LegAdapter legAdapter = new LegAdapter(this, -1, completedTrip.getLegs());
+        ListView legsListView = findViewById(R.id.trip_completed_legs_list);
+        legsListView.setAdapter(legAdapter);
     }
 }

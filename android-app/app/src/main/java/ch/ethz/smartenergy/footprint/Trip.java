@@ -34,6 +34,14 @@ public class Trip {
     }
 
     /**
+     * Get legs in the trip
+     * @return legs
+     */
+    public List<Leg> getLegs() {
+        return legs;
+    }
+
+    /**
      * Adds one or more legs to the trip
      * @param legs the legs to add to the trip
      */
