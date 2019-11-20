@@ -13,39 +13,34 @@ import androidx.annotation.Nullable;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
-
 import ch.ethz.smartenergy.R;
-import ch.ethz.smartenergy.footprint.Leg;
 import ch.ethz.smartenergy.footprint.TripType;
 
-public class LegAdapter extends ArrayAdapter {
+public class PredictionAdapter extends ArrayAdapter {
 
-    private final List<Leg> legs;
+    private float[] predictions = {};
 
-    public LegAdapter(@NonNull Context context, int resource, List<Leg> legs) {
+    public PredictionAdapter(@NonNull Context context, int resource) {
         super(context, resource);
-        this.legs = legs;
+    }
+
+    public void setPredictions(float[] predictions) {
+        this.predictions = predictions;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_leg, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_prediction, parent, false);
 
-        ImageView legIcon = v.findViewById(R.id.item_leg_icon_type);
-        TextView legType = v.findViewById(R.id.item_leg_type);
-        TextView legDistance = v.findViewById(R.id.item_leg_length);
-        TextView legEmissions = v.findViewById(R.id.item_leg_emissions);
+        ImageView predictionIcon = v.findViewById(R.id.item_prediction_icon_mode);
+        TextView predictionCertainty = v.findViewById(R.id.item_prediction_certainty);
 
-        Leg leg = legs.get(position);
+        int predictionIconResource = getIconResource(position);
+        Picasso.get().load(predictionIconResource).into(predictionIcon);
 
-        TripType type = leg.getMostProbableLegType();
-        Picasso.get().load(getIconResource(type)).into(legIcon);
-
-        legType.setText(leg.getMostProbableLegType().toString());
-        legDistance.setText(leg.getLegLengthAsString());
-        legEmissions.setText(leg.getLegEmissionsAsString());
+        predictionCertainty.setText(Float.toString(predictions[position] * 100));
 
         return v;
     }
@@ -55,9 +50,9 @@ public class LegAdapter extends ArrayAdapter {
      * @param type of trip
      * @return resource id of icon trip
      */
-    private int getIconResource(TripType type) {
+    private int getIconResource(int type) {
         int iconResource = 0;
-        switch (type) {
+        switch (TripType.values()[type]) {
             case FOOT:
                 iconResource = R.drawable.icon_foot; break;
             case TRAIN:
@@ -80,6 +75,6 @@ public class LegAdapter extends ArrayAdapter {
 
     @Override
     public int getCount() {
-        return legs.size();
+        return predictions.length;
     }
 }

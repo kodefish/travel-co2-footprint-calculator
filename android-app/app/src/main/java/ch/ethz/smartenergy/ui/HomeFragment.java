@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
+import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -55,6 +56,7 @@ import ch.ethz.smartenergy.model.SensorReading;
 import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.service.DataCollectionService;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
+import ch.ethz.smartenergy.ui.adapters.PredictionAdapter;
 
 public class HomeFragment extends Fragment {
 
@@ -73,6 +75,7 @@ public class HomeFragment extends Fragment {
     private TextView tripDistanceTravelled;
     private double tripDistanceCounter = 0;
     private Chronometer tripTimeChronometer;
+    private PredictionAdapter predictionAdapter;
 
     // App background
     private Intent serviceIntent;
@@ -86,6 +89,10 @@ public class HomeFragment extends Fragment {
         tripEmissions = root.findViewById(R.id.home_emissions);
         tripDistanceTravelled = root.findViewById(R.id.home_distance_travelled);
         tripTimeChronometer = root.findViewById(R.id.home_chronometer);
+
+        GridView predictionGridView = root.findViewById(R.id.home_predictions);
+        predictionAdapter = new PredictionAdapter(getContext(), -1);
+        predictionGridView.setAdapter(predictionAdapter);
 
         // Register button clicks to start scanning
         ((ToggleButton)root.findViewById(R.id.button_start)).setOnCheckedChangeListener(
@@ -193,6 +200,9 @@ public class HomeFragment extends Fragment {
         // Update distance
         tripDistanceCounter += featureVector.getDistanceCovered();
         tripDistanceTravelled.setText(Double.toString(tripDistanceCounter));
+
+        // Update predictions
+        predictionAdapter.setPredictions(featureVector.getPredictions());
     }
 
     private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {

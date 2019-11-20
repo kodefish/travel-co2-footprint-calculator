@@ -131,4 +131,8 @@ public class FeatureVector {
     public long getEndTime() {
         return endTime;
     }
+
+    public float[] getPredictions() {
+        return predictions;
+    }
 }
