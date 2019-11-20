@@ -15,13 +15,17 @@ public class FeatureVector {
     public static final String FEATURE_KEY_DISTANCE_COVERED = "distanceCovered";
 
     // Raw scan results from the sensor
-    private ScanResult scanResult;
+    private final ScanResult scanResult;
 
     // Computed features for decison tree
-    private Map<String, Double> features;
+    private final Map<String, Double> features;
 
     // Represents how sure we are that prediction[i] is of type TripType[i]
     private float[] predictions;
+
+    // Time when scan result was started and finalized
+    private final long startTime;
+    private final long endTime;
 
     /**
      * Construct a feature vector based on raw sensor values
@@ -30,6 +34,8 @@ public class FeatureVector {
     public FeatureVector(ScanResult scanResult) {
         this.scanResult = scanResult;
         features = new HashMap<>();
+        this.startTime = scanResult.getStartTime();
+        this.endTime = scanResult.getEndTime();
     }
 
     /**
@@ -87,5 +93,13 @@ public class FeatureVector {
     public double getDistanceCovered() {
         Double distance = features.get(this.FEATURE_KEY_DISTANCE_COVERED);
         return distance;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
     }
 }

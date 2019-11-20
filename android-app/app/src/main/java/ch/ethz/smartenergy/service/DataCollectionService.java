@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -43,7 +44,8 @@ public class DataCollectionService extends Service {
     private final Runnable broadcastCollectedData = new Runnable() {
         @Override
         public void run() {
-            // TODO add end timestamp
+            // Add end timestamp (in millis)
+            scanResult.setEndTime(SystemClock.elapsedRealtime());
 
             Intent broadCastIntent = new Intent();
             broadCastIntent.setAction(Constants.WindowBroadcastActionName);

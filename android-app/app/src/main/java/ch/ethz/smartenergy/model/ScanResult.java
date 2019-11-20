@@ -1,5 +1,7 @@
 package ch.ethz.smartenergy.model;
 
+import android.os.SystemClock;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -17,6 +19,9 @@ public class ScanResult implements Serializable {
 
     private ArrayList<SensorReading> magnReadings;
 
+    private long startTime;
+    private long endTime;
+
     public ScanResult() {
         this.bluetoothScans = new ArrayList<>();
         this.wifiScans = new ArrayList<>();
@@ -24,6 +29,8 @@ public class ScanResult implements Serializable {
         this.accReadings = new ArrayList<>();
         this.gyroReadings = new ArrayList<>();
         this.magnReadings = new ArrayList<>();
+        this.startTime = SystemClock.elapsedRealtime();
+        this.endTime = SystemClock.elapsedRealtime();
     }
 
     public void clear() {
@@ -33,6 +40,8 @@ public class ScanResult implements Serializable {
         accReadings.clear();
         gyroReadings.clear();
         magnReadings.clear();
+        startTime = SystemClock.elapsedRealtime();
+        endTime = SystemClock.elapsedRealtime();
     }
 
     public ArrayList<BluetoothScan> getBluetoothScans() {
@@ -83,6 +92,22 @@ public class ScanResult implements Serializable {
         this.magnReadings = magnReadings;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(long endTime) {
+        this.endTime = endTime;
+    }
+
     public ScanResult copy() {
         ScanResult copiedResult = new ScanResult();
         copiedResult.setAccReadings((ArrayList<SensorReading>) this.getAccReadings().clone());
@@ -91,7 +116,8 @@ public class ScanResult implements Serializable {
         copiedResult.setBluetoothScans((ArrayList<BluetoothScan>) this.getBluetoothScans().clone());
         copiedResult.setWifiScans((ArrayList<WifiScan>) this.getWifiScans().clone());
         copiedResult.setLocationScans((ArrayList<LocationScan>) this.getLocationScans().clone());
-
+        copiedResult.setStartTime(this.startTime);
+        copiedResult.setEndTime(this.endTime);
         return copiedResult;
     }
 }
