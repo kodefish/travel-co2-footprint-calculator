@@ -64,7 +64,17 @@ public class Leg {
      * @return length as pretty string (km or m)
      */
     public String getLegLengthAsString() {
-        return "200m";
+        int value;
+        String unit;
+        if (this.totalLegDistance > 1_000) {
+            // In kilometers
+            value = (this.totalLegDistance.intValue() * 100) / 100; // Diplay 2 decimals
+            unit = "km";
+        } else {
+            value = this.totalLegDistance.intValue();
+            unit = "m";
+        }
+        return value + " " + unit;
     }
 
     /**
