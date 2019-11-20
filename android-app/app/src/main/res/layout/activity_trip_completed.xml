@@ -1,38 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="@dimen/default_padding"
     tools:context=".TripCompletedActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:orientation="vertical">
-        <TextView
-            android:id="@+id/trip_completed_length"
-            android:layout_width="match_parent"
-            android:padding="@dimen/default_padding"
-            android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/trip_completed_footprint"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:padding="@dimen/default_padding"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/trip_completed_num_legs"
-            android:layout_width="match_parent"
-            android:padding="@dimen/default_padding"
-            android:layout_height="wrap_content"/>
+            <RelativeLayout
+                android:layout_width="@dimen/circular_main_image"
+                android:layout_height="@dimen/circular_main_image"
+                android:layout_gravity="center"
+                android:background="@drawable/green_circle_background"
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/trip_completed_json"
+                <TextView
+                    android:id="@+id/trip_completed_emissions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="250g"
+                    android:textColor="@color/primaryTextColor"
+                    android:textSize="40sp" />
+
+                <TextView
+                    style="@style/trip_summary_info_subtext"
+                    android:layout_below="@id/trip_completed_emissions"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/primaryTextColor"
+                    android:text="CO2 Emitted" />
+            </RelativeLayout>
+
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:padding="@dimen/default_padding"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/trip_completed_distance_travelled"
+                    style="@style/trip_summary_info_title"
+                    android:text="15km" />
+
+                <TextView
+                    style="@style/trip_summary_info_subtext"
+                    android:text="Distance \nTraveled" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/trip_completed_duration"
+                    style="@style/trip_summary_info_title"
+                    android:text="0:14" />
+
+                <TextView
+                    style="@style/trip_summary_info_subtext"
+                    android:text="Trip \nDuration" />
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+    <!-- Github style summary -> color for each type of transportation mode -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@color/primaryColor"/>
+
+    <!-- List all the legs -->
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/primaryColor"
+        android:text="Cool, thanks!"
+        android:textColor="@android:color/white" />
+</LinearLayout>
+

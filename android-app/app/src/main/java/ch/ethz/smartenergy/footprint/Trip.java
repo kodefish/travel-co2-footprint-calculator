@@ -7,6 +7,7 @@ public class Trip {
     private List<Leg> legs;
     private Double totalFootprint = null;
     private Double totalDistance = null;
+    private Double totalTime = null;
 
     /**
      * Constructs a trip with no legs
@@ -68,6 +69,10 @@ public class Trip {
         return totalDistance;
     }
 
+    public Double getTotalTime() {
+        return totalTime;
+    }
+
     /**
      * Get number of legs in the trip
      * @return number of legs in the trip
@@ -77,4 +82,28 @@ public class Trip {
     }
 
 
+    /**
+     * TODO Returns string representation (so pretty) of the total distance travelled
+     * @return String representation of distance travelled
+     */
+    public String getTotalDistanceAsString() {
+        return "1.5km";
+    }
+
+    /**
+     * TODO Returns string representation (so pretty) of the total footprint
+     * @return String representation of distance travelled
+     */
+    public String getTotalFootprintAsString() {
+        return "200g";
+    }
+
+
+    /**
+     * TODO Returns string representation (so pretty) of the total duration of trip
+     * @return String representation of distance travelled
+     */
+    public String getTotalTimeAsString() {
+        return "0:12";
+    }
 }

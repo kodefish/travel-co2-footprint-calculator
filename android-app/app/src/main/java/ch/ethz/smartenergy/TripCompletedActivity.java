@@ -31,14 +31,12 @@ public class TripCompletedActivity extends AppCompatActivity {
         Trip completedTrip = gson.fromJson(serializedCompletedTrip, Trip.class);
 
         // Display trip summary
-        TextView textViewLength = (TextView) findViewById(R.id.trip_completed_length);
-        TextView textViewFootprint = (TextView) findViewById(R.id.trip_completed_footprint);
-        TextView textViewNumLegs = (TextView) findViewById(R.id.trip_completed_num_legs);
-        TextView textViewJson = (TextView) findViewById(R.id.trip_completed_json);
+        TextView textViewLength = findViewById(R.id.trip_completed_distance_travelled);
+        TextView textViewFootprint = findViewById(R.id.trip_completed_emissions);
+        TextView textViewDuration = findViewById(R.id.trip_completed_duration);
 
-        textViewLength.setText("Total length: " + completedTrip.getTotalDistance());
-        textViewFootprint.setText("Total footprint: " + completedTrip.getTotalFootprint());
-        textViewNumLegs.setText("Num legs in trip: " + completedTrip.getNumLegs());
-        textViewJson.setText(gson.toJson(completedTrip));
+        textViewLength.setText(completedTrip.getTotalDistanceAsString());
+        textViewFootprint.setText(completedTrip.getTotalFootprintAsString());
+        textViewDuration.setText(completedTrip.getTotalTimeAsString());
     }
 }
