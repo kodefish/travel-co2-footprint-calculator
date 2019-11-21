@@ -74,6 +74,11 @@ def getWindow(df, start, end):
             (df["reading_time"] <= end)
             ].copy()
 
+
+#TODO: used for DEBUG
+do_visualize = False
+do_tmode = 3
+
 # for every selected user, go through all processed legs
 selected_ids = {}
 for user_id in user_ids:
@@ -85,6 +90,10 @@ for user_id in user_ids:
         leg_row = leg_df.loc[(leg_df.user == user_id) & (leg_df.id == leg_id)].iloc[0]
         raw_tmode = int(leg_row["mode"])
         tmode = tmode_map[raw_tmode]
+
+        # for debugging and graph generation
+        if do_visualize and do_tmode != -1 and tmode != do_tmode:
+            continue
 
         cur_fp = user_fp + "/" + file
 
@@ -119,36 +128,41 @@ for user_id in user_ids:
                 acc_data = [acc_window["x"], acc_window["y"], acc_window["z"]]
                 acc_features = extract_features(acc_data, T, N, f_s, denominator)
 
+                if (len(acc_features) != 90):
+                    # 2*5 * 3 * 3 = 90
+                    # In other words: x/y axis of FFT * first 5 peaks * 3 features[fft/psd/autocor] * x/y/z data
+                    print("ERROR: feature length not 90")
+                    sys.exit()
+
                 for i in range(0, 90):
                     features["acc_mixed_" + str(i)] = acc_features[i]
             else:
+                # not enough data points available, set features to 0
                 for i in range(0, 90):
                     features["acc_mixed_" + str(i)] = 0
 
             # visualize!
-            do_visualize = False
             if do_visualize:
                 # if you want a certain mode, uncomment
-                #if tmode == 5:
+                if tmode == -1 or tmode == do_tmode:
+                    fig, (axsX, axsY, axsZ) = plt.subplots(3, figsize=(10, 7))
+                    f_values, fft_values = get_fft_values(acc_window["x"], T, N, f_s)
+                    axsX.plot(f_values, fft_values, linestyle='-', color='blue')
+                    axsX.title.set_text("Acc X axis")
 
-                fig, (axsX, axsY, axsZ) = plt.subplots(3)
-                f_values, fft_values = get_fft_values(acc_window["x"], T, N, f_s)
-                axsX.plot(f_values, fft_values, linestyle='-', color='blue')
-                axsX.title.set_text("Acc X axis")
+                    f_values, fft_values = get_fft_values(acc_window["y"], T, N, f_s)
+                    axsY.plot(f_values, fft_values, linestyle='-', color='red')
+                    axsY.title.set_text("Acc Y axis")
 
-                f_values, fft_values = get_fft_values(acc_window["y"], T, N, f_s)
-                axsY.plot(f_values, fft_values, linestyle='-', color='red')
-                axsY.title.set_text("Acc Y axis")
+                    f_values, fft_values = get_fft_values(acc_window["z"], T, N, f_s)
+                    axsZ.plot(f_values, fft_values, linestyle='-', color='green')
+                    axsZ.title.set_text("Acc Z axis")
 
-                f_values, fft_values = get_fft_values(acc_window["z"], T, N, f_s)
-                axsZ.plot(f_values, fft_values, linestyle='-', color='green')
-                axsZ.title.set_text("Acc Z axis")
+                    plt.xlabel('Frequency [Hz]', fontsize=16)
+                    plt.ylabel('Amplitude', fontsize=16)
 
-                plt.xlabel('Frequency [Hz]', fontsize=16)
-                plt.ylabel('Amplitude', fontsize=16)
-
-                plt.suptitle("Transport mode = " + tmode_names[tmode])
-                plt.show()
+                    plt.suptitle("Transport mode = " + tmode_names[tmode])
+                    plt.show()
 
             ## Bluetooth
             bt_window = getWindow(bt_df, boundary_left, boundary_right)
@@ -171,8 +185,13 @@ for user_id in user_ids:
 
                 gyro_data = [gyro_window["x"], gyro_window["y"], gyro_window["z"]]
                 gyro_features = extract_features(gyro_data, T, N, f_s, denominator)
+
+                if (len(gyro_features) != 90):
+                    print("ERROR: feature length not 90")
+                    sys.exit()
+
                 for i in range(0, 90):
-                    features["gyro_mixed_" + str(i)] = acc_features[i]
+                    features["gyro_mixed_" + str(i)] = gyro_features[i]
             else:
                 for i in range(0, 90):
                     features["gyro_mixed_" + str(i)] = 0
@@ -181,7 +200,7 @@ for user_id in user_ids:
             loc_window = getWindow(loc_df, boundary_left, boundary_right)
             
             # maximum speed
-            features["max_speed"] = min(0, loc_window["speed"].max())
+            features["max_speed"] = max(0, loc_window["speed"].max())
 
             # mean speed
             features["avg_speed"] = loc_window["speed"].mean()
