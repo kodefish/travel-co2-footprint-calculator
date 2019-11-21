@@ -15,7 +15,7 @@ public class Trip {
     private List<Leg> legs;
     private Double totalFootprint = null;
     private Double totalDistance = null;
-    private Double totalTime = null;
+    private Long totalTime = null;
     private Map<TripType, Integer> modesUsed;
     private List<TripType> modesUsedDescOrder = null;
     private Integer numModesUsed = null;
@@ -29,7 +29,6 @@ public class Trip {
         this.legs = new ArrayList<>(legs);
         this.modesUsed = new HashMap<TripType, Integer>();
         this.date = Calendar.getInstance().getTime();
-
     }
 
     /**
@@ -59,7 +58,7 @@ public class Trip {
         if (totalFootprint == null) {
             totalFootprint = 0.;
             for (Leg leg: this.legs)
-                totalFootprint += leg.getFootprint();
+                totalFootprint += leg.getLegFootprint();
         }
         return totalFootprint;
     }
@@ -91,7 +90,7 @@ public class Trip {
         if (totalDistance == null) {
             totalDistance = 0.;
             for (Leg leg : this.legs)
-                totalDistance += leg.getLegLength();
+                totalDistance += leg.getLegDistance();
         }
         return totalDistance;
     }
@@ -119,9 +118,9 @@ public class Trip {
      * Returns the total time of the trip
      * @return distance time of the trip
      */
-    public Double getTotalTime() {
+    public Long getTotalTime() {
         if (totalTime == null) {
-            totalTime = 0.;
+            totalTime = 0L;
             for (Leg leg: this.legs)
                 totalTime += leg.getLegTime();
         }
@@ -148,7 +147,7 @@ public class Trip {
         }
         if (seconds != 0) {
             sb.append(seconds).append(" s");
-        } else {
+        } else if (hours != 0 || minutes != 0) {
             // Removing the last ", "
             sb.deleteCharAt(sb.length() - 1);
             sb.deleteCharAt(sb.length() - 1);
