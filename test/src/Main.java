@@ -123,7 +123,20 @@ public class Main {
 
         ArrayList<Integer> peaks = detect_peaks(vals.b, mph);
         System.out.println(peaks);
-        // get first n peaks
+
+        // get first n peaks padded with 0's as features
+        int no_peaks = 5;
+        ArrayList<Double> peaks_x_y = new ArrayList<>(Collections.nCopies(no_peaks * 2, 0.0));
+        for (int i = 0; i < no_peaks; i++) {
+            if (i < peaks.size()) {
+                peaks_x_y.set(i, vals.a.get(peaks.get(i)));
+                peaks_x_y.set(no_peaks + i, vals.b.get(peaks.get(i)));
+            }
+        }
+
+        System.out.println("FEATURES:");
+        System.out.println(peaks_x_y);
+
     }
     // test client
     public static void main(String[] args) {

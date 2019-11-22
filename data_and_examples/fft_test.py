@@ -12,20 +12,21 @@ res = fft(data)
 
 #print(np.linspace(11, 47, 23))
 
-x, y = get_fft_values(data, 0.01, len(data), 0)
+x_values, y_values = get_fft_values(data, 0.01, len(data), 0)
 
 denominator = 10
 percentile = 5
 
-print(y)
-signal_min = np.percentile(y, percentile)
-signal_max = np.percentile(y, 100-percentile)
+#print(y)
+signal_min = np.percentile(y_values, percentile)
+signal_max = np.percentile(y_values, 100-percentile)
 
-print(signal_min)
-print(signal_max)
+#print(signal_min)
+#print(signal_max)
 mph = signal_min + (signal_max - signal_min)/denominator
-mph = 0
 
-peaks = detect_peaks(y, mph)
-print("peaks:")
-print(peaks)
+indices_peaks = detect_peaks(y_values, mph=mph)
+peaks_x, peaks_y = get_first_n_peaks(x_values[indices_peaks], y_values[indices_peaks])
+features = peaks_x + peaks_y
+
+print(features)
