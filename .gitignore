@@ -43,8 +43,9 @@ smartenergy/output.json
 smartenergy/obj/
 smartenergy/.externalNativeBuild
 
-# python
+# timonbl
 venv/
 .se_visualization.html
 features.csv
 __pycache__/
+test/out/
