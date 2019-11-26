@@ -27,6 +27,8 @@
  *
  ******************************************************************************/
 
+package ch.ethz.smartenergy.features;
+
 import java.util.Objects;
 
 public class Complex {

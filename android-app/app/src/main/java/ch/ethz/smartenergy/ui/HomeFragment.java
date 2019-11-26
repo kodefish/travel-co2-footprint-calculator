@@ -162,11 +162,29 @@ public class HomeFragment extends Fragment {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
 
-                    // TODO move this to Feature vec -> (maybe directly into the constructor?)
+                    // TODO: aggregate all features here:
+
+                    // Accelerator magnitude mean
                     double meanMagnitude = calculateMeanMagnitude(scan.getAccReadings());
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
+
+                    // TODO: peaks of FFT (5x and 5y = 10 features)
+
+                    // TODO: average connected bluetooth devices (for each scanID within this window, look at #devices and then take average over that)
+
+                    // TODO: Gyro magnitude mean
+
+                    // max speed
                     double maxSpeed = calculateMaxSpeed(scan.getLocationScans());
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MAX_SPEED, maxSpeed);
+
+                    // TODO: average speed
+
+                    // altitude speed (let's skip this for simplicity..)
+
+                    // TODO: magnetic field magnitude mean
+
+                    // distance covered (this is not implemented in the ML model [yet])
                     double distanceCovered = calculateDistanceCovered(scan.getLocationScans());
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_DISTANCE_COVERED, distanceCovered);
 

@@ -1,3 +1,4 @@
+package ch.ethz.smartenergy.features;
 import java.util.ArrayList;
 
 public class InplaceFFT {
