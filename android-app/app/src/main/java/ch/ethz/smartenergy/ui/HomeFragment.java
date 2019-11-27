@@ -172,7 +172,7 @@ public class HomeFragment extends Fragment {
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
 
                     // peaks of FFT (5x and 5y = 10 features)
-                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<Double>));
+                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<Double>()));
                     extractXYZ(scan.getAccReadings(), accAxis);
 
                     for (ArrayList<Double> axis : accAxis) {

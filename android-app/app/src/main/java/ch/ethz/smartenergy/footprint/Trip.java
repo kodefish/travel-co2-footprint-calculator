@@ -1,5 +1,6 @@
 package ch.ethz.smartenergy.footprint;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,14 +70,18 @@ public class Trip {
      */
     public String getTotalFootprintAsString() {
         double footprint = this.getTotalFootprint();
-        int value;
+        String value;
         String unit;
+
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+
         if (footprint > 1_000) {
             // In kilograms
-            value = ((int) (footprint * 100)) / 100; // Diplay 2 decimals
+            value = df.format(footprint); // Diplay 2 decimals
             unit = "kg";
         } else {
-            value = (int) footprint;
+            value = df.format((int) footprint);
             unit = "g";
         }
         return value + " " + unit;
@@ -101,14 +106,18 @@ public class Trip {
      */
     public String getTotalDistanceAsString() {
         double distance = this.getTotalDistance();
-        int value;
+        String value;
         String unit;
+
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+
         if (distance > 1_000) {
             // In kilometers
-            value = ((int) (distance * 100)) / 100; // Diplay 2 decimals
+            value = df.format(distance); // Diplay 2 decimals
             unit = "km";
         } else {
-            value = (int) distance;
+            value = df.format((int) distance);
             unit = "m";
         }
         return value + " " + unit;
