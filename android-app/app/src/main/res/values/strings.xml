@@ -29,4 +29,5 @@
     <string name="motorcycle">Motorcycle: %1$.2f \%%</string>
     <string name="percentage">%1$.2f \%</string>
     <string name="todo">TODO</string>
+    <string name="empty_trip">Trip was empty!</string>
 </resources>

@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -103,8 +104,9 @@ public class HomeFragment extends Fragment {
                     if (isChecked) {
                         startScanning();
                     } else {
-                        stopScanning();
-                        startActivity(new Intent(getActivity(), TripCompletedActivity.class));
+                        // If trip isn't empty, show summary
+                        if (stopScanning())
+                            startActivity(new Intent(getActivity(), TripCompletedActivity.class));
                     }});
 
         // Load ML stuff
@@ -418,7 +420,11 @@ public class HomeFragment extends Fragment {
         tripReadings = new ArrayList<>();
     }
 
-    public void stopScanning() {
+    /**
+     * Stops the scanning service, computes the trip from feature vectors, persists the trip
+     * @return true if trip not empty
+     */
+    public boolean stopScanning() {
         // Stop timer
         tripTimeChronometer.stop();
 
@@ -427,15 +433,22 @@ public class HomeFragment extends Fragment {
         // Convert trip's sensor readings into a proper trip
         Trip trip = computeTripFromReadings();
 
-        // Persist the trip
-        try {
-            tripStorage.persistTrip(trip);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!trip.getLegs().isEmpty()) {
+            // Persist the trip
+            try {
+                tripStorage.persistTrip(trip);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // DEBUG Log the trip as a string
+            Log.i("TripDone", trip.toString());
+        } else {
+            Toast.makeText(getContext(), getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
         }
 
-        // DEBUG Log the trip as a string
-        Log.i("TripDone", trip.toString());
+        return !trip.getLegs().isEmpty();
+
     }
 
     private Trip computeTripFromReadings() {
