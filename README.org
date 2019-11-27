@@ -116,3 +116,19 @@ The resulting windows will be saved in the file "features.csv".
     
 **** Machine Learning
 To test the accuracy of the features extracted from the data and saved in "features.csv" you can simply invoke machine.py which will split the data into test and training set and then perform ML and report the resulting accuracy.
+
+**** Features
+List of all features used (in order):
++ acc_mean (mean of the accelerator's magnitude over all axis)
++ avg_con_bt (average of connected bluetooth devices over all scans that were done within this window)
++ gyro_mean (see acc_mean)
++ max_speed
++ avg_speed
++ distance_travelled
++ mag_mean (see acc_mean)
++ acc_mixed_0 (fft magic, there's 10 features per axis, so 30 features total per sensor)
++ ...
++ acc_mixed_29
++ gyro_mixed_0
++ ...
++ gyro_mixed_29

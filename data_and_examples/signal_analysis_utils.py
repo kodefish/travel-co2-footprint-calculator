@@ -68,7 +68,7 @@ def extract_features_labels(dataset, labels, T, N, f_s, denominator):
 
 # by Timon Blattner
 # given a one-dimensional dataset, extract the features
-def extract_features(dataset, T, N, f_s, denominator):
+def extract_features(dataset, T, N, f_s, denominator, do_simplified):
     percentile = 5
     features = []
     for signal_comp in range(0, len(dataset)):
@@ -77,8 +77,9 @@ def extract_features(dataset, T, N, f_s, denominator):
         signal_max = np.nanpercentile(signal, 100-percentile)
         mph = signal_min + (signal_max - signal_min)/denominator
     
-        features += get_features(*get_psd_values(signal, T, N, f_s), mph)
         features += get_features(*get_fft_values(signal, T, N, f_s), mph)
-        features += get_features(*get_autocorr_values(signal, T, N, f_s), mph)
+        if not do_simplified:
+            features += get_features(*get_psd_values(signal, T, N, f_s), mph)
+            features += get_features(*get_autocorr_values(signal, T, N, f_s), mph)
 
     return features

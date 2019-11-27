@@ -45,6 +45,7 @@ print(confMatrix)
 
 
 # TODO:
-#xgb_classifier.fit(X, y)
+xgb_classifier.fit(X, y)
 #xgb_classifier.save_model('xgboost.model', 'xgboost_model')
-#print('model exported')
+xgb_classifier.save_model('xgboost.model')
+print('model exported')

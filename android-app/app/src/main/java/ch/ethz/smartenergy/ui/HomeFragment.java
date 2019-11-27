@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -103,8 +104,9 @@ public class HomeFragment extends Fragment {
                     if (isChecked) {
                         startScanning();
                     } else {
-                        Trip completedTrip = stopScanning();
-                        showTripSummary(completedTrip);
+                        // If trip isn't empty, show summary
+                        if (stopScanning())
+                            startActivity(new Intent(getActivity(), TripCompletedActivity.class));
                     }});
 
         // Load ML stuff
@@ -117,27 +119,12 @@ public class HomeFragment extends Fragment {
         }
 
         // Load trip storage utility
-        tripStorage = new TripStorage(getContext());
+        tripStorage = TripStorage.getInstance(getContext());
 
         // Start listening for sensor scans
         registerReceiver();
         Log.i("HomeFragment", "done");
         return root;
-    }
-
-    private void showTripSummary(Trip completedTrip) {
-        // Serialize completed trip
-        Gson gson = new Gson();
-        String tripJson = gson.toJson(completedTrip, Trip.class);
-
-        // Create intent for summary activity
-        Intent startTripSummaryActivity = new Intent(getActivity(), TripCompletedActivity.class);
-        // Pass completed trip as serialized extra
-        startTripSummaryActivity.putExtra(
-                TripCompletedActivity.EXTRA_TRIP, tripJson);
-
-        // Start summary activity
-        startActivity(startTripSummaryActivity);
     }
 
     @Override
@@ -149,7 +136,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        stopScanning();
+
+        // Stop service if it was launched
+        if (serviceIntent != null) stopScanning();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
     }
 
@@ -172,7 +161,8 @@ public class HomeFragment extends Fragment {
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
 
                     // peaks of FFT (5x and 5y = 10 features)
-                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<Double>()));
+
+                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
                     extractXYZ(scan.getAccReadings(), accAxis);
 
                     for (ArrayList<Double> axis : accAxis) {
@@ -227,11 +217,11 @@ public class HomeFragment extends Fragment {
     private void updateUI(FeatureVector featureVector) {
         // Update emissions
         tripEmissionsCounter += featureVector.getFootprint();
-        tripEmissions.setText(Double.toString(tripEmissionsCounter));
+        tripEmissions.setText(Trip.getFootprintAsString(tripEmissionsCounter));
 
         // Update distance
         tripDistanceCounter += featureVector.getDistanceCovered();
-        tripDistanceTravelled.setText(Double.toString(tripDistanceCounter));
+        tripDistanceTravelled.setText(Trip.getDistanceAsString(tripDistanceCounter));
 
         // Update predictions
         predictionAdapter.setPredictions(featureVector.getPredictions());
@@ -430,7 +420,11 @@ public class HomeFragment extends Fragment {
         tripReadings = new ArrayList<>();
     }
 
-    public Trip stopScanning() {
+    /**
+     * Stops the scanning service, computes the trip from feature vectors, persists the trip
+     * @return true if trip not empty
+     */
+    public boolean stopScanning() {
         // Stop timer
         tripTimeChronometer.stop();
 
@@ -439,14 +433,22 @@ public class HomeFragment extends Fragment {
         // Convert trip's sensor readings into a proper trip
         Trip trip = computeTripFromReadings();
 
-        // Persist the trip
-        try {
-            tripStorage.persistTrip(trip);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!trip.getLegs().isEmpty()) {
+            // Persist the trip
+            try {
+                tripStorage.persistTrip(trip);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // DEBUG Log the trip as a string
+            Log.i("TripDone", trip.toString());
+        } else {
+            Toast.makeText(getContext(), getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
         }
 
-        return trip;
+        return !trip.getLegs().isEmpty();
+
     }
 
     private Trip computeTripFromReadings() {

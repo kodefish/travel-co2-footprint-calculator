@@ -44,7 +44,7 @@ public class HistoryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_history, container, false);
         final TextView textView = root.findViewById(R.id.text_history);
 
-        TripStorage storage = new TripStorage(getContext());
+        TripStorage storage = TripStorage.getInstance(getContext());
         try {
             pastTrips = storage.getAllStoredTrips();
         } catch (FileNotFoundException e) {
