@@ -103,8 +103,8 @@ public class HomeFragment extends Fragment {
                     if (isChecked) {
                         startScanning();
                     } else {
-                        Trip completedTrip = stopScanning();
-                        showTripSummary(completedTrip);
+                        stopScanning();
+                        startActivity(new Intent(getActivity(), TripCompletedActivity.class));
                     }});
 
         // Load ML stuff
@@ -117,27 +117,12 @@ public class HomeFragment extends Fragment {
         }
 
         // Load trip storage utility
-        tripStorage = new TripStorage(getContext());
+        tripStorage = TripStorage.getInstance(getContext());
 
         // Start listening for sensor scans
         registerReceiver();
         Log.i("HomeFragment", "done");
         return root;
-    }
-
-    private void showTripSummary(Trip completedTrip) {
-        // Serialize completed trip
-        Gson gson = new Gson();
-        String tripJson = gson.toJson(completedTrip, Trip.class);
-
-        // Create intent for summary activity
-        Intent startTripSummaryActivity = new Intent(getActivity(), TripCompletedActivity.class);
-        // Pass completed trip as serialized extra
-        startTripSummaryActivity.putExtra(
-                TripCompletedActivity.EXTRA_TRIP, tripJson);
-
-        // Start summary activity
-        startActivity(startTripSummaryActivity);
     }
 
     @Override
@@ -433,7 +418,7 @@ public class HomeFragment extends Fragment {
         tripReadings = new ArrayList<>();
     }
 
-    public Trip stopScanning() {
+    public void stopScanning() {
         // Stop timer
         tripTimeChronometer.stop();
 
@@ -451,8 +436,6 @@ public class HomeFragment extends Fragment {
 
         // DEBUG Log the trip as a string
         Log.i("TripDone", trip.toString());
-
-        return trip;
     }
 
     private Trip computeTripFromReadings() {

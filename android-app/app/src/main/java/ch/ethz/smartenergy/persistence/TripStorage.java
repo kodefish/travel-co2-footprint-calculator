@@ -1,7 +1,9 @@
 package ch.ethz.smartenergy.persistence;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -19,27 +21,40 @@ import java.util.List;
 import ch.ethz.smartenergy.footprint.Trip;
 
 public class TripStorage {
+
+    private static TripStorage tripStorage = null;
+
     // Filename of json file that stores all the tips made by the user
     private final String JSON_TRIP_STORAGE_FILENAME = "trips.json";
 
     private final File jsonFile;
+
+    public static TripStorage getInstance(Context context) {
+        if (tripStorage == null) tripStorage = new TripStorage(context);
+        return tripStorage;
+    }
 
     /**
      * Creates a TripStorage object which can be used to interact with the persisted trip data
      * Trip data is stored in JSON format in the internal memory of the device, which is private
      * @param context
      */
-    public TripStorage(Context context) {
+    private TripStorage(Context context) {
         // Gets or creates file for trips in internal private storage
+        Log.i("Storage", "Files stored at " + context.getFilesDir() + "/" + JSON_TRIP_STORAGE_FILENAME);
         jsonFile = new File(context.getFilesDir(), JSON_TRIP_STORAGE_FILENAME);
 
         // Create the file if it doesn't already exist
         if (!jsonFile.exists()) {
+            Log.i("Storage", "file doesn't exist");
             try {
-                jsonFile.createNewFile();
+                boolean s = jsonFile.createNewFile();
+                Log.i("Storage", "file created: " + s);
+
                 // Write an empty list to the the json file
                 List<Trip> emptyList = new ArrayList<>();
                 writeTrips(emptyList);
+                Log.i("Storage", "writing empty trip");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -87,5 +102,14 @@ public class TripStorage {
 
         // Serialize updated list and write back to storage
         writeTrips(storedTrips);
+    }
+
+    /**
+     * Get last stored trip
+     * @return last stored trip
+     */
+    public Trip getLastTrip() throws FileNotFoundException {
+        List<Trip> storedTrips = getAllStoredTrips();
+        return storedTrips.get(storedTrips.size()-1);
     }
 }
