@@ -39,6 +39,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import biz.k11i.xgboost.Predictor;
@@ -46,6 +47,8 @@ import biz.k11i.xgboost.util.FVec;
 import ch.ethz.smartenergy.Constants;
 import ch.ethz.smartenergy.R;
 import ch.ethz.smartenergy.TripCompletedActivity;
+import ch.ethz.smartenergy.features.FeatureExtractor;
+import ch.ethz.smartenergy.features.InplaceFFT;
 import ch.ethz.smartenergy.footprint.Leg;
 import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.footprint.TripType;
@@ -168,11 +171,22 @@ public class HomeFragment extends Fragment {
                     double meanMagnitude = calculateMeanMagnitude(scan.getAccReadings());
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
 
-                    // TODO: peaks of FFT (5x and 5y = 10 features)
+                    // peaks of FFT (5x and 5y = 10 features)
+                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<Double>));
+                    extractXYZ(scan.getAccReadings(), accAxis);
+
+                    for (ArrayList<Double> axis : accAxis) {
+                        ArrayList<Double> fft;
+                        fft = FeatureExtractor.extract_features(axis, window_size); // winsize in milliseconds! should be 20'000!!
+                        for (int i = 0; i < fft.size(); i++)
+                            featureVec.addFeature("gyro_" + axis + "_" + i, fft.get(i));
+                    }
 
                     // TODO: average connected bluetooth devices (for each scanID within this window, look at #devices and then take average over that)
 
                     // TODO: Gyro magnitude mean
+
+                    // TODO: FFT for gyro
 
                     // max speed
                     double maxSpeed = calculateMaxSpeed(scan.getLocationScans());
@@ -221,6 +235,14 @@ public class HomeFragment extends Fragment {
 
         // Update predictions
         predictionAdapter.setPredictions(featureVector.getPredictions());
+    }
+
+    private void extractXYZ(ArrayList<SensorReading> readings, ArrayList<ArrayList<Double>> axis) {
+        for (SensorReading reading : readings) {
+            axis.get(0).add(reading.getValueOnXAxis());
+            axis.get(1).add(reading.getValueOnYAxis());
+            axis.get(2).add(reading.getValueOnZAxis());
+        }
     }
 
     private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {
