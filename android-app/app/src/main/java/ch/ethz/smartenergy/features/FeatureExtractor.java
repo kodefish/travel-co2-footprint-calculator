@@ -87,7 +87,7 @@ public class FeatureExtractor {
     }
 
     // window_size in milliseconds
-    public static ArrayList<Double> extract_features(ArrayList<Double> data, int window_size) {
+    public static ArrayList<Double> extract_features(ArrayList<Double> data, long window_size) {
         // pad data w/ 0's so it fits powers of two!
         int n = data.size();
         int newSize = nextPowerOf2(n);

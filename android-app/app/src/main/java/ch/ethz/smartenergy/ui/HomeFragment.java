@@ -177,7 +177,7 @@ public class HomeFragment extends Fragment {
 
                     for (ArrayList<Double> axis : accAxis) {
                         ArrayList<Double> fft;
-                        fft = FeatureExtractor.extract_features(axis, window_size); // winsize in milliseconds! should be 20'000!!
+                        fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE); // winsize in milliseconds! should be 20'000!!
                         for (int i = 0; i < fft.size(); i++)
                             featureVec.addFeature("gyro_" + axis + "_" + i, fft.get(i));
                     }
