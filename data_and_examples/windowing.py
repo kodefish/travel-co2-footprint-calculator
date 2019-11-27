@@ -1,10 +1,13 @@
 #usr/bin/env python
 import sys
+import math
 import os
+import geopy.distance
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 from signal_analysis_utils import *
 
@@ -204,6 +207,18 @@ for user_id in user_ids:
 
             # mean speed
             features["avg_speed"] = loc_window["speed"].mean()
+
+            # distance travelled
+            dTrav= 0.0
+            coord1 = (0, 0)
+            for loc_idx, loc_row in loc_window.iterrows():
+                coord2 = (loc_row["lat"], loc_row["lng"])
+                if math.isnan(coord2[0]) or math.isnan(coord2[1]) or coord2 == (0, 0):
+                    continue
+                if coord1 != (0, 0):
+                    dTrav += geopy.distance.distance(coord1, coord2).km * 1000.0
+                coord1 = coord2
+            features["distance_travelled"] = dTrav
 
             # maximum altitude "speed" 
             # skip this feature if we're missing altitude infos..
