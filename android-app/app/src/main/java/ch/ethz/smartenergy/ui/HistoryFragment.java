@@ -44,7 +44,7 @@ public class HistoryFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_history, container, false);
         final TextView textView = root.findViewById(R.id.text_history);
 
-        TripStorage storage = new TripStorage(getContext());
+        TripStorage storage = TripStorage.getInstance(getContext());
         try {
             pastTrips = storage.getAllStoredTrips();
         } catch (FileNotFoundException e) {
@@ -57,7 +57,7 @@ public class HistoryFragment extends Fragment {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             // TODO: stuff
-            Toast.makeText(getContext(), pastTrips.get(position).getTotalFootprintAsString() + " emmited", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), pastTrips.get(position).getTotalFootprintAsString() + " emitted", Toast.LENGTH_SHORT).show();
         });
 
         return root;

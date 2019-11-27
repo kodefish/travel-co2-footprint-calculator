@@ -103,8 +103,8 @@ public class HomeFragment extends Fragment {
                     if (isChecked) {
                         startScanning();
                     } else {
-                        Trip completedTrip = stopScanning();
-                        showTripSummary(completedTrip);
+                        stopScanning();
+                        startActivity(new Intent(getActivity(), TripCompletedActivity.class));
                     }});
 
         // Load ML stuff
@@ -117,27 +117,12 @@ public class HomeFragment extends Fragment {
         }
 
         // Load trip storage utility
-        tripStorage = new TripStorage(getContext());
+        tripStorage = TripStorage.getInstance(getContext());
 
         // Start listening for sensor scans
         registerReceiver();
         Log.i("HomeFragment", "done");
         return root;
-    }
-
-    private void showTripSummary(Trip completedTrip) {
-        // Serialize completed trip
-        Gson gson = new Gson();
-        String tripJson = gson.toJson(completedTrip, Trip.class);
-
-        // Create intent for summary activity
-        Intent startTripSummaryActivity = new Intent(getActivity(), TripCompletedActivity.class);
-        // Pass completed trip as serialized extra
-        startTripSummaryActivity.putExtra(
-                TripCompletedActivity.EXTRA_TRIP, tripJson);
-
-        // Start summary activity
-        startActivity(startTripSummaryActivity);
     }
 
     @Override
@@ -149,7 +134,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        stopScanning();
+
+        // Stop service if it was launched
+        if (serviceIntent != null) stopScanning();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
     }
 
@@ -172,12 +159,13 @@ public class HomeFragment extends Fragment {
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
 
                     // peaks of FFT (5x and 5y = 10 features)
-                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<Double>));
+
+                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
                     extractXYZ(scan.getAccReadings(), accAxis);
 
                     for (ArrayList<Double> axis : accAxis) {
                         ArrayList<Double> fft;
-                        fft = FeatureExtractor.extract_features(axis, window_size); // winsize in milliseconds! should be 20'000!!
+                        fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE); // winsize in milliseconds! should be 20'000!!
                         for (int i = 0; i < fft.size(); i++)
                             featureVec.addFeature("gyro_" + axis + "_" + i, fft.get(i));
                     }
@@ -430,7 +418,7 @@ public class HomeFragment extends Fragment {
         tripReadings = new ArrayList<>();
     }
 
-    public Trip stopScanning() {
+    public void stopScanning() {
         // Stop timer
         tripTimeChronometer.stop();
 
@@ -446,7 +434,8 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
 
-        return trip;
+        // DEBUG Log the trip as a string
+        Log.i("TripDone", trip.toString());
     }
 
     private Trip computeTripFromReadings() {
