@@ -1,6 +1,7 @@
 package ch.ethz.smartenergy.footprint;
 
-import java.text.DecimalFormat;
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class Trip {
     private List<Leg> legs;
@@ -147,28 +149,15 @@ public class Trip {
      * @return String representation of distance travelled
      */
     public String getTotalTimeAsString() {
-        int time = this.getTotalTime().intValue();
+        Log.i("Time", this.getTotalTime() + "");
+        long millis = this.getTotalTime();
 
-        int seconds = time % 60;
-        int minutes = (time / 60) % 60;
-        int hours = (time / 60) / 60;
-
-        StringBuilder sb = new StringBuilder();
-        if (hours != 0) {
-            sb.append(hours).append(" h, ");
-        }
-        if (minutes != 0) {
-            sb.append(minutes).append(" min, ");
-        }
-        if (seconds != 0) {
-            sb.append(seconds).append(" s");
-        } else if (hours != 0 || minutes != 0) {
-            // Removing the last ", "
-            sb.deleteCharAt(sb.length() - 1);
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        return sb.toString();
+        return String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(millis),
+                TimeUnit.MILLISECONDS.toMinutes(millis) -
+                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), // The change is in this line
+                TimeUnit.MILLISECONDS.toSeconds(millis) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
     }
 
     /**

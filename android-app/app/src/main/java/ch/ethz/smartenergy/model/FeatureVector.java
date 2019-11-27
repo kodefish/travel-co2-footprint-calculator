@@ -1,12 +1,17 @@
 package ch.ethz.smartenergy.model;
 
+import android.location.Location;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.ethz.smartenergy.features.FeatureExtractor;
 import ch.ethz.smartenergy.footprint.Footprint;
 import ch.ethz.smartenergy.footprint.TripType;
+import ch.ethz.smartenergy.service.SensorScanPeriod;
 
 public class FeatureVector {
 
@@ -15,14 +20,13 @@ public class FeatureVector {
     public static final String FEATURE_KEY_MAX_SPEED = "maxSpeed";
     public static final String FEATURE_KEY_DISTANCE_COVERED = "distanceCovered";
 
-    // Raw scan results from the sensor
-    private final ScanResult scanResult;
-
     // Computed features for decison tree
-    private final Map<String, Double> features;
+    private transient final Map<String, Double> features;
 
     // Represents how sure we are that prediction[i] is of type TripType[i]
     private float[] predictions;
+
+    private final double totalDistanceCovered;
 
     // Time when scan result was started and finalized
     private final long startTime;
@@ -33,45 +37,116 @@ public class FeatureVector {
      * @param scanResult resulting scan values
      */
     public FeatureVector(ScanResult scanResult) {
-        this.scanResult = scanResult;
-        features = new HashMap<>();
         this.startTime = scanResult.getStartTime();
         this.endTime = scanResult.getEndTime();
-    }
 
-    /**
-     * Add feature to the feature vector
-     * @param name name of the feature
-     * @param value value of the feature
-     */
-    public void addFeature(String name, Double value) {
-        features.put(name, value);
-    }
+        features = new HashMap<>();
 
-    /**
-     * Get a list of the feature names, in the same order as if it were values
-     * @return list of feature names
-     */
-    public List<String> getFeatureNames() {
-        List<String> featureNames = new ArrayList<>();
-        for (Map.Entry<String, Double> entry : features.entrySet()) {
-            featureNames.add(entry.getKey());
+        // Accelerator magnitude mean
+        double meanMagnitude = calculateMeanMagnitude(scanResult.getAccReadings());
+        features.put(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
+
+        // peaks of FFT (5x and 5y = 10 features)
+
+        ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
+        extractXYZ(scanResult.getAccReadings(), accAxis);
+
+        for (ArrayList<Double> axis : accAxis) {
+            ArrayList<Double> fft;
+            fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE); // winsize in milliseconds! should be 20'000!!
+            for (int i = 0; i < fft.size(); i++)
+                features.put("gyro_" + axis + "_" + i, fft.get(i));
         }
-        return featureNames;
+
+        // TODO: average connected bluetooth devices (for each scanID within this window, look at #devices and then take average over that)
+
+        // TODO: Gyro magnitude mean
+
+        // TODO: FFT for gyro
+
+        // max speed
+        double maxSpeed = calculateMaxSpeed(scanResult.getLocationScans());
+        features.put(FeatureVector.FEATURE_KEY_MAX_SPEED, maxSpeed);
+
+        // TODO: average speed
+
+        // altitude speed (let's skip this for simplicity..)
+
+        // TODO: magnetic field magnitude mean
+
+        // distance covered (this is not implemented in the ML model [yet])
+        totalDistanceCovered = calculateDistanceCovered(scanResult.getLocationScans());
+        features.put(FeatureVector.FEATURE_KEY_DISTANCE_COVERED, totalDistanceCovered);
+    }
+
+
+    private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {
+        double maxSpeed = 0;
+        for (LocationScan locationScan : locationScans) {
+            if (locationScan.getSpeed() > maxSpeed) {
+                maxSpeed = locationScan.getSpeed();
+            }
+        }
+
+        return maxSpeed;
+    }
+
+    private double calculateMeanMagnitude(ArrayList<SensorReading> accReadings) {
+        if (accReadings.size() == 0) return 0;
+
+        double sumOfMagnitudes = 0;
+
+        for (SensorReading reading : accReadings) {
+            double sumOfPows = reading.getValueOnXAxis() * reading.getValueOnXAxis() +
+                    reading.getValueOnYAxis() * reading.getValueOnYAxis() +
+                    reading.getValueOnZAxis() * reading.getValueOnZAxis();
+            sumOfMagnitudes += Math.sqrt(sumOfPows);
+        }
+
+        return sumOfMagnitudes / accReadings.size();
+    }
+
+    private double calculateDistanceCovered(ArrayList<LocationScan> locationScans) {
+        double distanceCovered = 0;
+        for (int i = 0; i < locationScans.size() - 1; i++) {
+            LocationScan locationScan1 = locationScans.get(i);
+            LocationScan locationScan2 = locationScans.get(i+1);
+            double lat1 = locationScan1.getLatitude(), lon1 = locationScan1.getLongitude();
+            double lat2 = locationScan2.getLatitude(), lon2 = locationScan2.getLongitude();
+
+            Location loc1 = new Location("");
+            loc1.setLatitude(lat1);
+            loc1.setLongitude(lon1);
+
+            Location loc2 = new Location("");
+            loc2.setLatitude(lat2);
+            loc2.setLongitude(lon2);
+
+            distanceCovered += loc1.distanceTo(loc2);
+        }
+
+        return distanceCovered;
+    }
+
+    private void extractXYZ(ArrayList<SensorReading> readings, ArrayList<ArrayList<Double>> axis) {
+        for (SensorReading reading : readings) {
+            axis.get(0).add(reading.getValueOnXAxis());
+            axis.get(1).add(reading.getValueOnYAxis());
+            axis.get(2).add(reading.getValueOnZAxis());
+        }
     }
 
     /**
      * Returns a vector containing the features
      * @return
      */
-    public double[] getFeatureVec() {
-        // TODO specify order in which the feature vec should be given to the decision tree
-        double[] featureArr = new double[features.size()];
+    public double[] getFeatureVec(String... keys) {
+        double[] featureArr = new double[keys.length];
         int idx = 0;
-        for (Map.Entry<String, Double> entry : features.entrySet()) {
-            featureArr[idx++] = entry.getValue();
+        for (String s : keys) {
+            Double feature = features.get(s);
+            featureArr[idx++] =  feature == null ? 0 : feature;
         }
-
         return featureArr;
     }
 
@@ -104,8 +179,7 @@ public class FeatureVector {
      * @return
      */
     public double getDistanceCovered() {
-        Double distance = features.get(this.FEATURE_KEY_DISTANCE_COVERED);
-        return distance;
+        return totalDistanceCovered;
     }
 
     /**

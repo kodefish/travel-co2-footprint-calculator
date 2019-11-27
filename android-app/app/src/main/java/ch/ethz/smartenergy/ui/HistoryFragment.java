@@ -45,12 +45,11 @@ public class HistoryFragment extends Fragment {
         final TextView textView = root.findViewById(R.id.text_history);
 
         TripStorage storage = TripStorage.getInstance(getContext());
-        try {
-            pastTrips = storage.getAllStoredTrips();
-        } catch (FileNotFoundException e) {
-            // Do nothing
-        }
+        pastTrips = storage.getAllStoredTrips();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        textView.setText(gson.toJson(pastTrips));
 
+        /*
         final TripAdapter adapter = new TripAdapter(getContext(),-1, pastTrips);
         ListView listView = root.findViewById(R.id.history_list_view);
         listView.setAdapter(adapter);
@@ -59,7 +58,7 @@ public class HistoryFragment extends Fragment {
             // TODO: stuff
             Toast.makeText(getContext(), pastTrips.get(position).getTotalFootprintAsString() + " emitted", Toast.LENGTH_SHORT).show();
         });
-
+         */
         return root;
     }
 }

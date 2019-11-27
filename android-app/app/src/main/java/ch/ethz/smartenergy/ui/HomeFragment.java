@@ -154,44 +154,6 @@ public class HomeFragment extends Fragment {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
 
-                    // TODO: aggregate all features here:
-
-                    // Accelerator magnitude mean
-                    double meanMagnitude = calculateMeanMagnitude(scan.getAccReadings());
-                    featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
-
-                    // peaks of FFT (5x and 5y = 10 features)
-
-                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
-                    extractXYZ(scan.getAccReadings(), accAxis);
-
-                    for (ArrayList<Double> axis : accAxis) {
-                        ArrayList<Double> fft;
-                        fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE); // winsize in milliseconds! should be 20'000!!
-                        for (int i = 0; i < fft.size(); i++)
-                            featureVec.addFeature("gyro_" + axis + "_" + i, fft.get(i));
-                    }
-
-                    // TODO: average connected bluetooth devices (for each scanID within this window, look at #devices and then take average over that)
-
-                    // TODO: Gyro magnitude mean
-
-                    // TODO: FFT for gyro
-
-                    // max speed
-                    double maxSpeed = calculateMaxSpeed(scan.getLocationScans());
-                    featureVec.addFeature(FeatureVector.FEATURE_KEY_MAX_SPEED, maxSpeed);
-
-                    // TODO: average speed
-
-                    // altitude speed (let's skip this for simplicity..)
-
-                    // TODO: magnetic field magnitude mean
-
-                    // distance covered (this is not implemented in the ML model [yet])
-                    double distanceCovered = calculateDistanceCovered(scan.getLocationScans());
-                    featureVec.addFeature(FeatureVector.FEATURE_KEY_DISTANCE_COVERED, distanceCovered);
-
                     // Get prediction results
                     float[] predictions = predict(featureVec);
                     featureVec.setPredictions(predictions);
@@ -206,10 +168,11 @@ public class HomeFragment extends Fragment {
     };
 
     private float[] predict(FeatureVector features) {
-        // build features vector
+        // Build features vector
+        // TODO give the keys we want for the features
         FVec features_vector = FVec.Transformer.fromArray(features.getFeatureVec(), false);
 
-        //predict
+        // Predict
         float[] predictions = predictor.predict(features_vector);
         return predictions;
     }
@@ -225,62 +188,6 @@ public class HomeFragment extends Fragment {
 
         // Update predictions
         predictionAdapter.setPredictions(featureVector.getPredictions());
-    }
-
-    private void extractXYZ(ArrayList<SensorReading> readings, ArrayList<ArrayList<Double>> axis) {
-        for (SensorReading reading : readings) {
-            axis.get(0).add(reading.getValueOnXAxis());
-            axis.get(1).add(reading.getValueOnYAxis());
-            axis.get(2).add(reading.getValueOnZAxis());
-        }
-    }
-
-    private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {
-        double maxSpeed = 0;
-        for (LocationScan locationScan : locationScans) {
-            if (locationScan.getSpeed() > maxSpeed) {
-                maxSpeed = locationScan.getSpeed();
-            }
-        }
-
-        return maxSpeed;
-    }
-
-    private double calculateMeanMagnitude(ArrayList<SensorReading> accReadings) {
-        if (accReadings.size() == 0) return 0;
-
-        double sumOfMagnitudes = 0;
-
-        for (SensorReading reading : accReadings) {
-            double sumOfPows = reading.getValueOnXAxis() * reading.getValueOnXAxis() +
-                    reading.getValueOnYAxis() * reading.getValueOnYAxis() +
-                    reading.getValueOnZAxis() * reading.getValueOnZAxis();
-            sumOfMagnitudes += Math.sqrt(sumOfPows);
-        }
-
-        return sumOfMagnitudes / accReadings.size();
-    }
-
-    private double calculateDistanceCovered(ArrayList<LocationScan> locationScans) {
-        double distanceCovered = 0;
-        for (int i = 0; i < locationScans.size() - 1; i++) {
-            LocationScan locationScan1 = locationScans.get(i);
-            LocationScan locationScan2 = locationScans.get(i+1);
-            double lat1 = locationScan1.getLatitude(), lon1 = locationScan1.getLongitude();
-            double lat2 = locationScan2.getLatitude(), lon2 = locationScan2.getLongitude();
-
-            Location loc1 = new Location("");
-            loc1.setLatitude(lat1);
-            loc1.setLongitude(lon1);
-
-            Location loc2 = new Location("");
-            loc2.setLatitude(lat2);
-            loc2.setLongitude(lon2);
-
-            distanceCovered += loc1.distanceTo(loc2);
-        }
-
-        return distanceCovered;
     }
 
     /**
@@ -466,6 +373,9 @@ public class HomeFragment extends Fragment {
                     // If the current window is of the same type as the previous, then the leg is
                     // probably the same
                     legFeatures.add(featureVec);
+
+                    // If last feature vec, then create leg and add it
+                    if (i == tripReadings.size() - 1) legs.add(new Leg(legFeatures));
                 } else {
                     // Finalize current leg
                     legs.add(new Leg(legFeatures));

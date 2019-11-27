@@ -53,37 +53,25 @@ public class Leg {
     }
 
     /**
-     * Returns the starting time of the leg (in seconds)
-     * @return the starting time of the leg (in seconds)
+     * Returns the starting time of the leg
+     * @return the starting time of the leg
      */
     public long getLegStartTime() {
-        if (legStartTime == null) {
-            legStartTime = 0L;
-            for (FeatureVector featureVector : featureVectorList)
-                legStartTime += featureVector.getStartTime();
-            legStartTime /= 1_000;
-        }
-        return legStartTime;
+        return featureVectorList.get(0).getStartTime();
     }
 
     /**
-     * Returns the end time of the leg (in seconds)
-     * @return the end time of the leg (in seconds)
+     * Returns the end time of the leg
+     * @return the end time of the leg
      */
     public long getLegEndTime() {
-        if (legEndTime == null) {
-            legEndTime = 0L;
-            for (FeatureVector featureVector : featureVectorList)
-                legEndTime += featureVector.getStartTime();
-            legEndTime /= 1_000;
-        }
-        return legEndTime;
+        return featureVectorList.get(featureVectorList.size()-1).getEndTime();
     }
 
     /**
      * Computes total time elapsed by leg by summing the time between each
-     * sensor reading  (in seconds)
-     * @return time elapsed during the leg (in seconds)
+     * sensor reading  (in millis)
+     * @return time elapsed during the leg (in millis)
      */
     public long getLegTime() {
         if (totalLegTime == null) {

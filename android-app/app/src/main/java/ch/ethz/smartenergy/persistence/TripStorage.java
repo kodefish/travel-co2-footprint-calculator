@@ -3,6 +3,7 @@ package ch.ethz.smartenergy.persistence;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
@@ -28,6 +29,9 @@ public class TripStorage {
     private final String JSON_TRIP_STORAGE_FILENAME = "trips.json";
 
     private final File jsonFile;
+    private BufferedReader bufferedReader;
+
+    private List<Trip> storedTrips = null;
 
     public static TripStorage getInstance(Context context) {
         if (tripStorage == null) tripStorage = new TripStorage(context);
@@ -37,6 +41,7 @@ public class TripStorage {
     /**
      * Creates a TripStorage object which can be used to interact with the persisted trip data
      * Trip data is stored in JSON format in the internal memory of the device, which is private
+     *
      * @param context
      */
     private TripStorage(Context context) {
@@ -45,9 +50,9 @@ public class TripStorage {
         jsonFile = new File(context.getFilesDir(), JSON_TRIP_STORAGE_FILENAME);
 
         // Create the file if it doesn't already exist
-        if (!jsonFile.exists()) {
-            Log.i("Storage", "file doesn't exist");
-            try {
+        try {
+            if (!jsonFile.exists()) {
+                Log.i("Storage", "file doesn't exist");
                 boolean s = jsonFile.createNewFile();
                 Log.i("Storage", "file created: " + s);
 
@@ -55,29 +60,48 @@ public class TripStorage {
                 List<Trip> emptyList = new ArrayList<>();
                 writeTrips(emptyList);
                 Log.i("Storage", "writing empty trip");
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
+            Log.i("Storage", "file exists!");
+            bufferedReader = new BufferedReader(new FileReader(jsonFile));
+
+            // Load stored trips
+            storedTrips = getAllStoredTrips();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            bufferedReader = null;
         }
     }
 
     /**
      * Fetches the list of stored trips
+     *
      * @return List of trips stored on the internal memory
      * @throws FileNotFoundException
      */
-    public List<Trip> getAllStoredTrips() throws FileNotFoundException {
-        // Read json file to get list of trips
-        Type listOfTripsType = new TypeToken<ArrayList<Trip>>() {}.getType();
-        Gson gson = new Gson();
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(jsonFile));
-        List<Trip> storedTrips = gson.fromJson(bufferedReader, listOfTripsType);
-        if (storedTrips == null) storedTrips = new ArrayList<>();
+    public List<Trip> getAllStoredTrips() {
+        if (storedTrips == null) {
+            // Read json file to get list of trips
+            Type listOfTripsType = new TypeToken<ArrayList<Trip>>() {
+            }.getType();
+            Gson gson = new Gson();
+            storedTrips = gson.fromJson(bufferedReader, listOfTripsType);
+            if (storedTrips == null) storedTrips = new ArrayList<>();
+
+            // close the file as the trips are now in memory
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return storedTrips;
     }
 
     /**
      * Writes the list of trips, replacing the contents of whatever was there before
+     *
      * @param trips to be written to memory
      * @throws IOException
      */
@@ -90,13 +114,11 @@ public class TripStorage {
 
     /**
      * Adds a trip to a the list of persisted trips
+     *
      * @param trip
      * @throws IOException
      */
     public void persistTrip(Trip trip) throws IOException {
-        // Read json file to get list of trips
-        List<Trip> storedTrips = getAllStoredTrips();
-
         // Append trip to deserialized list
         storedTrips.add(trip);
 
@@ -106,10 +128,11 @@ public class TripStorage {
 
     /**
      * Get last stored trip
+     *
      * @return last stored trip
      */
-    public Trip getLastTrip() throws FileNotFoundException {
+    public Trip getLastTrip() {
         List<Trip> storedTrips = getAllStoredTrips();
-        return storedTrips.get(storedTrips.size()-1);
+        return storedTrips.get(storedTrips.size() - 1);
     }
 }
