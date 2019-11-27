@@ -57,7 +57,7 @@ public class HistoryFragment extends Fragment {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             // TODO: stuff
-            Toast.makeText(getContext(), pastTrips.get(position).getTotalFootprintAsString() + " emmited", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), pastTrips.get(position).getTotalFootprintAsString() + " emitted", Toast.LENGTH_SHORT).show();
         });
 
         return root;

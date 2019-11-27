@@ -33,13 +33,15 @@ public class TripAdapter extends ArrayAdapter<Trip> {
         TextView distanceView = v.findViewById(R.id.item_trip_distance);
         TextView modesView = v.findViewById(R.id.item_trip_modes);
         TextView footprintView = v.findViewById(R.id.item_trip_footprint);
+        TextView durationView = v.findViewById(R.id.item_trip_duration);
 
         Trip t = trips.get(position);
 
         dateView.setText(t.getDateAsString());
-        distanceView.setText("" + t.getTotalDistance()); // TODO: clean it
+        distanceView.setText(t.getTotalDistanceAsString());
         modesView.setText(t.getModesAsString());
-        footprintView.setText("" + t.getTotalFootprint()); // TODO: clean it
+        footprintView.setText(t.getTotalFootprintAsString());
+        durationView.setText(t.getTotalTimeAsString());
 
         return v;
     }
