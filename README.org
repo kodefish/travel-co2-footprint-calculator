@@ -118,6 +118,7 @@ The resulting windows will be saved in the file "features.csv".
 To test the accuracy of the features extracted from the data and saved in "features.csv" you can simply invoke machine.py which will split the data into test and training set and then perform ML and report the resulting accuracy.
 
 **** Features
+List of all features used (in order):
 * acc_mean
 * avg_con_bt
 * gyro_mean
