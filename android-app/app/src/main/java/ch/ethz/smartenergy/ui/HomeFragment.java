@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -35,28 +34,22 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import biz.k11i.xgboost.Predictor;
 import biz.k11i.xgboost.util.FVec;
 import ch.ethz.smartenergy.Constants;
 import ch.ethz.smartenergy.R;
-import ch.ethz.smartenergy.TripCompletedActivity;
-import ch.ethz.smartenergy.features.FeatureExtractor;
-import ch.ethz.smartenergy.features.InplaceFFT;
+import ch.ethz.smartenergy.TripSummaryActivity;
 import ch.ethz.smartenergy.footprint.Leg;
 import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.footprint.TripType;
 import ch.ethz.smartenergy.model.FeatureVector;
-import ch.ethz.smartenergy.model.LocationScan;
 import ch.ethz.smartenergy.model.ScanResult;
-import ch.ethz.smartenergy.model.SensorReading;
 import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.service.DataCollectionService;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
@@ -106,7 +99,7 @@ public class HomeFragment extends Fragment {
                     } else {
                         // If trip isn't empty, show summary
                         if (stopScanning())
-                            startActivity(new Intent(getActivity(), TripCompletedActivity.class));
+                            startActivity(new Intent(getActivity(), TripSummaryActivity.class));
                     }});
 
         // Load ML stuff

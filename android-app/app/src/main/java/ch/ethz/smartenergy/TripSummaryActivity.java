@@ -17,7 +17,7 @@ import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.ui.adapters.LegAdapter;
 
-public class TripCompletedActivity extends AppCompatActivity {
+public class TripSummaryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
