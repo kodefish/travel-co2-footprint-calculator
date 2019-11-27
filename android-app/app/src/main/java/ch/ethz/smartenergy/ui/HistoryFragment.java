@@ -42,14 +42,10 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_history, container, false);
-        final TextView textView = root.findViewById(R.id.text_history);
 
         TripStorage storage = TripStorage.getInstance(getContext());
         pastTrips = storage.getAllStoredTrips();
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        textView.setText(gson.toJson(pastTrips));
 
-        /*
         final TripAdapter adapter = new TripAdapter(getContext(),-1, pastTrips);
         ListView listView = root.findViewById(R.id.history_list_view);
         listView.setAdapter(adapter);
@@ -58,7 +54,6 @@ public class HistoryFragment extends Fragment {
             // TODO: stuff
             Toast.makeText(getContext(), pastTrips.get(position).getTotalFootprintAsString() + " emitted", Toast.LENGTH_SHORT).show();
         });
-         */
         return root;
     }
 }

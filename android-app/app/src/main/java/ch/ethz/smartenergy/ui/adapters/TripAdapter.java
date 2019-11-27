@@ -39,7 +39,7 @@ public class TripAdapter extends ArrayAdapter<Trip> {
 
         dateView.setText(t.getDateAsString());
         distanceView.setText(t.getTotalDistanceAsString());
-        modesView.setText(t.getModesAsString());
+        // modesView.setText(t.getModesAsString());
         footprintView.setText(t.getTotalFootprintAsString());
         durationView.setText(t.getTotalTimeAsString());
 
