@@ -30,4 +30,6 @@
     <string name="percentage">%1$.2f \%</string>
     <string name="todo">TODO</string>
     <string name="empty_trip">Trip was empty!</string>
+    <string name="home_distance_travelled">0m</string>
+    <string name="home_emissions">0g</string>
 </resources>

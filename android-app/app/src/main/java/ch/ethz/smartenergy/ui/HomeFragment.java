@@ -403,9 +403,9 @@ public class HomeFragment extends Fragment {
         tripTimeChronometer.setBase(SystemClock.elapsedRealtime());
         tripTimeChronometer.start();
 
-        tripEmissions.setText("0");
+        tripEmissions.setText(getString(R.string.home_emissions));
         tripEmissionsCounter = 0;
-        tripDistanceTravelled.setText("0");
+        tripDistanceTravelled.setText(R.string.home_distance_travelled);
         tripDistanceCounter = 0;
 
         // Start data collection service

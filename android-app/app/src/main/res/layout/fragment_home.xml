@@ -29,7 +29,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="250g"
+                    android:text="@string/home_emissions"
                     android:textColor="@color/primaryTextColor"
                     android:textSize="40sp" />
 
@@ -67,7 +67,7 @@
                     <TextView
                         android:id="@+id/home_distance_travelled"
                         style="@style/trip_summary_info_title"
-                        android:text="15km" />
+                        android:text="@string/home_distance_travelled" />
 
                     <TextView
                         style="@style/trip_summary_info_subtext"
