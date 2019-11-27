@@ -8,7 +8,6 @@ from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 from signal_analysis_utils import *
 
 ### FUNCTIONALITY ###
@@ -68,19 +67,31 @@ else:
     print ("Selected user", user_ids[user_id_idx])
     user_ids = [user_ids[user_id_idx]]
 
-# DataFrame to store all features. One row equals one window
-features_df = pd.DataFrame()
-
 def getWindow(df, start, end):
     return df.loc[
             (df["reading_time"] > start) &
             (df["reading_time"] <= end)
             ].copy()
 
-
 #TODO: used for DEBUG
+do_simplified = True
 do_visualize = False
 do_tmode = 3
+
+fft_feature_len = 30 if do_simplified else 90
+
+# initialize column names to enforce order..!
+columns = ["acc_mean", "avg_con_bt", "gyro_mean", "max_speed", "avg_speed", "distance_travelled", "mag_mean"]
+if not do_simplified:
+    columns.append("max_alt_speed")
+for i in range(0, fft_feature_len):
+    columns.append("acc_mixed_" + str(i))
+for i in range(0, fft_feature_len):
+    columns.append("gyro_mixed_" + str(i))
+
+# DataFrame to store all features. One row equals one window
+features_df = pd.DataFrame(columns=columns)
+
 
 # for every selected user, go through all processed legs
 selected_ids = {}
@@ -117,10 +128,10 @@ for user_id in user_ids:
             ## Accelerator
             acc_window = getWindow(acc_df, boundary_left, boundary_right)
 
-            # mean magnitude
+            # 1) mean magnitude
             features["acc_mean"] = acc_window["magnitude"].mean()
 
-            # FFT of acc
+            # 2) FFT of acc
             N = acc_window.shape[0]
             if N > 0:
                 t_n = window_size / 1000 # in sec
@@ -129,19 +140,13 @@ for user_id in user_ids:
                 denominator = 10
 
                 acc_data = [acc_window["x"], acc_window["y"], acc_window["z"]]
-                acc_features = extract_features(acc_data, T, N, f_s, denominator)
+                acc_features = extract_features(acc_data, T, N, f_s, denominator, do_simplified)
 
-                if (len(acc_features) != 90):
-                    # 2*5 * 3 * 3 = 90
-                    # In other words: x/y axis of FFT * first 5 peaks * 3 features[fft/psd/autocor] * x/y/z data
-                    print("ERROR: feature length not 90")
-                    sys.exit()
-
-                for i in range(0, 90):
+                for i in range(0, fft_feature_len):
                     features["acc_mixed_" + str(i)] = acc_features[i]
             else:
                 # not enough data points available, set features to 0
-                for i in range(0, 90):
+                for i in range(0, fft_feature_len):
                     features["acc_mixed_" + str(i)] = 0
 
             # visualize!
@@ -170,15 +175,15 @@ for user_id in user_ids:
             ## Bluetooth
             bt_window = getWindow(bt_df, boundary_left, boundary_right)
 
-            # average connected devices
+            # 3) average connected devices
             bt_grp = bt_window.groupby("scan")
             features["avg_con_bt"] = bt_grp.size().mean()
 
-            ## Gyro
+            ## 4) Gyro Mean
             gyro_window = getWindow(gyro_df, boundary_left, boundary_right)
             features["gyro_mean"] = gyro_window["magnitude"].mean()
 
-            # FFT magic for gyro
+            # 5) FFT magic for gyro
             N = gyro_window.shape[0]
             if N > 0:
                 t_n = window_size / 1000 # in sec
@@ -187,28 +192,24 @@ for user_id in user_ids:
                 denominator = 10
 
                 gyro_data = [gyro_window["x"], gyro_window["y"], gyro_window["z"]]
-                gyro_features = extract_features(gyro_data, T, N, f_s, denominator)
+                gyro_features = extract_features(gyro_data, T, N, f_s, denominator, do_simplified)
 
-                if (len(gyro_features) != 90):
-                    print("ERROR: feature length not 90")
-                    sys.exit()
-
-                for i in range(0, 90):
+                for i in range(0, fft_feature_len):
                     features["gyro_mixed_" + str(i)] = gyro_features[i]
             else:
-                for i in range(0, 90):
+                for i in range(0, fft_feature_len):
                     features["gyro_mixed_" + str(i)] = 0
 
             ## Location
             loc_window = getWindow(loc_df, boundary_left, boundary_right)
             
-            # maximum speed
+            # 6) maximum speed
             features["max_speed"] = max(0, loc_window["speed"].max())
 
-            # mean speed
+            # 7) mean speed
             features["avg_speed"] = loc_window["speed"].mean()
 
-            # distance travelled
+            # 8) distance travelled
             dTrav= 0.0
             coord1 = (0, 0)
             for loc_idx, loc_row in loc_window.iterrows():
@@ -220,25 +221,17 @@ for user_id in user_ids:
                 coord1 = coord2
             features["distance_travelled"] = dTrav
 
-            # maximum altitude "speed" 
-            # skip this feature if we're missing altitude infos..
-            min_alt = loc_window["alt"].min()
-            if min_alt > 0:
-                bucket_array = np.linspace(boundary_left, boundary_right, 9) # 8 buckets
-                alt_cut = pd.cut(loc_window["reading_time"], bucket_array)
-                features["max_alt_speed"] = loc_window.groupby(alt_cut)["alt"].mean().diff().max()
+            if not do_simplified:
+                # maximum altitude "speed" 
+                min_alt = loc_window["alt"].min()
+                if min_alt > 0:
+                    bucket_array = np.linspace(boundary_left, boundary_right, 9) # 8 buckets
+                    alt_cut = pd.cut(loc_window["reading_time"], bucket_array)
+                    features["max_alt_speed"] = loc_window.groupby(alt_cut)["alt"].mean().diff().max()
 
-            # min altitude / max altitude -> for debugging
-            #features["alt_max"] = loc_window["alt"].max()
-            #features["alt_min"] = loc_window["alt"].min()
-
-
-            ## Magnetic Field
+            ## 9) Magnetic Field
             magn_window = getWindow(magn_df, boundary_left, boundary_right)
             features["mag_mean"] = magn_window["magnitude"].mean()
-
-            # TODO: How much you turn around
-            # (i.e. in a train it should be very stable but on foot you turn left right alot)
 
             ## WiFi
             # TODO: reading times are scuffed as fuck here. if possible extract avg nearby access points..?
