@@ -19,14 +19,27 @@ import ch.ethz.smartenergy.ui.adapters.LegAdapter;
 
 public class TripSummaryActivity extends AppCompatActivity {
 
+    public static final String EXTRA_TRIP_ID = "extra_trip_id";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_completed);
 
-        // Get latest trip from persistence
+        // Get latest trip from persistence, if none then show latest trip
         TripStorage tripStorage = TripStorage.getInstance(this);
-        Trip completedTrip = tripStorage.getLastTrip();
+
+        Trip completedTrip;
+
+        // Get id of trip to display
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            int id = extras.getInt(EXTRA_TRIP_ID);
+            completedTrip = tripStorage.getTripById(id);
+        } else {
+            completedTrip = tripStorage.getLastTrip();
+        }
+
 
         // Display trip summary
         TextView textViewLength = findViewById(R.id.trip_completed_distance_travelled);

@@ -132,7 +132,11 @@ public class TripStorage {
      * @return last stored trip
      */
     public Trip getLastTrip() {
+        return getTripById(getAllStoredTrips().size() - 1);
+    }
+
+    public Trip getTripById(int id) {
         List<Trip> storedTrips = getAllStoredTrips();
-        return storedTrips.get(storedTrips.size() - 1);
+        return storedTrips.get(id);
     }
 }

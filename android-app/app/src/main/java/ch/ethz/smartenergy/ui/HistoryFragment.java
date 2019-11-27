@@ -1,5 +1,6 @@
 package ch.ethz.smartenergy.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import ch.ethz.smartenergy.R;
+import ch.ethz.smartenergy.TripSummaryActivity;
 import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.persistence.TripStorage;
 
@@ -51,8 +53,9 @@ public class HistoryFragment extends Fragment {
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            // TODO: stuff
-            Toast.makeText(getContext(), pastTrips.get(position).getTotalFootprintAsString() + " emitted", Toast.LENGTH_SHORT).show();
+            Intent tripSummaryIntent = new Intent(HistoryFragment.this.getContext(), TripSummaryActivity.class);
+            tripSummaryIntent.putExtra(TripSummaryActivity.EXTRA_TRIP_ID, position);
+            startActivity(tripSummaryIntent);
         });
         return root;
     }
