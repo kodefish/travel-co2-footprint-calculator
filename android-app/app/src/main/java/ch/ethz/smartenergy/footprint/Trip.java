@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Date;
 import java.util.Calendar;
@@ -196,7 +197,9 @@ public class Trip {
     public List<TripType> getModesUsed() {
         if (modesUsedDescOrder == null) {
             // Getting the entrySet
-            Set<Map.Entry<TripType, Integer>> numUsedSet = this.modesUsed.entrySet();
+            Set<Map.Entry<TripType, Integer>> numUsedSet = this.modesUsed == null
+                    ? new HashSet<Map.Entry<TripType, Integer>>()
+                    : this.modesUsed.entrySet();
             // Converting HashMap to List of Map entries
             List<Map.Entry<TripType, Integer>> numUsedListEntry = new ArrayList<Map.Entry<TripType, Integer>>(numUsedSet);
 
