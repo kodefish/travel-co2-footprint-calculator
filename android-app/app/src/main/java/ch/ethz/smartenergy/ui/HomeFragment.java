@@ -215,11 +215,11 @@ public class HomeFragment extends Fragment {
     private void updateUI(FeatureVector featureVector) {
         // Update emissions
         tripEmissionsCounter += featureVector.getFootprint();
-        tripEmissions.setText(Double.toString(tripEmissionsCounter));
+        tripEmissions.setText(Trip.getFootprintAsString(tripEmissionsCounter));
 
         // Update distance
         tripDistanceCounter += featureVector.getDistanceCovered();
-        tripDistanceTravelled.setText(Double.toString(tripDistanceCounter));
+        tripDistanceTravelled.setText(Trip.getDistanceAsString(tripDistanceCounter));
 
         // Update predictions
         predictionAdapter.setPredictions(featureVector.getPredictions());

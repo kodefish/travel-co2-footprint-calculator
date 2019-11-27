@@ -71,19 +71,21 @@ public class Trip {
      * @return String representation of distance travelled
      */
     public String getTotalFootprintAsString() {
-        double footprint = this.getTotalFootprint();
+        return getFootprintAsString(this.getTotalFootprint());
+    }
+
+    public static String getFootprintAsString(double footprint) {
         String value;
         String unit;
 
-        DecimalFormat df = new DecimalFormat();
-        df.setMaximumFractionDigits(2);
+        String format = "%.0f";
 
         if (footprint > 1_000) {
             // In kilograms
-            value = df.format(footprint); // Diplay 2 decimals
+            value = String.format(format, footprint); // Diplay 2 decimals
             unit = "kg";
         } else {
-            value = df.format((int) footprint);
+            value = String.format(format, Math.floor(footprint));
             unit = "g";
         }
         return value + " " + unit;
@@ -107,19 +109,21 @@ public class Trip {
      * @return String representation of distance travelled
      */
     public String getTotalDistanceAsString() {
-        double distance = this.getTotalDistance();
+        return getDistanceAsString(this.getTotalDistance());
+    }
+
+    public static String getDistanceAsString(double distance) {
         String value;
         String unit;
 
-        DecimalFormat df = new DecimalFormat();
-        df.setMaximumFractionDigits(2);
+        String format = "%.2f";
 
         if (distance > 1_000) {
             // In kilometers
-            value = df.format(distance); // Diplay 2 decimals
+            value = String.format(format, distance); // Diplay 2 decimals
             unit = "km";
         } else {
-            value = df.format((int) distance);
+            value = String.format(format, Math.floor(distance));
             unit = "m";
         }
         return value + " " + unit;
