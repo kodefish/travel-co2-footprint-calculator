@@ -149,7 +149,9 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        stopScanning();
+
+        // Stop service if it was launched
+        if (serviceIntent != null) stopScanning();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
     }
 
@@ -172,7 +174,8 @@ public class HomeFragment extends Fragment {
                     featureVec.addFeature(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
 
                     // peaks of FFT (5x and 5y = 10 features)
-                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<Double>()));
+
+                    ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
                     extractXYZ(scan.getAccReadings(), accAxis);
 
                     for (ArrayList<Double> axis : accAxis) {
@@ -445,6 +448,9 @@ public class HomeFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // DEBUG Log the trip as a string
+        Log.i("TripDone", trip.toString());
 
         return trip;
     }
