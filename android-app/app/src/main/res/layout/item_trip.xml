@@ -44,4 +44,14 @@
         android:maxLines="1"
         android:text="Emissions"
         android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/item_trip_duration"
+        android:layout_width="fill_parent"
+        android:layout_height="26dip"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:maxLines="1"
+        android:text="Duration"
+        android:textSize="12sp" />
 </LinearLayout>
