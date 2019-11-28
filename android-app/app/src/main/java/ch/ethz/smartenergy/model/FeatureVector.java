@@ -1,6 +1,7 @@
 package ch.ethz.smartenergy.model;
 
 import android.location.Location;
+import android.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,9 +17,87 @@ import ch.ethz.smartenergy.service.SensorScanPeriod;
 public class FeatureVector {
 
     // Constants used to reference features
-    public static final String FEATURE_KEY_MEAN_MAGNITUDE = "meanMagnitude";
-    public static final String FEATURE_KEY_MAX_SPEED = "maxSpeed";
-    public static final String FEATURE_KEY_DISTANCE_COVERED = "distanceCovered";
+    public static final String FEATURE_KEY_ACC_MEAN_MAGNITUDE = "acc_mean";
+    public static final String FEATURE_KEY_AVG_CON_BT = "avg_con_bt";
+    public static final String FEATURE_KEY_GYRO_MEAN_MAGNITUDE = "gyro_mean";
+    public static final String FEATURE_KEY_MAX_SPEED = "max_speed";
+    public static final String FEATURE_KEY_AVG_SPEED = "avg_speed";
+    public static final String FEATURE_KEY_DISTANCE_COVERED = "distance_travelled";
+    public static final String FEATURE_KEY_MAG_MEAN_MAGNITUDE = "mag_mean";
+
+    public static final String FEATURE_PREFIX_ACC_MIXED = "acc_mixed_";
+    public static final String FEATURE_PREFIX_GYRO_MIXED = "gyro_mixed_";
+
+    // Hard coded feature labels to ensure correct order
+    public static final String[] FeatureLabels = {
+            FEATURE_KEY_ACC_MEAN_MAGNITUDE,
+            FEATURE_KEY_AVG_CON_BT,
+            FEATURE_KEY_GYRO_MEAN_MAGNITUDE,
+            FEATURE_KEY_MAX_SPEED,
+            FEATURE_KEY_AVG_SPEED,
+            FEATURE_KEY_DISTANCE_COVERED,
+            FEATURE_KEY_MAG_MEAN_MAGNITUDE,
+            "acc_mixed_0",
+            "acc_mixed_1",
+            "acc_mixed_2",
+            "acc_mixed_3",
+            "acc_mixed_4",
+            "acc_mixed_5",
+            "acc_mixed_6",
+            "acc_mixed_7",
+            "acc_mixed_8",
+            "acc_mixed_9",
+            "acc_mixed_10",
+            "acc_mixed_11",
+            "acc_mixed_12",
+            "acc_mixed_13",
+            "acc_mixed_14",
+            "acc_mixed_15",
+            "acc_mixed_16",
+            "acc_mixed_17",
+            "acc_mixed_18",
+            "acc_mixed_19",
+            "acc_mixed_20",
+            "acc_mixed_21",
+            "acc_mixed_22",
+            "acc_mixed_23",
+            "acc_mixed_24",
+            "acc_mixed_25",
+            "acc_mixed_26",
+            "acc_mixed_27",
+            "acc_mixed_28",
+            "acc_mixed_29",
+            "gyro_mixed_0",
+            "gyro_mixed_1",
+            "gyro_mixed_2",
+            "gyro_mixed_3",
+            "gyro_mixed_4",
+            "gyro_mixed_5",
+            "gyro_mixed_6",
+            "gyro_mixed_7",
+            "gyro_mixed_8",
+            "gyro_mixed_9",
+            "gyro_mixed_10",
+            "gyro_mixed_11",
+            "gyro_mixed_12",
+            "gyro_mixed_13",
+            "gyro_mixed_14",
+            "gyro_mixed_15",
+            "gyro_mixed_16",
+            "gyro_mixed_17",
+            "gyro_mixed_18",
+            "gyro_mixed_19",
+            "gyro_mixed_20",
+            "gyro_mixed_21",
+            "gyro_mixed_22",
+            "gyro_mixed_23",
+            "gyro_mixed_24",
+            "gyro_mixed_25",
+            "gyro_mixed_26",
+            "gyro_mixed_27",
+            "gyro_mixed_28",
+            "gyro_mixed_29"
+    };
 
     // Computed features for decison tree
     private transient final Map<String, Double> features;
@@ -44,51 +123,70 @@ public class FeatureVector {
 
         // Accelerator magnitude mean
         double meanMagnitude = calculateMeanMagnitude(scanResult.getAccReadings());
-        features.put(FeatureVector.FEATURE_KEY_MEAN_MAGNITUDE, meanMagnitude);
+        features.put(FEATURE_KEY_ACC_MEAN_MAGNITUDE, meanMagnitude);
+
 
         // peaks of FFT (5x and 5y = 10 features)
+        ArrayList<ArrayList<Double>> sensorAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
+        extractXYZ(scanResult.getAccReadings(), sensorAxis);
 
-        ArrayList<ArrayList<Double>> accAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
-        extractXYZ(scanResult.getAccReadings(), accAxis);
-
-        for (ArrayList<Double> axis : accAxis) {
+        int index = 0;
+        for (ArrayList<Double> axis : sensorAxis) {
             ArrayList<Double> fft;
-            fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE); // winsize in milliseconds! should be 20'000!!
+            fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE);
             for (int i = 0; i < fft.size(); i++)
-                features.put("gyro_" + axis + "_" + i, fft.get(i));
+                features.put(FEATURE_PREFIX_ACC_MIXED + (index++), fft.get(i));
         }
 
-        // TODO: average connected bluetooth devices (for each scanID within this window, look at #devices and then take average over that)
+        // average connected bluetooth devices (for each scanID within this window, look at #devices and then take average over that)
+        double avgConBT = calculateAvgConBT(scanResult.getBluetoothScans());
+        features.put(FEATURE_KEY_AVG_CON_BT, avgConBT);
 
-        // TODO: Gyro magnitude mean
+        // Gyro magnitude mean
+        double gyroMeanMagnitude = calculateMeanMagnitude(scanResult.getGyroReadings());
+        features.put(FEATURE_KEY_GYRO_MEAN_MAGNITUDE, gyroMeanMagnitude);
 
-        // TODO: FFT for gyro
+        // peaks from gyro of FFT (5x and 5y = 10 features)
+        sensorAxis.clear();
+        extractXYZ(scanResult.getGyroReadings(), sensorAxis);
+
+        index = 0;
+        for (ArrayList<Double> axis : sensorAxis) {
+            ArrayList<Double> fft;
+            fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE);
+            for (int i = 0; i < fft.size(); i++)
+                features.put(FEATURE_PREFIX_GYRO_MIXED + (index++), fft.get(i));
+        }
 
         // max speed
-        double maxSpeed = calculateMaxSpeed(scanResult.getLocationScans());
-        features.put(FeatureVector.FEATURE_KEY_MAX_SPEED, maxSpeed);
+        Pair<Double, Double> maxAndAvgSpeed = calculateMaxAndAvgSpeed(scanResult.getLocationScans());
+        features.put(FEATURE_KEY_MAX_SPEED, maxAndAvgSpeed.first);
 
-        // TODO: average speed
+        // average speed
+        features.put(FEATURE_KEY_AVG_SPEED, maxAndAvgSpeed.second);
 
-        // altitude speed (let's skip this for simplicity..)
-
-        // TODO: magnetic field magnitude mean
+        // magnetic field magnitude mean
+        double magnMeanMagnitude = calculateMeanMagnitude(scanResult.getMagnReadings());
+        features.put(FEATURE_KEY_MAG_MEAN_MAGNITUDE, magnMeanMagnitude);
 
         // distance covered (this is not implemented in the ML model [yet])
         totalDistanceCovered = calculateDistanceCovered(scanResult.getLocationScans());
-        features.put(FeatureVector.FEATURE_KEY_DISTANCE_COVERED, totalDistanceCovered);
+        features.put(FEATURE_KEY_DISTANCE_COVERED, totalDistanceCovered);
     }
 
 
-    private double calculateMaxSpeed(ArrayList<LocationScan> locationScans) {
+    private Pair<Double, Double> calculateMaxAndAvgSpeed(ArrayList<LocationScan> locationScans) {
         double maxSpeed = 0;
+        double avgSpeed = 0;
         for (LocationScan locationScan : locationScans) {
             if (locationScan.getSpeed() > maxSpeed) {
                 maxSpeed = locationScan.getSpeed();
             }
+            avgSpeed += locationScan.getSpeed();
         }
+        avgSpeed /= locationScans.size();
 
-        return maxSpeed;
+        return new Pair<>(maxSpeed, avgSpeed);
     }
 
     private double calculateMeanMagnitude(ArrayList<SensorReading> accReadings) {
@@ -104,6 +202,14 @@ public class FeatureVector {
         }
 
         return sumOfMagnitudes / accReadings.size();
+    }
+
+    private double calculateAvgConBT(ArrayList<BluetoothScan> btScans) {
+        double avg = 0;
+        for (BluetoothScan reading : btScans)
+            avg += reading.getDiscoveredDevices().size();
+        avg /= btScans.size();
+        return avg;
     }
 
     private double calculateDistanceCovered(ArrayList<LocationScan> locationScans) {
@@ -140,10 +246,10 @@ public class FeatureVector {
      * Returns a vector containing the features
      * @return
      */
-    public double[] getFeatureVec(String... keys) {
-        double[] featureArr = new double[keys.length];
+    public double[] getFeatureVec() {
+        double[] featureArr = new double[FeatureLabels.length];
         int idx = 0;
-        for (String s : keys) {
+        for (String s : FeatureLabels) {
             Double feature = features.get(s);
             featureArr[idx++] =  feature == null ? 0 : feature;
         }
