@@ -186,7 +186,7 @@ public class Trip {
      * @return the list of transportation modes used
      */
     public List<TripType> getModesUsedDescOrder() {
-        if (modesUsedDescOrder.size() != getNumModesUsed()) {
+        if (modesUsedDescOrder == null || modesUsedDescOrder.size() != getNumModesUsed()) {
             // Getting the entrySet
             Set<Map.Entry<TripType, Integer>> numUsedSet = this.getModesUsed().entrySet();
             // Converting HashMap to List of Map entries
