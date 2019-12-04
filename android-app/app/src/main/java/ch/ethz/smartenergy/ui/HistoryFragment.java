@@ -10,6 +10,7 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +35,19 @@ public class HistoryFragment extends Fragment {
 
         Collections.reverse(pastTrips);
 
-        final TripAdapter adapter = new TripAdapter(getContext(),-1, pastTrips);
+        // Setup adapter
+        final TripAdapter adapter = new TripAdapter(getContext(),-1);
+        adapter.setTrips(pastTrips);
+        adapter.setOnDeleteClickListener(position -> {
+            try {
+                pastTrips = storage.deleteTrip(pastTrips.size() - 1 - position);
+                adapter.setTrips(pastTrips);
+                adapter.notifyDataSetChanged();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
         ListView listView = root.findViewById(R.id.history_list_view);
         listView.setAdapter(adapter);
 

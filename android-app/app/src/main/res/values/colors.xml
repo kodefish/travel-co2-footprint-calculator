@@ -5,4 +5,5 @@
   <color name="primaryDarkColor">#005005</color>
   <color name="primaryTextColor">#ffffff</color>
   <color name="primaryTextColorInverted">#000000</color>
+  <color name="primaryRed">#d11a2a</color>
 </resources>

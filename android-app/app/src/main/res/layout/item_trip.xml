@@ -1,57 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:padding="6dip"
-    android:orientation="vertical">
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_trip_swipe_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/item_trip_date"
-        android:layout_width="fill_parent"
-        android:layout_height="26dip"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:maxLines="1"
-        android:text="Date"
-        android:textSize="16sp" />
+    <LinearLayout
+        android:id="@+id/bottom_wrapper"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:gravity="center"
+        android:background="@color/primaryRed"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
-    <TextView
-        android:id="@+id/item_trip_distance"
-        android:layout_width="fill_parent"
-        android:layout_height="26dip"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:maxLines="1"
-        android:text="Distance traveled"
-        android:textSize="12sp" />
+        <ImageButton
+            android:id="@+id/item_trip_delete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_trash"
+            android:background="@android:color/transparent"
+            android:scaleType="fitEnd" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/item_trip_modes"
-        android:layout_width="fill_parent"
-        android:layout_height="26dip"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:maxLines="1"
-        android:text="Modes used"
-        android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/item_trip_footprint"
-        android:layout_width="fill_parent"
-        android:layout_height="26dip"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:maxLines="1"
-        android:text="Emissions"
-        android:textSize="12sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="6dip">
 
-    <TextView
-        android:id="@+id/item_trip_duration"
-        android:layout_width="fill_parent"
-        android:layout_height="26dip"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:maxLines="1"
-        android:text="Duration"
-        android:textSize="12sp" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/item_trip_date"
+            android:layout_width="fill_parent"
+            android:layout_height="26dip"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:maxLines="1"
+            android:text="Date"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/item_trip_distance"
+            android:layout_width="fill_parent"
+            android:layout_height="26dip"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:maxLines="1"
+            android:text="Distance traveled"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/item_trip_modes"
+            android:layout_width="fill_parent"
+            android:layout_height="26dip"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:maxLines="1"
+            android:text="Modes used"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/item_trip_footprint"
+            android:layout_width="fill_parent"
+            android:layout_height="26dip"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:maxLines="1"
+            android:text="Emissions"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/item_trip_duration"
+            android:layout_width="fill_parent"
+            android:layout_height="26dip"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:maxLines="1"
+            android:text="Duration"
+            android:textSize="12sp" />
+    </LinearLayout>
+</com.daimajia.swipe.SwipeLayout>
