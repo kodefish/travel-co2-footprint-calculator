@@ -41,41 +41,13 @@ public class LegAdapter extends ArrayAdapter {
         Leg leg = legs.get(position);
 
         TripType type = leg.getMostProbableLegType();
-        Picasso.get().load(getIconResource(type)).into(legIcon);
+        Picasso.get().load(TripType.getTripTypeIconResource(type)).into(legIcon);
 
         legType.setText(leg.getMostProbableLegType().toString());
         legDistance.setText(leg.getLegDistanceAsString());
         legEmissions.setText(leg.getLegFootprintAsString());
 
         return v;
-    }
-
-    /**
-     * Get icon resource based on trip type
-     * @param type of trip
-     * @return resource id of icon trip
-     */
-    private int getIconResource(TripType type) {
-        int iconResource = 0;
-        switch (type) {
-            case FOOT:
-                iconResource = R.drawable.icon_foot; break;
-            case TRAIN:
-                iconResource = R.drawable.icon_train; break;
-            case BUS:
-                iconResource = R.drawable.icon_bus; break;
-            case CAR:
-                iconResource = R.drawable.icon_car; break;
-            case TRAM:
-                iconResource = R.drawable.icon_tram; break;
-            case BIKE:
-                iconResource = R.drawable.icon_bike; break;
-            case EBIKE:
-                iconResource = R.drawable.icon_ebike; break;
-            case MOTORCYCLE:
-                iconResource = R.drawable.icon_motorcycle; break;
-        }
-        return iconResource;
     }
 
     @Override

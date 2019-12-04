@@ -9,3 +9,4 @@ tram: https://thenounproject.com/search/?q=tram&i=1751321
 bike: https://thenounproject.com/search/?q=bicycle&i=45229
 ebike: https://thenounproject.com/search/?q=ebike&i=905922
 motorcycle: https://thenounproject.com/search/?q=motorcycle&i=640498
+trash: https://thenounproject.com/search/?q=trash&i=3007781

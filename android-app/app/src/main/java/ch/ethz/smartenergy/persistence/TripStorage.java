@@ -139,4 +139,10 @@ public class TripStorage {
         List<Trip> storedTrips = getAllStoredTrips();
         return storedTrips.get(id);
     }
+
+    public List<Trip> deleteTrip(int i) throws IOException {
+        this.storedTrips.remove(i);
+        writeTrips(this.storedTrips);
+        return this.storedTrips;
+    }
 }

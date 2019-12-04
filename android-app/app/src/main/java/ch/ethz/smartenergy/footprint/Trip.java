@@ -9,10 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +23,7 @@ public class Trip {
     private Double totalDistance = null;
     private Long totalTime = null;
     private Map<TripType, Integer> modesUsed = new HashMap<>();
-    private List<TripType> modesUsedDescOrder = new ArrayList<>();
+    private List<TripType> modesUsedDescOrder = null;
     private Integer numModesUsed = null;
     private Date date;
 
@@ -174,27 +174,21 @@ public class Trip {
      * @return the number of transportation modes used
      */
     public int getNumModesUsed() {
-        if (numModesUsed == null) {
-            numModesUsed = 0;
-            for (Leg leg: this.legs) {
-                if (this.modesUsed.get(leg.getMostProbableLegType()) != 0) {
-                    numModesUsed++;
-                }
-            }
-        }
-        return numModesUsed;
+        return getModesUsed().size();
+    }
+
+    public Map<TripType, Integer> getModesUsed() {
+        return modesUsed;
     }
 
     /**
      * Returns the list of transportation modes used (by descending order)
      * @return the list of transportation modes used
      */
-    public List<TripType> getModesUsed() {
-        if (modesUsedDescOrder == null) {
+    public List<TripType> getModesUsedDescOrder() {
+        if (modesUsedDescOrder.size() != getNumModesUsed()) {
             // Getting the entrySet
-            Set<Map.Entry<TripType, Integer>> numUsedSet = this.modesUsed == null
-                    ? new HashSet<Map.Entry<TripType, Integer>>()
-                    : this.modesUsed.entrySet();
+            Set<Map.Entry<TripType, Integer>> numUsedSet = this.getModesUsed().entrySet();
             // Converting HashMap to List of Map entries
             List<Map.Entry<TripType, Integer>> numUsedListEntry = new ArrayList<>(numUsedSet);
 
@@ -203,14 +197,13 @@ public class Trip {
                     (mode1, mode2) -> mode2.getValue().compareTo(mode1.getValue()));
 
             // Storing
-            List<TripType> asList = new ArrayList<TripType>();
+            modesUsedDescOrder = new ArrayList<TripType>();
             for (Map.Entry<TripType, Integer> map : numUsedListEntry) {
-                asList.add(map.getKey());
+                Log.i("Trip",  map.getKey().toString());
+                modesUsedDescOrder.add(map.getKey());
             }
-
-            this.modesUsedDescOrder = asList;
         }
-        return this.modesUsedDescOrder;
+        return modesUsedDescOrder;
     }
 
     /**
@@ -218,16 +211,19 @@ public class Trip {
      * @return a string representation of the transportation modes used
      */
     public String getModesAsString() {
-        StringBuilder sb = new StringBuilder();
-        for (TripType mode: this.getModesUsed()) {
-            sb.append(mode.toString().toLowerCase()).append(", ");
+        if (!this.getModesUsedDescOrder().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (TripType mode: this.getModesUsedDescOrder()) {
+                sb.append(mode.toString().toLowerCase()).append(", ");
+            }
+
+            // Removing the last ", "
+            sb.deleteCharAt(sb.length() - 1);
+            sb.deleteCharAt(sb.length() - 1);
+
+            return sb.toString();
         }
-
-        // Removing the last ", "
-        sb.deleteCharAt(sb.length() - 1);
-        sb.deleteCharAt(sb.length() - 1);
-
-        return sb.toString();
+        return "";
     }
 
     /**
@@ -244,7 +240,7 @@ public class Trip {
      */
     public String getDateAsString() {
         if (this.getDate() == null) return "";
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
         return df.format(this.getDate());
     }
 

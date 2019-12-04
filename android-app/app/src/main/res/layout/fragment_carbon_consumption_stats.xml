@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/default_padding"
+        android:gravity="center">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/carbon_consumption_distance_travelled"
+                style="@style/trip_summary_info_title"/>
+
+            <TextView
+                style="@style/trip_summary_info_subtext"
+                android:text="Distance \nTraveled" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/carbon_consumption_co2_emitted"
+                style="@style/trip_summary_info_title"/>
+
+            <TextView
+                style="@style/trip_summary_info_subtext"
+                android:text="Carbon \nConsumed" />
+        </LinearLayout>
+    </LinearLayout>
+    
+    
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/carbon_consumption_chart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/default_padding" />
+    
+</LinearLayout>

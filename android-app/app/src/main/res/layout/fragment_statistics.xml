@@ -4,31 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_statistics"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/statistics_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_statistics" />
+        android:layout_height="wrap_content">
 
-    <Spinner
-        android:id="@+id/spinner1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:visibility="visible" />
+        <androidx.viewpager.widget.PagerTabStrip
+            android:id="@+id/statistics_pager_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:paddingBottom="@dimen/default_padding"
+            android:paddingTop="@dimen/default_padding" />
 
-    <Spinner
-        android:id="@+id/spinner2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:visibility="visible" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        tools:srcCompat="@tools:sample/backgrounds/scenic"
-        android:contentDescription="@string/todo" />
+    </androidx.viewpager.widget.ViewPager>
 </LinearLayout>
