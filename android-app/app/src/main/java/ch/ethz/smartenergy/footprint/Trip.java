@@ -185,11 +185,15 @@ public class Trip {
         return numModesUsed;
     }
 
+    public Map<TripType, Integer> getModesUsed() {
+        return modesUsed;
+    }
+
     /**
      * Returns the list of transportation modes used (by descending order)
      * @return the list of transportation modes used
      */
-    public List<TripType> getModesUsed() {
+    public List<TripType> getModesUsedDescOrder() {
         if (modesUsedDescOrder == null) {
             // Getting the entrySet
             Set<Map.Entry<TripType, Integer>> numUsedSet = this.modesUsed == null
@@ -219,7 +223,7 @@ public class Trip {
      */
     public String getModesAsString() {
         StringBuilder sb = new StringBuilder();
-        for (TripType mode: this.getModesUsed()) {
+        for (TripType mode: this.getModesUsedDescOrder()) {
             sb.append(mode.toString().toLowerCase()).append(", ");
         }
 

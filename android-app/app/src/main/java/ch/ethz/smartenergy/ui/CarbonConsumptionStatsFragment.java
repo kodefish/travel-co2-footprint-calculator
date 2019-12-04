@@ -1,6 +1,7 @@
 package ch.ethz.smartenergy.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,12 +62,14 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         for (Trip t : allTrips) {
             totalDistance += t.getTotalDistance();
             totalFootprint += t.getTotalFootprint();
-            entries.add(new BarEntry(t.getDate().getTime(), (float) t.getTotalFootprint())) ;
+            BarEntry entry = new BarEntry(t.getDate().getTime(), (float) (t.getTotalFootprint() + Math.random()));
+            entries.add(entry) ;
+            Log.i("CarbonConumption", entry.toString());
         }
 
         // Set total sums
-        distanceTravelledTv.setText(Double.toString(totalDistance));
-        carbonEmittedTv.setText(Double.toString(totalFootprint));
+        distanceTravelledTv.setText(Trip.getDistanceAsString(totalDistance));
+        carbonEmittedTv.setText(Trip.getFootprintAsString(totalFootprint));
 
         // Create data set
         BarDataSet dataSet = new BarDataSet(entries, "C02 Consumption");
@@ -87,10 +90,12 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         // Load data into chart
         BarData barData = new BarData(dataSet);
         barChart.setData(barData);
-        barChart.invalidate();
+        barChart.setPinchZoom(true);
+        barChart.notifyDataSetChanged();
 
         return view;
     }
+
 
 
 }
