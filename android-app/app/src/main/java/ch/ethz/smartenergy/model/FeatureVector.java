@@ -186,10 +186,9 @@ public class FeatureVector {
         }
 
         ArrayList<Double> acc_mixed = new ArrayList<Double>();
-        // TODO: Is the factor correct ?
-        acc_mixed.addAll(InplaceFFT.fft_pos_abs(accx, 1));
-        acc_mixed.addAll(InplaceFFT.fft_pos_abs(accz, 1));
-        acc_mixed.addAll(InplaceFFT.fft_pos_abs(accy, 1));
+        acc_mixed.addAll(FeatureExtractor.extract_features(accx, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE));
+        acc_mixed.addAll(FeatureExtractor.extract_features(accy, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE));
+        acc_mixed.addAll(FeatureExtractor.extract_features(accz, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE));
 
 
         int cur = 7; // Start at 7 (index of acc_mixed_0), work our way up to 37
@@ -202,17 +201,16 @@ public class FeatureVector {
         ArrayList<Double> gyrox = new ArrayList<Double>();
         ArrayList<Double> gyroy = new ArrayList<Double>();
         ArrayList<Double> gyroz = new ArrayList<Double>();
-        for (SensorReading reading : acc) {
-            accx.add(reading.getValueOnXAxis());
-            accy.add(reading.getValueOnYAxis());
-            accz.add(reading.getValueOnZAxis());
+        for (SensorReading reading : gyro) {
+            gyrox.add(reading.getValueOnXAxis());
+            gyroy.add(reading.getValueOnYAxis());
+            gyroz.add(reading.getValueOnZAxis());
         }
 
         ArrayList<Double> gyro_mixed = new ArrayList<Double>();
-        // TODO: Is the factor correct ?
-        acc_mixed.addAll(InplaceFFT.fft_pos_abs(gyrox, 1));
-        acc_mixed.addAll(InplaceFFT.fft_pos_abs(gyroz, 1));
-        acc_mixed.addAll(InplaceFFT.fft_pos_abs(gyroy, 1));
+        gyro_mixed.addAll(FeatureExtractor.extract_features(gyrox, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE));
+        gyro_mixed.addAll(FeatureExtractor.extract_features(gyroy, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE));
+        gyro_mixed.addAll(FeatureExtractor.extract_features(gyroz, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE));
 
         // cur is still valid
         for (Double val : gyro_mixed) {
