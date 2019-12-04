@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,11 +13,13 @@ import androidx.annotation.Nullable;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.ArraySwipeAdapter;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import ch.ethz.smartenergy.R;
 import ch.ethz.smartenergy.footprint.Trip;
+import ch.ethz.smartenergy.footprint.TripType;
 import ch.ethz.smartenergy.ui.util.OnDeleteListener;
 
 public class TripAdapter extends ArraySwipeAdapter<Trip> {
@@ -47,6 +50,7 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_trip, parent, false);
 
         // Init surface view with all the info
+        ImageView icon = v.findViewById(R.id.item_trip_icon);
         TextView dateView = v.findViewById(R.id.item_trip_date);
         TextView distanceView = v.findViewById(R.id.item_trip_distance);
         TextView modesView = v.findViewById(R.id.item_trip_modes);
@@ -55,9 +59,11 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
 
         Trip t = trips.get(position);
 
+        // Load most prominent trip type icon
+        Picasso.get().load(TripType.getTripTypeIconResource(t.getModesUsedDescOrder().get(0))).into(icon);
         dateView.setText(t.getDateAsString());
         distanceView.setText(t.getTotalDistanceAsString());
-        modesView.setText(t.getModesAsString());
+        modesView.setText("Modes used: " + t.getModesAsString());
         footprintView.setText(t.getTotalFootprintAsString());
         durationView.setText(t.getTotalTimeAsString());
 
