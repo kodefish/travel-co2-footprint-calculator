@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment;
 
 import ch.ethz.smartenergy.R;
 
-public class BarChartFragment extends Fragment {
+public class TransportationModeStatsFragment extends Fragment {
 
     // newInstance constructor for creating fragment with arguments
-    public static BarChartFragment newInstance() {
-        BarChartFragment fragmentFirst = new BarChartFragment();
+    public static TransportationModeStatsFragment newInstance() {
+        TransportationModeStatsFragment fragmentFirst = new TransportationModeStatsFragment();
         return fragmentFirst;
     }
 
@@ -28,9 +28,9 @@ public class BarChartFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
+        View view = inflater.inflate(R.layout.fragment_transportation_modes_stats, container, false);
         TextView tvLabel = (TextView) view.findViewById(R.id.tvLabel);
-        tvLabel.setText("bar chart");
+        tvLabel.setText("Transportation modes");
         return view;
     }
 }

@@ -4,9 +4,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.github.mikephil.charting.charts.BarChart;
-
-import ch.ethz.smartenergy.ui.BarChartFragment;
+import ch.ethz.smartenergy.ui.CarbonConsumptionStatsFragment;
+import ch.ethz.smartenergy.ui.TransportationModeStatsFragment;
 
 public class PagerAdapter extends FragmentPagerAdapter {
     private static int NUM_ITEMS = 2;
@@ -26,9 +25,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0: // Fragment # 0 - This will show FirstFragment
-                return BarChartFragment.newInstance();
+                return TransportationModeStatsFragment.newInstance();
             case 1: // Fragment # 0 - This will show FirstFragment different title
-                return BarChartFragment.newInstance();
+                return CarbonConsumptionStatsFragment.newInstance();
             default:
                 return null;
         }
