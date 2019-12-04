@@ -3,7 +3,7 @@ package ch.ethz.smartenergy.footprint;
 public class Footprint {
 
     /**
-     * Returns the Emission Factor (EF) of the type of transport (in g CO2 / km)
+     * Returns the Emission Factor (EF) of the type of transport (in g CO2 / m)
      *
      * Data comes from:
      * Car: https://www.eea.europa.eu/highlights/average-co2-emissions-from-new
@@ -13,9 +13,13 @@ public class Footprint {
      * Everything else: https://jamesrivertrans.com/wp-content/uploads/2012/05/ComparativeEnergy.pdf
      *
      * @param tripType the type of transport
-     * @return the emission factor of the type of transport (in g CO2 / km)
+     * @return the emission factor of the type of transport (in g CO2 / m)
      */
     public static double getEFof(TripType tripType) {
+        return perKM(tripType) / 1000;
+    }
+
+    private static double perKM(TripType tripType) {
         switch (tripType) {
             case FOOT: return 0;
             case TRAIN: return 111.18;
