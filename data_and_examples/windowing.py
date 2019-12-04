@@ -74,7 +74,7 @@ def getWindow(df, start, end):
             ].copy()
 
 #TODO: used for DEBUG
-do_simplified = True
+do_simplified = False
 do_visualize = False
 do_tmode = 3
 
@@ -233,8 +233,26 @@ for user_id in user_ids:
             magn_window = getWindow(magn_df, boundary_left, boundary_right)
             features["mag_mean"] = magn_window["magnitude"].mean()
 
+            if not do_simplified:
+                N = magn_window.shape[0]
+                if N > 0:
+                    t_n = window_size / 1000 # in sec
+                    T = t_n / N
+                    f_s = 1.0 / T # sample frequency
+                    denominator = 10
+
+                    magn_data = [magn_window["x"], magn_window["y"], magn_window["z"]]
+                    magn_features = extract_features(magn_data, T, N, f_s, denominator, do_simplified)
+
+                    for i in range(0, fft_feature_len):
+                        features["magn_mixed_" + str(i)] = magn_features[i]
+                else:
+                    for i in range(0, fft_feature_len):
+                        features["magn_mixed_" + str(i)] = 0
+
             ## WiFi
             # TODO: reading times are scuffed as fuck here. if possible extract avg nearby access points..?
+            # or any distance calculations?
 
             ## TARGET
             features["legID"] = leg_id

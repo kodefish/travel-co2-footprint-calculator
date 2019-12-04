@@ -126,19 +126,6 @@ public class FeatureVector {
         double meanMagnitude = calculateMeanMagnitude(scanResult.getAccReadings());
         features.put(FEATURE_KEY_ACC_MEAN_MAGNITUDE, meanMagnitude);
 
-
-        // peaks of FFT (5x and 5y = 10 features)
-        ArrayList<ArrayList<Double>> sensorAxis = new ArrayList<>(Collections.nCopies(3, new ArrayList<>()));
-        extractXYZ(scanResult.getAccReadings(), sensorAxis);
-
-        int index = 0;
-        for (ArrayList<Double> axis : sensorAxis) {
-            ArrayList<Double> fft;
-            fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE);
-            for (int i = 0; i < fft.size(); i++)
-                features.put(FEATURE_PREFIX_ACC_MIXED + (index++), fft.get(i));
-        }
-
         // average connected bluetooth devices (for each scanID within this window, look at #devices and then take average over that)
         double avgConBT = calculateAvgConBT(scanResult.getBluetoothScans());
         features.put(FEATURE_KEY_AVG_CON_BT, avgConBT);
@@ -146,18 +133,6 @@ public class FeatureVector {
         // Gyro magnitude mean
         double gyroMeanMagnitude = calculateMeanMagnitude(scanResult.getGyroReadings());
         features.put(FEATURE_KEY_GYRO_MEAN_MAGNITUDE, gyroMeanMagnitude);
-
-        // peaks from gyro of FFT (5x and 5y = 10 features)
-        sensorAxis.clear();
-        extractXYZ(scanResult.getGyroReadings(), sensorAxis);
-
-        index = 0;
-        for (ArrayList<Double> axis : sensorAxis) {
-            ArrayList<Double> fft;
-            fft = FeatureExtractor.extract_features(axis, SensorScanPeriod.DATA_COLLECTION_WINDOW_SIZE);
-            for (int i = 0; i < fft.size(); i++)
-                features.put(FEATURE_PREFIX_GYRO_MIXED + (index++), fft.get(i));
-        }
 
         // max speed
         Pair<Double, Double> maxAndAvgSpeed = calculateMaxAndAvgSpeed(scanResult.getLocationScans());
