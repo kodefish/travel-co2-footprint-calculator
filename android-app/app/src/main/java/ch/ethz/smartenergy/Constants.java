@@ -11,4 +11,5 @@ public class Constants {
     public static final String AccReadingExtraName = "AccelerometerReading";
     public static final String GyroReadingExtraName = "GyroscopeReading";
     public static final String MagnReadingExtraName = "MagneticFieldReading";
+
 }
