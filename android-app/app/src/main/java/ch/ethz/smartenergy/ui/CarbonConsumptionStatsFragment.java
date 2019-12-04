@@ -96,7 +96,4 @@ public class CarbonConsumptionStatsFragment extends Fragment {
 
         return view;
     }
-
-
-
 }
