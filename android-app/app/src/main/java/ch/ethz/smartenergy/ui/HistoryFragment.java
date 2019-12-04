@@ -1,5 +1,7 @@
 package ch.ethz.smartenergy.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,13 +41,26 @@ public class HistoryFragment extends Fragment {
         final TripAdapter adapter = new TripAdapter(getContext(),-1);
         adapter.setTrips(pastTrips);
         adapter.setOnDeleteClickListener(position -> {
-            try {
-                pastTrips = storage.deleteTrip(pastTrips.size() - 1 - position);
-                adapter.setTrips(pastTrips);
-                adapter.notifyDataSetChanged();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            AlertDialog deleteConfirmDialog = new AlertDialog.Builder(getContext())
+                    // set message, title, and icon
+                    .setTitle("Delete")
+                    .setMessage("Do you want to Delete")
+                    .setIcon(R.drawable.icon_trash)
+
+                    .setPositiveButton("Delete", (dialog, whichButton) -> {
+                        try {
+                            pastTrips = storage.deleteTrip(pastTrips.size() - 1 - position);
+                            adapter.setTrips(pastTrips);
+                            adapter.notifyDataSetChanged();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .create();
+
+            deleteConfirmDialog.show();
         });
 
         ListView listView = root.findViewById(R.id.history_list_view);
