@@ -21,7 +21,7 @@ public class StatisticsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_statistics, container, false);
 
         ViewPager viewPager = root.findViewById(R.id.statistics_viewpager);
-        FragmentPagerAdapter pagerAdapter = new PagerAdapter(getFragmentManager());
+        FragmentPagerAdapter pagerAdapter = new PagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(pagerAdapter);
 
         return root;

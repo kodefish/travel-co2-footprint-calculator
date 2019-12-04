@@ -1,5 +1,6 @@
 package ch.ethz.smartenergy.ui;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,10 +11,13 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,8 +74,19 @@ public class TransportationModeStatsFragment extends Fragment {
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Transportation Modes");
+        dataSet.setColors(ColorTemplate.PASTEL_COLORS);
+        dataSet.setValueTextColor(Color.WHITE);
+        dataSet.setValueTextSize(13f);
 
         PieData pieData = new PieData(dataSet);
+        pieData.setValueFormatter(new PercentFormatter());
+
+        Description d = new Description();
+        d.setText("");
+        pieChart.setDescription(d);
+        pieChart.setUsePercentValues(true);
+        pieChart.setRotationEnabled(false);
+        pieChart.animateXY(1000, 1000);
         pieChart.setData(pieData);
         pieChart.invalidate();
 

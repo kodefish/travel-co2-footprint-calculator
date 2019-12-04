@@ -21,11 +21,13 @@ import ch.ethz.smartenergy.R;
 import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.footprint.TripType;
 import ch.ethz.smartenergy.ui.util.OnDeleteListener;
+import ch.ethz.smartenergy.ui.util.OnItemClickListener;
 
 public class TripAdapter extends ArraySwipeAdapter<Trip> {
 
     private List<Trip> trips;
     private OnDeleteListener onDeleteClickListener;
+    private OnItemClickListener onItemClickListener;
 
     public TripAdapter(@NonNull Context context, int resource) {
         super(context, resource);
@@ -37,6 +39,10 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
 
     public void setOnDeleteClickListener(OnDeleteListener onDeleteClickListener) {
         this.onDeleteClickListener = onDeleteClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
@@ -71,6 +77,9 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
         SwipeLayout swipeLayout = v.findViewById(R.id.item_trip_swipe_layout);
         swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
         swipeLayout.addDrag(SwipeLayout.DragEdge.Right, v.findViewById(R.id.bottom_wrapper));
+
+        // Set on click listener on trip (swipe layout blocks the event for some reason)
+        v.findViewById(R.id.top_wrapper).setOnClickListener(view -> onItemClickListener.onItemClickListener(position));
 
         // Add delete functionality
         ImageButton deleteButton = v.findViewById(R.id.item_trip_delete);
