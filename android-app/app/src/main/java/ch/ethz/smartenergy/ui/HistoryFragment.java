@@ -22,6 +22,7 @@ import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.persistence.TripStorage;
 
 import ch.ethz.smartenergy.ui.adapters.TripAdapter;
+import ch.ethz.smartenergy.ui.util.OnItemClickListener;
 
 
 public class HistoryFragment extends Fragment {
@@ -62,15 +63,15 @@ public class HistoryFragment extends Fragment {
 
             deleteConfirmDialog.show();
         });
-
-        ListView listView = root.findViewById(R.id.history_list_view);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener((parent, view, position, id) -> {
+        adapter.setOnItemClickListener(position -> {
             Intent tripSummaryIntent = new Intent(HistoryFragment.this.getContext(), TripSummaryActivity.class);
             tripSummaryIntent.putExtra(TripSummaryActivity.EXTRA_TRIP_ID, pastTrips.size() - 1 - position);
             startActivity(tripSummaryIntent);
         });
+
+        ListView listView = root.findViewById(R.id.history_list_view);
+        listView.setAdapter(adapter);
+
         return root;
     }
 }

@@ -16,6 +16,7 @@
         android:weightSum="1">
 
         <ImageButton
+            android:focusable="false"
             android:id="@+id/item_trip_delete"
             android:layout_width="40dp"
             android:layout_height="40dp"
