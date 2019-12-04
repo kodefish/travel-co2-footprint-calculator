@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -248,7 +249,7 @@ public class Trip {
      */
     public String getDateAsString() {
         if (this.getDate() == null) return "";
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
         return df.format(this.getDate());
     }
 

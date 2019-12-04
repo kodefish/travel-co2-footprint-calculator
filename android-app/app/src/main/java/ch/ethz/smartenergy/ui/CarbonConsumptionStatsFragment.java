@@ -10,10 +10,14 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.text.SimpleDateFormat;
@@ -62,9 +66,8 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         for (Trip t : allTrips) {
             totalDistance += t.getTotalDistance();
             totalFootprint += t.getTotalFootprint();
-            BarEntry entry = new BarEntry(t.getDate().getTime(), (float) (t.getTotalFootprint() + Math.random()));
+            BarEntry entry = new BarEntry(entries.size(), (float) t.getTotalFootprint());
             entries.add(entry) ;
-            Log.i("CarbonConumption", entry.toString());
         }
 
         // Set total sums
@@ -79,9 +82,7 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         IndexAxisValueFormatter xAxisValueFormatter = new IndexAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                Date date = new Date((long) value);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy", Locale.ENGLISH);
-                return sdf.format(date);
+                return allTrips.get((int) value).getDateAsString();
             }
         };
         XAxis xAxis = barChart.getXAxis();
@@ -91,7 +92,7 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         BarData barData = new BarData(dataSet);
         barChart.setData(barData);
         barChart.setPinchZoom(true);
-        barChart.notifyDataSetChanged();
+        barChart.invalidate();
 
         return view;
     }
