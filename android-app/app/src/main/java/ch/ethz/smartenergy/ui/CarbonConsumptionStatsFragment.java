@@ -19,6 +19,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,6 +78,7 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         // Create data set
         BarDataSet dataSet = new BarDataSet(entries, "C02 Consumption");
         dataSet.setColor(getContext().getColor(R.color.primaryColor));
+        dataSet.setColors(ColorTemplate.PASTEL_COLORS);
 
         // Format x-axis data as string date
         IndexAxisValueFormatter xAxisValueFormatter = new IndexAxisValueFormatter() {
