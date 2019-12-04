@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.ethz.smartenergy.features.FeatureExtractor;
+import ch.ethz.smartenergy.features.InplaceFFT;
 import ch.ethz.smartenergy.footprint.Footprint;
 import ch.ethz.smartenergy.footprint.TripType;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
@@ -172,6 +173,51 @@ public class FeatureVector {
         // distance covered (this is not implemented in the ML model [yet])
         totalDistanceCovered = calculateDistanceCovered(scanResult.getLocationScans());
         features.put(FEATURE_KEY_DISTANCE_COVERED, totalDistanceCovered);
+
+        // acc_mixed
+        ArrayList<SensorReading> acc = scanResult.getAccReadings();
+        ArrayList<Double> accx = new ArrayList<Double>();
+        ArrayList<Double> accy = new ArrayList<Double>();
+        ArrayList<Double> accz = new ArrayList<Double>();
+        for (SensorReading reading : acc) {
+            accx.add(reading.getValueOnXAxis());
+            accy.add(reading.getValueOnYAxis());
+            accz.add(reading.getValueOnZAxis());
+        }
+
+        ArrayList<Double> acc_mixed = new ArrayList<Double>();
+        // TODO: Is the factor correct ?
+        acc_mixed.addAll(InplaceFFT.fft_pos_abs(accx, 1));
+        acc_mixed.addAll(InplaceFFT.fft_pos_abs(accz, 1));
+        acc_mixed.addAll(InplaceFFT.fft_pos_abs(accy, 1));
+
+
+        int cur = 7; // Start at 7 (index of acc_mixed_0), work our way up to 37
+        for (Double val : acc_mixed) {
+            features.put(FeatureLabels[cur++], val);
+        }
+
+        // gyro_mixed
+        ArrayList<SensorReading> gyro = scanResult.getGyroReadings();
+        ArrayList<Double> gyrox = new ArrayList<Double>();
+        ArrayList<Double> gyroy = new ArrayList<Double>();
+        ArrayList<Double> gyroz = new ArrayList<Double>();
+        for (SensorReading reading : acc) {
+            accx.add(reading.getValueOnXAxis());
+            accy.add(reading.getValueOnYAxis());
+            accz.add(reading.getValueOnZAxis());
+        }
+
+        ArrayList<Double> gyro_mixed = new ArrayList<Double>();
+        // TODO: Is the factor correct ?
+        acc_mixed.addAll(InplaceFFT.fft_pos_abs(gyrox, 1));
+        acc_mixed.addAll(InplaceFFT.fft_pos_abs(gyroz, 1));
+        acc_mixed.addAll(InplaceFFT.fft_pos_abs(gyroy, 1));
+
+        // cur is still valid
+        for (Double val : gyro_mixed) {
+            features.put(FeatureLabels[cur++], val);
+        }
     }
 
 
