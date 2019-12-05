@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/default_padding"
+    android:paddingTop="?attr/actionBarSize"
     android:orientation="vertical">
 
     <ListView
         android:id="@+id/history_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="@dimen/default_padding"
         android:focusable="true" />
 
 </LinearLayout>

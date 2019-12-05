@@ -13,7 +13,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.DayNight.ActionBar">
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorPrimary">@android:color/transparent</item>
         <item name="android:elevation">0dp</item>
     </style>
@@ -41,4 +41,29 @@
         <item name="android:textColor">@color/primaryTextColorInverted</item>
     </style>
 
+    <style name="home_text_view_big">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="home_text_view_value" parent="home_text_view_big">
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">40sp</item>
+    </style>
+
+    <style name="home_text_view_label" parent="home_text_view_big">
+        <item name="android:textColor">@color/primaryDarkColor</item>
+        <item name="android:textSize">30sp</item>
+    </style>
+
+    <style name="EqualSpacingCenterVerticalLL">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
 </resources>

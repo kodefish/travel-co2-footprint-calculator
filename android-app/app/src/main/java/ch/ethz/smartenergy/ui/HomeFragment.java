@@ -67,6 +67,7 @@ public class HomeFragment extends Fragment {
     private List<FeatureVector> tripReadings;
 
     // UI
+    private TextView tripCurrentMode;
     private TextView tripEmissions;
     private double tripEmissionsCounter = 0;
     private TextView tripDistanceTravelled;
@@ -83,13 +84,16 @@ public class HomeFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Setup display
+        tripCurrentMode = root.findViewById(R.id.home_current_mode);
         tripEmissions = root.findViewById(R.id.home_emissions);
         tripDistanceTravelled = root.findViewById(R.id.home_distance_travelled);
         tripTimeChronometer = root.findViewById(R.id.home_chronometer);
 
+        /*
         GridView predictionGridView = root.findViewById(R.id.home_predictions);
         predictionAdapter = new PredictionAdapter(getContext(), -1);
         predictionGridView.setAdapter(predictionAdapter);
+         */
 
         // Register button clicks to start scanning
         ((ToggleButton)root.findViewById(R.id.button_start)).setOnCheckedChangeListener(
@@ -171,16 +175,19 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateUI(FeatureVector featureVector) {
+        // Update mode
+        tripCurrentMode.setText(featureVector.mostProbableTripType().toString());
+
         // Update emissions
         tripEmissionsCounter += featureVector.getFootprint();
-        tripEmissions.setText(Trip.getFootprintAsString(tripEmissionsCounter));
+        tripEmissions.setText(Integer.toString((int)Math.round(tripEmissionsCounter)));
 
         // Update distance
         tripDistanceCounter += featureVector.getDistanceCovered();
-        tripDistanceTravelled.setText(Trip.getDistanceAsString(tripDistanceCounter));
+        tripDistanceTravelled.setText(Integer.toString((int)Math.round(tripDistanceCounter)));
 
         // Update predictions
-        predictionAdapter.setPredictions(featureVector.getPredictions());
+        // predictionAdapter.setPredictions(featureVector.getPredictions());
     }
 
     /**
