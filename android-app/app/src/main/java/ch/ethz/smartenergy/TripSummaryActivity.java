@@ -100,7 +100,6 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.i("Trip", "map ready");
         GoogleMap mMap = googleMap;
 
         // Draw Polyline for the trip
