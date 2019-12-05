@@ -78,20 +78,7 @@ public class Trip {
     }
 
     public static String getFootprintAsString(double footprint) {
-        String value;
-        String unit;
-
-        String format = "%.0f";
-
-        if (footprint > 1_000) {
-            // In kilograms
-            value = String.format(format, footprint); // Diplay 2 decimals
-            unit = "kg";
-        } else {
-            value = String.format(format, Math.floor(footprint));
-            unit = "g";
-        }
-        return value + " " + unit;
+        return Integer.toString((int)Math.round(footprint));
     }
 
     /**
@@ -116,20 +103,7 @@ public class Trip {
     }
 
     public static String getDistanceAsString(double distance) {
-        String value;
-        String unit;
-
-        String format = "%.2f";
-
-        if (distance > 1_000) {
-            // In kilometers
-            value = String.format(format, distance); // Diplay 2 decimals
-            unit = "km";
-        } else {
-            value = String.format(format, Math.floor(distance));
-            unit = "m";
-        }
-        return value + " " + unit;
+        return Integer.toString((int)Math.round(distance));
     }
 
     /**
@@ -152,8 +126,7 @@ public class Trip {
     public String getTotalTimeAsString() {
         long millis = this.getTotalTime();
 
-        return String.format("%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(millis),
+        return String.format("%02d:%02d",
                 TimeUnit.MILLISECONDS.toMinutes(millis) -
                         TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), // The change is in this line
                 TimeUnit.MILLISECONDS.toSeconds(millis) -

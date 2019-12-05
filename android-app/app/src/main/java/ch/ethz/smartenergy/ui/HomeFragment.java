@@ -221,11 +221,11 @@ public class HomeFragment extends Fragment {
 
         // Update emissions
         tripEmissionsCounter += featureVector.getFootprint();
-        tripEmissions.setText(Integer.toString((int)Math.round(tripEmissionsCounter)));
+        tripEmissions.setText(Trip.getFootprintAsString(tripEmissionsCounter));
 
         // Update distance
         tripDistanceCounter += featureVector.getDistanceCovered();
-        tripDistanceTravelled.setText(Integer.toString((int)Math.round(tripDistanceCounter)));
+        tripDistanceTravelled.setText(Trip.getFootprintAsString(tripDistanceCounter));
 
         // Update predictions
         // predictionAdapter.setPredictions(featureVector.getPredictions());

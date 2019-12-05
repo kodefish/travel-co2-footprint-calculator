@@ -76,8 +76,8 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
         TextView textViewFootprint = findViewById(R.id.trip_completed_emissions);
         TextView textViewDuration = findViewById(R.id.trip_completed_duration);
 
-        textViewLength.setText(completedTrip.getTotalDistanceAsString());
         textViewFootprint.setText(completedTrip.getTotalFootprintAsString());
+        textViewLength.setText(completedTrip.getTotalDistanceAsString());
         textViewDuration.setText(completedTrip.getTotalTimeAsString());
 
         // Set peak height of bottom sheet to only reveal trip summary info
