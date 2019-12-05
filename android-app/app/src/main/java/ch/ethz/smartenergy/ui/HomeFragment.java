@@ -167,7 +167,6 @@ public class HomeFragment extends Fragment {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
                     if (featureVec.isMoving()) {
-                    //if (true) {
                         // Reset the counter
                         immobileFeatureVecCounter = 0;
 

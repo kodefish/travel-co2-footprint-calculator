@@ -1,9 +1,11 @@
 package ch.ethz.smartenergy;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -80,19 +82,9 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
         textViewLength.setText(completedTrip.getTotalDistanceAsString());
         textViewDuration.setText(completedTrip.getTotalTimeAsString());
 
-        // Set peak height of bottom sheet to only reveal trip summary info
-        final LinearLayout quickInfoContainer = findViewById(R.id.trip_quick_info_container);
+        // Get bottom sheet to toggle state
         final LinearLayout bottomSheet = findViewById(R.id.trip_summary_bottom_sheet);
         final BottomSheetBehavior<LinearLayout> behavior = BottomSheetBehavior.from(bottomSheet);
-        quickInfoContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                behavior.setPeekHeight(quickInfoContainer.getHeight());
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                // Only need to set the height once -> remove observer when done
-                quickInfoContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
 
         OnItemClickListener onItemClickListener = position -> {
             if (mMap != null) {
