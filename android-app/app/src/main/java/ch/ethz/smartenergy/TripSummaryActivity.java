@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -149,17 +150,14 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
         for (Leg l : completedTrip.getLegs()) {
             PolylineOptions polylineOptions = new PolylineOptions();
             polylineOptions.color(ResourcesCompat.getColor(getResources(), R.color.primaryColor, null));
-            // Only add start, since end is the start of the next
-            for (FeatureVector p : l.getFeatureVectorList()) {
-                LatLng start = new LatLng(p.getStartLat(), p.getStartLon());
-                polylineOptions.add(start);
-                latLngBounds.include(start);
+            // Only all location scan points for higher precision tracing
+            for (FeatureVector fv : l.getFeatureVectorList()) {
+                for (Pair<Double, Double> latlng : fv.getLocations()) {
+                    LatLng start = new LatLng(latlng.first, latlng.second);
+                    polylineOptions.add(start);
+                    latLngBounds.include(start);
+                }
             }
-            // Add just the last end
-            FeatureVector lastFeatureVec = l.getFeatureVectorList().get(l.getFeatureVectorList().size()-1);
-            LatLng end = new LatLng(lastFeatureVec.getEndLat(), lastFeatureVec.getEndLon());
-            polylineOptions.add(end);
-            latLngBounds.include(end);
 
             // Draw the leg
             Polyline polyline = mMap.addPolyline(polylineOptions);

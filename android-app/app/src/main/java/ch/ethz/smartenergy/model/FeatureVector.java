@@ -4,13 +4,11 @@ import android.location.Location;
 import android.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ch.ethz.smartenergy.features.FeatureExtractor;
-import ch.ethz.smartenergy.features.InplaceFFT;
 import ch.ethz.smartenergy.footprint.Footprint;
 import ch.ethz.smartenergy.footprint.TripType;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
@@ -112,8 +110,8 @@ public class FeatureVector {
     private final long startTime;
     private final long endTime;
 
-    // Start and stop location of feature vec
-    private double startLat, startLon, endLat, endLon;
+    // Save all locations of feature vec
+    List<Pair<Double, Double>> locations;
 
     /**
      * Construct a feature vector based on raw sensor values
@@ -125,10 +123,7 @@ public class FeatureVector {
         this.endTime = scanResult.getEndTime();
 
         // Save start and end locations
-        this.startLat = scanResult.getLocationScans().get(0).getLatitude();
-        this.startLon = scanResult.getLocationScans().get(0).getLongitude();
-        this.endLat = scanResult.getLocationScans().get(scanResult.getLocationScans().size()-1).getLatitude();
-        this.endLon = scanResult.getLocationScans().get(scanResult.getLocationScans().size()-1).getLongitude();
+        locations = getLocationsFromLocationScan(scanResult);
 
         features = new HashMap<>();
 
@@ -201,6 +196,14 @@ public class FeatureVector {
         for (Double val : gyro_mixed) {
             features.put(FeatureLabels[cur++], val);
         }
+    }
+
+    private List<Pair<Double, Double>> getLocationsFromLocationScan(ScanResult scanResult) {
+        List<Pair<Double, Double>> locations = new ArrayList<>();
+        for (LocationScan l : scanResult.getLocationScans()) {
+            locations.add(new Pair<>(l.getLatitude(), l.getLongitude()));
+        }
+        return locations;
     }
 
 
@@ -341,22 +344,6 @@ public class FeatureVector {
         return endTime;
     }
 
-    public double getStartLat() {
-        return startLat;
-    }
-
-    public double getStartLon() {
-        return startLon;
-    }
-
-    public double getEndLat() {
-        return endLat;
-    }
-
-    public double getEndLon() {
-        return endLon;
-    }
-
     public float[] getPredictions() {
         return predictions;
     }
@@ -367,5 +354,9 @@ public class FeatureVector {
      */
     public boolean isMoving() {
         return features.getOrDefault(FEATURE_KEY_AVG_SPEED, 0.) > 0.5;
+    }
+
+    public List<Pair<Double, Double>> getLocations() {
+        return this.locations;
     }
 }
