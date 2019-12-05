@@ -18,14 +18,17 @@ import java.util.List;
 import ch.ethz.smartenergy.R;
 import ch.ethz.smartenergy.footprint.Leg;
 import ch.ethz.smartenergy.footprint.TripType;
+import ch.ethz.smartenergy.ui.util.OnItemClickListener;
 
 public class LegAdapter extends ArrayAdapter {
 
     private final List<Leg> legs;
+    private final OnItemClickListener onItemClickListener;
 
-    public LegAdapter(@NonNull Context context, int resource, List<Leg> legs) {
+    public LegAdapter(@NonNull Context context, int resource, List<Leg> legs, OnItemClickListener onItemClickListener) {
         super(context, resource);
         this.legs = legs;
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -47,6 +50,8 @@ public class LegAdapter extends ArrayAdapter {
         legDistance.setText(leg.getLegDistanceAsString());
         legEmissions.setText(leg.getLegFootprintAsString());
 
+        // React to click since bottom sheet does something funky
+        v.setOnClickListener(v1 -> onItemClickListener.onItemClickListener(position));
         return v;
     }
 

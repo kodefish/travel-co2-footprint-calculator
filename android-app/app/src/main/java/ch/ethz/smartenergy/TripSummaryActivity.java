@@ -1,14 +1,10 @@
 package ch.ethz.smartenergy;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,24 +15,28 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.ethz.smartenergy.footprint.Leg;
 import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.model.FeatureVector;
 import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.ui.adapters.LegAdapter;
+import ch.ethz.smartenergy.ui.util.OnItemClickListener;
 
 public class TripSummaryActivity extends FragmentActivity implements OnMapReadyCallback {
 
     public static final String EXTRA_TRIP_ID = "extra_trip_id";
+    private static final int MAP_BOUNDS_PADDING_AMOUNT = 375;
     private Trip completedTrip;
+
+    private GoogleMap mMap;
+    private List<Polyline> legPolylines = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +80,23 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
             }
         });
 
-        LegAdapter legAdapter = new LegAdapter(this, -1, completedTrip.getLegs());
+        OnItemClickListener onItemClickListener = position -> {
+            if (mMap != null) {
+                Polyline polyline = legPolylines.get(position);
+
+                // Focus on selected leg
+                LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+                for (LatLng pt : polyline.getPoints())
+                    bounds.include(pt);
+
+                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), MAP_BOUNDS_PADDING_AMOUNT));
+
+                // Close bottom sheet
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        };
+
+        LegAdapter legAdapter = new LegAdapter(this, -1, completedTrip.getLegs(), onItemClickListener);
         ListView legsListView = findViewById(R.id.trip_completed_legs_list);
         legsListView.setAdapter(legAdapter);
 
@@ -101,7 +117,7 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        GoogleMap mMap = googleMap;
+        mMap = googleMap;
 
         // Draw trip
         // Compute bounds (to display the entire trip)
@@ -122,11 +138,12 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
             latLngBounds.include(end);
 
             // Draw the leg
-            mMap.addPolyline(polylineOptions);
+            Polyline polyline = mMap.addPolyline(polylineOptions);
+            legPolylines.add(polyline);
         }
 
         // Set the camera to the greatest possible zoom level that includes the bounds
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 0));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), MAP_BOUNDS_PADDING_AMOUNT));
     }
 }
 
