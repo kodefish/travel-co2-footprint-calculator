@@ -89,15 +89,18 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
         OnItemClickListener onItemClickListener = position -> {
             if (mMap != null) {
 
-                // Flip previously selected selectedPolyline from previous solid stroke to dotted stroke pattern.
-                toggleDottedPattern(selectedPolyline);
+                // Flip previously selected selectedPolyline from previous dotted stroke to solid stroke pattern.
+                if (selectedPolyline != null) {
+                    selectedPolyline.setPattern(null);
+                }
 
                 // Flip from solid stroke to dotted stroke pattern (only if different polyline was selected)
                 if (selectedPolyline != legPolylines.get(position)) {
-                    toggleDottedPattern(selectedPolyline);
-
                     // Update selected polyline
                     selectedPolyline = legPolylines.get(position);
+
+                    selectedPolyline.setPattern(PATTERN_POLYLINE_DOTTED);
+                    toggleDottedPattern(selectedPolyline);
 
                     // Focus on selected leg
                     LatLngBounds.Builder bounds = new LatLngBounds.Builder();
@@ -124,15 +127,7 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
     }
 
     private void toggleDottedPattern(Polyline polyline) {
-        if (polyline != null) {
-            if ((polyline.getPattern() == null)
-                    || (!polyline.getPattern().contains(DOT))) {
-                polyline.setPattern(PATTERN_POLYLINE_DOTTED);
-            } else {
-                // The default pattern is a solid stroke.
-                polyline.setPattern(null);
-            }
-        }
+
     }
 
     /**
