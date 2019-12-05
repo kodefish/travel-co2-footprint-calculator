@@ -13,13 +13,17 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Dot;
+import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ch.ethz.smartenergy.footprint.Leg;
@@ -33,10 +37,20 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
 
     public static final String EXTRA_TRIP_ID = "extra_trip_id";
     private static final int MAP_BOUNDS_PADDING_AMOUNT = 375;
+    private static final float PATTERN_GAP_LENGTH_PX = 20;
+
     private Trip completedTrip;
 
     private GoogleMap mMap;
     private List<Polyline> legPolylines = new ArrayList<>();
+    private Polyline selectedPolyline;
+
+    private static final PatternItem DOT = new Dot();
+    private static final PatternItem GAP = new Gap(PATTERN_GAP_LENGTH_PX);
+    //
+    // Create a stroke pattern of a gap followed by a dot.
+    private static final List<PatternItem> PATTERN_POLYLINE_DOTTED = Arrays.asList(GAP, DOT);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,17 +96,28 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
 
         OnItemClickListener onItemClickListener = position -> {
             if (mMap != null) {
-                Polyline polyline = legPolylines.get(position);
 
-                // Focus on selected leg
-                LatLngBounds.Builder bounds = new LatLngBounds.Builder();
-                for (LatLng pt : polyline.getPoints())
-                    bounds.include(pt);
+                // Flip previously selected selectedPolyline from previous solid stroke to dotted stroke pattern.
+                toggleDottedPattern(selectedPolyline);
 
-                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), MAP_BOUNDS_PADDING_AMOUNT));
+                // Flip from solid stroke to dotted stroke pattern (only if different polyline was selected)
+                if (selectedPolyline != legPolylines.get(position)) {
+                    toggleDottedPattern(selectedPolyline);
 
-                // Close bottom sheet
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    // Update selected polyline
+                    selectedPolyline = legPolylines.get(position);
+
+                    // Focus on selected leg
+                    LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+                    for (LatLng pt : selectedPolyline.getPoints())
+                        bounds.include(pt);
+
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), MAP_BOUNDS_PADDING_AMOUNT));
+
+                    // Close bottom sheet
+                    behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+
             }
         };
 
@@ -104,6 +129,18 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void toggleDottedPattern(Polyline polyline) {
+        if (polyline != null) {
+            if ((polyline.getPattern() == null)
+                    || (!polyline.getPattern().contains(DOT))) {
+                polyline.setPattern(PATTERN_POLYLINE_DOTTED);
+            } else {
+                // The default pattern is a solid stroke.
+                polyline.setPattern(null);
+            }
+        }
     }
 
     /**
