@@ -16,7 +16,8 @@
     <string name="locations_required_goodbye">You didn\'t accept the location request. Without locations, the application cannot work as intended. Goodbye!</string>
     <string name="locations_required_text">Without location, the app cannot work as intended. Please accept the location request.</string>
     <string name="okay">Okay</string>
-    <string name="start_scanning">Start scanning</string>
+    <string name="start_scanning">Start Trip</string>
+    <string name="stop_scanning">Stop Trip</string>
     <string name="stop">Stop</string>
     <string name="text_title">Probabilities: XGBoost vs NN</string>
     <string name="on_foot">On foot: %1$.2f \%%</string>
@@ -32,7 +33,7 @@
     <string name="empty_trip">Trip was empty!</string>
     <string name="home_distance_travelled">0</string>
     <string name="home_emissions">0</string>
-    <string name="completed_journey">Completed Journey</string>
+    <string name="completed_journey">Completed Trip</string>
     <string name="title_activity_maps">Map</string>
     <string name="transition_trip_info">transition_trip_info</string>
     <string name="transition_trip_info_emissions_value">transition_trip_info_emissions_value</string>
@@ -41,4 +42,5 @@
     <string name="transition_trip_info_distance_label">transition_trip_info_distance_label</string>
     <string name="transition_trip_info_duration_value">transition_trip_info_duration_value</string>
     <string name="transition_trip_info_duration_label">transition_trip_info_duration_label</string>
+    <string name="ongoing_trip">Ongoing Trip</string>
 </resources>

@@ -28,7 +28,8 @@
 
                 <TextView
                     style="@style/home_text_view_label"
-                    android:text="ongoing journey"
+                    android:text="@string/ongoing_trip"
+                    android:singleLine="true"
                     android:textColor="@android:color/white"
                     android:textStyle="" />
 
@@ -123,6 +124,7 @@
         android:background="@color/primaryColor"
         android:textColor="@color/primaryTextColor"
         android:textOff="@string/start_scanning"
+        android:textOn="@string/stop_scanning"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
