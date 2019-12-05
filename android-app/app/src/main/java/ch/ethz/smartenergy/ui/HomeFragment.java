@@ -37,7 +37,10 @@ import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import biz.k11i.xgboost.Predictor;
@@ -88,6 +91,11 @@ public class HomeFragment extends Fragment {
         tripEmissions = root.findViewById(R.id.home_emissions);
         tripDistanceTravelled = root.findViewById(R.id.home_distance_travelled);
         tripTimeChronometer = root.findViewById(R.id.home_chronometer);
+        TextView currentDateTv = root.findViewById(R.id.home_text_view_date);
+        Date date = new Date();
+        date.setTime(Calendar.getInstance().getTimeInMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM");
+        currentDateTv.setText(sdf.format(date));
 
         /*
         GridView predictionGridView = root.findViewById(R.id.home_predictions);
