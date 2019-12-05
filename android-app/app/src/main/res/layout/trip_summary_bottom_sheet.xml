@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trip_summary_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_top_corners"
+    android:orientation="vertical"
+    app:behavior_hideable="false"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    tools:showIn="@layout/activity_trip_completed">
+
+    <LinearLayout
+        android:id="@+id/trip_quick_info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/default_padding"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0">
+
+            <TextView
+                android:id="@+id/trip_completed_emissions"
+                style="@style/summary_text_view_value"
+                android:text="@string/home_emissions" />
+
+            <TextView
+                style="@style/summary_text_view_label"
+                android:text="grams" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0">
+
+            <TextView
+                android:id="@+id/trip_completed_distance_travelled"
+                style="@style/summary_text_view_value"
+                android:text="@string/home_distance_travelled" />
+
+            <TextView
+                style="@style/summary_text_view_label"
+                android:text="meters" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0">
+
+            <TextView
+                android:id="@+id/trip_completed_duration"
+                style="@style/summary_text_view_value"
+                android:text="@string/home_distance_travelled" />
+
+            <TextView
+                style="@style/summary_text_view_label"
+                android:text="minutes" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/trip_completed_legs_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/default_padding"/>
+</LinearLayout>
+

@@ -3,11 +3,15 @@ package ch.ethz.smartenergy;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -49,6 +53,20 @@ public class TripSummaryActivity extends AppCompatActivity {
         textViewLength.setText(completedTrip.getTotalDistanceAsString());
         textViewFootprint.setText(completedTrip.getTotalFootprintAsString());
         textViewDuration.setText(completedTrip.getTotalTimeAsString());
+
+        // Set peak height of bottom sheet to only reveal trip summary info
+        final LinearLayout quickInfoContainer = findViewById(R.id.trip_quick_info_container);
+        final LinearLayout bottomSheet = findViewById(R.id.trip_summary_bottom_sheet);
+        final BottomSheetBehavior<LinearLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+        quickInfoContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                behavior.setPeekHeight(quickInfoContainer.getHeight());
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                // Only need to set the height once -> remove observer when done
+                quickInfoContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
 
         LegAdapter legAdapter = new LegAdapter(this, -1, completedTrip.getLegs());
         ListView legsListView = findViewById(R.id.trip_completed_legs_list);

@@ -37,13 +37,14 @@
                     style="@style/home_text_view_big"
                     android:text="mode"
                     android:textColor="@android:color/white"
-                    android:textSize="50sp" />
+                    android:textSize="@dimen/material_text_display3" />
 
                 <TextView
                     android:id="@+id/home_text_view_date"
                     style="@style/home_text_view_big"
                     android:textColor="@android:color/white"
-                    android:textSize="30sp"
+                    android:text="05 December"
+                    android:textSize="@dimen/material_text_display1"
                     android:textStyle="" />
 
 
