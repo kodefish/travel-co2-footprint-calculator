@@ -2,6 +2,7 @@ package ch.ethz.smartenergy.ui;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,12 +13,11 @@ import android.content.IntentSender;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Chronometer;
-import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -84,6 +84,7 @@ public class HomeFragment extends Fragment {
 
     // Counts how many feature vectors in a row the user hasn't moved
     private int immobileFeatureVecCounter = 0;
+    private View tripInfoWrapper, tripEmissionsLabel, tripDistanceTravelledLabel, tripTimeChronometerLabel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -100,6 +101,12 @@ public class HomeFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM");
         currentDateTv.setText(sdf.format(date));
 
+        // Load shared elems
+        tripInfoWrapper = root.findViewById(R.id.home_trip_info);
+        tripEmissionsLabel = root.findViewById(R.id.home_emissions_label);
+        tripDistanceTravelledLabel = root.findViewById(R.id.home_distance_travelled_label);
+        tripTimeChronometerLabel = root.findViewById(R.id.home_chronometer_label);
+
         /*
         GridView predictionGridView = root.findViewById(R.id.home_predictions);
         predictionAdapter = new PredictionAdapter(getContext(), -1);
@@ -113,8 +120,7 @@ public class HomeFragment extends Fragment {
                         startScanning();
                     } else {
                         // If trip isn't empty, show summary
-                        if (stopScanning())
-                            startActivity(new Intent(getActivity(), TripSummaryActivity.class));
+                        stopScanning();
                     }});
 
         // Load ML stuff
@@ -160,7 +166,8 @@ public class HomeFragment extends Fragment {
                 if (scan != null) {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
-                    if (featureVec.isMoving()) {
+                    //if (featureVec.isMoving()) {
+                    if (true) {
                         // Reset the counter
                         immobileFeatureVecCounter = 0;
 
@@ -176,6 +183,7 @@ public class HomeFragment extends Fragment {
                         immobileFeatureVecCounter++;
 
                         if (immobileFeatureVecCounter > 3) {
+                            immobileFeatureVecCounter = 0;
                             askStopScanning();
                         }
                     }
@@ -364,7 +372,7 @@ public class HomeFragment extends Fragment {
      * Stops the scanning service, computes the trip from feature vectors, persists the trip
      * @return true if trip not empty
      */
-    public boolean stopScanning() {
+    public void stopScanning() {
         // Stop timer
         tripTimeChronometer.stop();
 
@@ -385,8 +393,21 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getContext(), getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
         }
 
-        return !trip.getLegs().isEmpty();
+        
+        if (!trip.getLegs().isEmpty()) {
+            Intent startSummary = new Intent(getActivity(), TripSummaryActivity.class);
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                    new Pair<>(tripInfoWrapper, getString(R.string.transition_trip_info)),
+                    new Pair<>(tripEmissions, getString(R.string.transition_trip_info_emissions_value)),
+                    new Pair<>(tripEmissionsLabel, getString(R.string.transition_trip_info_emissions_label)),
+                    new Pair<>(tripDistanceTravelled, getString(R.string.transition_trip_info_distance_value)),
+                    new Pair<>(tripDistanceTravelledLabel, getString(R.string.transition_trip_info_distance_label)),
+                    new Pair<>(tripTimeChronometer, getString(R.string.transition_trip_info_duration_value)),
+                    new Pair<>(tripTimeChronometerLabel, getString(R.string.transition_trip_info_duration_label))
 
+            );
+            startActivity(startSummary, options.toBundle());
+        }
     }
 
     private Trip computeTripFromReadings() {

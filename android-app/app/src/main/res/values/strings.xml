@@ -34,4 +34,11 @@
     <string name="home_emissions">0</string>
     <string name="completed_journey">Completed Journey</string>
     <string name="title_activity_maps">Map</string>
+    <string name="transition_trip_info">transition_trip_info</string>
+    <string name="transition_trip_info_emissions_value">transition_trip_info_emissions_value</string>
+    <string name="transition_trip_info_emissions_label">transition_trip_info_emissions_label</string>
+    <string name="transition_trip_info_distance_value">transition_trip_info_distance_value</string>
+    <string name="transition_trip_info_distance_label">transition_trip_info_distance_label</string>
+    <string name="transition_trip_info_duration_value">transition_trip_info_duration_value</string>
+    <string name="transition_trip_info_duration_label">transition_trip_info_duration_label</string>
 </resources>

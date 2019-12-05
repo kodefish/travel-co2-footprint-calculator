@@ -16,7 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/default_padding"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:transitionName="trip_info">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,11 +26,13 @@
 
             <TextView
                 android:id="@+id/trip_completed_emissions"
+                android:transitionName="@string/transition_trip_info_emissions_value"
                 style="@style/summary_text_view_value"
                 android:text="@string/home_emissions" />
 
             <TextView
                 style="@style/summary_text_view_label"
+                android:transitionName="@string/transition_trip_info_emissions_label"
                 android:text="grams" />
 
         </LinearLayout>
@@ -41,11 +44,13 @@
 
             <TextView
                 android:id="@+id/trip_completed_distance_travelled"
+                android:transitionName="@string/transition_trip_info_distance_value"
                 style="@style/summary_text_view_value"
                 android:text="@string/home_distance_travelled" />
 
             <TextView
                 style="@style/summary_text_view_label"
+                android:transitionName="@string/transition_trip_info_distance_label"
                 android:text="meters" />
 
         </LinearLayout>
@@ -57,11 +62,13 @@
 
             <TextView
                 android:id="@+id/trip_completed_duration"
+                android:transitionName="@string/transition_trip_info_duration_value"
                 style="@style/summary_text_view_value"
                 android:text="@string/home_distance_travelled" />
 
             <TextView
                 style="@style/summary_text_view_label"
+                android:transitionName="@string/transition_trip_info_duration_label"
                 android:text="minutes" />
 
         </LinearLayout>
