@@ -82,6 +82,9 @@ public class HomeFragment extends Fragment {
     private Intent serviceIntent;
     private TripStorage tripStorage;
 
+    // Counts how many feature vectors in a row the user hasn't moved
+    private int immobileFeatureVecCounter = 0;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -158,23 +161,46 @@ public class HomeFragment extends Fragment {
                 if (scan != null) {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
+                    if (featureVec.isMoving()) {
+                        // Reset the counter
+                        immobileFeatureVecCounter = 0;
 
-                    // Get prediction results
-                    float[] predictions = predict(featureVec);
-                    featureVec.setPredictions(predictions);
+                        // Get prediction results
+                        float[] predictions = predict(featureVec);
+                        featureVec.setPredictions(predictions);
 
-                    // Show live info
-                    updateUI(featureVec);
+                        // Show live info
+                        updateUI(featureVec);
 
-                    tripReadings.add(featureVec);
+                        tripReadings.add(featureVec);
+                    } else {
+                        immobileFeatureVecCounter++;
+
+                        if (immobileFeatureVecCounter > 3) {
+                            askStopScanning();
+                        }
+                    }
                 }
             }
         }
     };
 
+    private void askStopScanning() {
+        AlertDialog stopTripDialog = new AlertDialog.Builder(getContext())
+                // set message, title, and icon
+                .setTitle("End Trip")
+                .setMessage("It seems you haven't moved in a while, would you like to stop your trip?")
+                .setIcon(R.drawable.icon_trash)
+
+                .setPositiveButton("Stop", (dialog, whichButton) -> stopScanning())
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create();
+
+        stopTripDialog.show();
+    }
+
     private float[] predict(FeatureVector features) {
         // Build features vector
-        // TODO give the keys we want for the features
         FVec features_vector = FVec.Transformer.fromArray(features.getFeatureVec(), false);
 
         // Predict

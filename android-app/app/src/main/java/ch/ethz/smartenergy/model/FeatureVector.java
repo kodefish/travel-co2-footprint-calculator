@@ -334,4 +334,12 @@ public class FeatureVector {
     public float[] getPredictions() {
         return predictions;
     }
+
+    /**
+     * Checks if the user is even moving (ie his speed is greater than 0.5m/s
+     * @return true if the user is moving
+     */
+    public boolean isMoving() {
+        return features.getOrDefault(FEATURE_KEY_AVG_SPEED, 0.) > 0.5;
+    }
 }
