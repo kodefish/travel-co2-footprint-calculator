@@ -45,7 +45,7 @@ public class HistoryFragment extends Fragment {
             AlertDialog deleteConfirmDialog = new AlertDialog.Builder(getContext())
                     // set message, title, and icon
                     .setTitle("Delete")
-                    .setMessage("Do you want to Delete")
+                    .setMessage("Are you sure you would like to delete this trip?")
                     .setIcon(R.drawable.icon_trash)
 
                     .setPositiveButton("Delete", (dialog, whichButton) -> {
