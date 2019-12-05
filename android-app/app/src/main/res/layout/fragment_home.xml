@@ -11,91 +11,96 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/primaryDarkColor">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1.4"
-            android:background="@color/primaryDarkColor">
+            android:layout_weight="1.4">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="@dimen/default_padding"
                 android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="@dimen/default_padding">
+
                 <TextView
+                    style="@style/home_text_view_label"
                     android:text="ongoing journey"
                     android:textColor="@android:color/white"
-                    style="@style/home_text_view_label"
-                    android:textStyle=""/>
+                    android:textStyle="" />
 
                 <TextView
                     android:id="@+id/home_current_mode"
+                    style="@style/home_text_view_big"
                     android:text="mode"
                     android:textColor="@android:color/white"
-                    style="@style/home_text_view_big"
-                    android:textSize="50sp"/>
+                    android:textSize="50sp" />
 
                 <TextView
+                    style="@style/home_text_view_big"
                     android:text="5 December"
                     android:textColor="@android:color/white"
-                    style="@style/home_text_view_big"
                     android:textSize="30sp"
-                    android:textStyle=""/>
+                    android:textStyle="" />
 
 
             </LinearLayout>
 
         </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/home_predictions"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:padding="@dimen/default_padding"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/home_predictions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_top_corners"
+            android:padding="@dimen/default_padding">
 
-                <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
-                    <TextView
-                        android:id="@+id/home_emissions"
-                        android:text="@string/home_emissions"
-                        style="@style/home_text_view_value" />
+            <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
 
-                    <TextView
-                        android:text="grams"
-                        style="@style/home_text_view_label" />
+                <TextView
+                    android:id="@+id/home_emissions"
+                    style="@style/home_text_view_value"
+                    android:text="@string/home_emissions" />
 
-                </LinearLayout>
-
-                <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
-                    <TextView
-                        android:id="@+id/home_distance_travelled"
-                        android:text="@string/home_distance_travelled"
-                        style="@style/home_text_view_value" />
-
-                    <TextView
-                        android:text="meters"
-                        style="@style/home_text_view_label" />
-
-                </LinearLayout>
-
-                <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
-                    <Chronometer
-                        android:id="@+id/home_chronometer"
-                        style="@style/home_text_view_value"/>
-
-                    <TextView
-                        android:text="minutes"
-                        style="@style/home_text_view_label" />
-
-                </LinearLayout>
-
+                <TextView
+                    style="@style/home_text_view_label"
+                    android:text="grams" />
 
             </LinearLayout>
+
+            <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
+
+                <TextView
+                    android:id="@+id/home_distance_travelled"
+                    style="@style/home_text_view_value"
+                    android:text="@string/home_distance_travelled" />
+
+                <TextView
+                    style="@style/home_text_view_label"
+                    android:text="meters" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
+
+                <Chronometer
+                    android:id="@+id/home_chronometer"
+                    style="@style/home_text_view_value" />
+
+                <TextView
+                    style="@style/home_text_view_label"
+                    android:text="minutes" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -105,8 +110,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_padding"
         android:background="@color/primaryColor"
-        android:textOff="@string/start_scanning"
         android:textColor="@color/primaryTextColor"
+        android:textOff="@string/start_scanning"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
