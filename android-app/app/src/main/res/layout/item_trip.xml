@@ -109,6 +109,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
+            android:textColor="@color/primaryDarkColor"
             android:text="200g" />
     </RelativeLayout>
 
