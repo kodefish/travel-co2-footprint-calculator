@@ -369,6 +369,7 @@ public class HomeFragment extends Fragment {
         tripTimeChronometer.stop();
 
         getActivity().stopService(serviceIntent);
+        serviceIntent = null;
 
         // Convert trip's sensor readings into a proper trip
         Trip trip = computeTripFromReadings();
