@@ -1,10 +1,6 @@
 package ch.ethz.smartenergy.persistence;
 
 import android.content.Context;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

@@ -3,6 +3,7 @@ package ch.ethz.smartenergy.ui;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,6 @@ import ch.ethz.smartenergy.footprint.Trip;
 import ch.ethz.smartenergy.persistence.TripStorage;
 
 import ch.ethz.smartenergy.ui.adapters.TripAdapter;
-import ch.ethz.smartenergy.ui.util.OnItemClickListener;
 
 
 public class HistoryFragment extends Fragment {
@@ -34,6 +34,8 @@ public class HistoryFragment extends Fragment {
 
         TripStorage storage = TripStorage.getInstance(getContext());
         pastTrips = storage.getAllStoredTrips();
+
+        Log.i("History", "loaded : " + pastTrips.size());
 
         Collections.reverse(pastTrips);
 
