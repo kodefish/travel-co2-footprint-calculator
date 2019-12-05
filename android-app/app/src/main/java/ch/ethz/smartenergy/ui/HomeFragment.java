@@ -131,7 +131,6 @@ public class HomeFragment extends Fragment {
 
         // Start listening for sensor scans
         registerReceiver();
-        Log.i("HomeFragment", "done");
         return root;
     }
 
@@ -381,9 +380,6 @@ public class HomeFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            // DEBUG Log the trip as a string
-            Log.i("TripDone", trip.toString());
         } else {
             Toast.makeText(getContext(), getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
         }

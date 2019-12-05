@@ -46,23 +46,18 @@ public class TripStorage {
      */
     private TripStorage(Context context) {
         // Gets or creates file for trips in internal private storage
-        Log.i("Storage", "Files stored at " + context.getFilesDir() + "/" + JSON_TRIP_STORAGE_FILENAME);
         jsonFile = new File(context.getFilesDir(), JSON_TRIP_STORAGE_FILENAME);
 
         // Create the file if it doesn't already exist
         try {
             if (!jsonFile.exists()) {
-                Log.i("Storage", "file doesn't exist");
                 boolean s = jsonFile.createNewFile();
-                Log.i("Storage", "file created: " + s);
 
                 // Write an empty list to the the json file
                 List<Trip> emptyList = new ArrayList<>();
                 writeTrips(emptyList);
-                Log.i("Storage", "writing empty trip");
             }
 
-            Log.i("Storage", "file exists!");
             bufferedReader = new BufferedReader(new FileReader(jsonFile));
 
             // Load stored trips

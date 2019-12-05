@@ -150,7 +150,6 @@ public class Trip {
      * @return String representation of distance travelled
      */
     public String getTotalTimeAsString() {
-        Log.i("Time", this.getTotalTime() + "");
         long millis = this.getTotalTime();
 
         return String.format("%02d:%02d:%02d",
@@ -199,7 +198,6 @@ public class Trip {
             // Storing
             modesUsedDescOrder = new ArrayList<TripType>();
             for (Map.Entry<TripType, Integer> map : numUsedListEntry) {
-                Log.i("Trip",  map.getKey().toString());
                 modesUsedDescOrder.add(map.getKey());
             }
         }
