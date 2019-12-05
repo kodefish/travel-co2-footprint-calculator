@@ -112,13 +112,23 @@ public class FeatureVector {
     private final long startTime;
     private final long endTime;
 
+    // Start and stop location of feature vec
+    private double startLat, startLon, endLat, endLon;
+
     /**
      * Construct a feature vector based on raw sensor values
      * @param scanResult resulting scan values
      */
     public FeatureVector(ScanResult scanResult) {
+        // Save start and end time
         this.startTime = scanResult.getStartTime();
         this.endTime = scanResult.getEndTime();
+
+        // Save start and end locations
+        this.startLat = scanResult.getLocationScans().get(0).getLatitude();
+        this.startLon = scanResult.getLocationScans().get(0).getLongitude();
+        this.endLat = scanResult.getLocationScans().get(scanResult.getLocationScans().size()-1).getLatitude();
+        this.endLat = scanResult.getLocationScans().get(scanResult.getLocationScans().size()-1).getLongitude();
 
         features = new HashMap<>();
 
@@ -329,6 +339,22 @@ public class FeatureVector {
      */
     public long getEndTime() {
         return endTime;
+    }
+
+    public double getStartLat() {
+        return startLat;
+    }
+
+    public double getStartLon() {
+        return startLon;
+    }
+
+    public double getEndLat() {
+        return endLat;
+    }
+
+    public double getEndLon() {
+        return endLon;
     }
 
     public float[] getPredictions() {

@@ -17,20 +17,25 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.FileNotFoundException;
 
+import ch.ethz.smartenergy.footprint.Leg;
 import ch.ethz.smartenergy.footprint.Trip;
+import ch.ethz.smartenergy.model.FeatureVector;
 import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.ui.adapters.LegAdapter;
 
 public class TripSummaryActivity extends FragmentActivity implements OnMapReadyCallback {
 
     public static final String EXTRA_TRIP_ID = "extra_trip_id";
+    private Trip completedTrip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +45,6 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
         // Get latest trip from persistence, if none then show latest trip
         TripStorage tripStorage = TripStorage.getInstance(this);
 
-        Trip completedTrip;
 
         // Get id of trip to display
         Bundle extras = getIntent().getExtras();
@@ -97,14 +101,29 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.i("Trip", "map ready");
-        /*
         GoogleMap mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-         */
+        // Draw Polyline for the trip
+        PolylineOptions polylineOptions = new PolylineOptions();
+        LatLngBounds.Builder latLngBounds = new LatLngBounds.Builder();
+        for (Leg l : completedTrip.getLegs()) {
+            // Only add start, since end is the start of the next
+            for (FeatureVector p : l.getFeatureVectorList()) {
+                LatLng start = new LatLng(p.getStartLat(), p.getStartLon());
+                polylineOptions.add(start);
+                latLngBounds.include(start);
+            }
+            // Add just the last end
+            FeatureVector lastFeatureVec = l.getFeatureVectorList().get(l.getFeatureVectorList().size()-1);
+            LatLng end = new LatLng(lastFeatureVec.getEndLat(), lastFeatureVec.getEndLon());
+            polylineOptions.add(end);
+            latLngBounds.include(end);
+        }
+
+        // Draw the journey
+        mMap.addPolyline(polylineOptions);
+        // Set the camera to the greatest possible zoom level that includes the bounds
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 0));
     }
 }
 

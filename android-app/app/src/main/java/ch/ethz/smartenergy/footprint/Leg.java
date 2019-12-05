@@ -145,4 +145,8 @@ public class Leg {
             mostProbableLegType = featureVectorList.get(0).mostProbableTripType();
         return mostProbableLegType;
     }
+
+    public List<FeatureVector> getFeatureVectorList() {
+        return featureVectorList;
+    }
 }
