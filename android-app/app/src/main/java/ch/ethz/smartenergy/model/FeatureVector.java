@@ -128,7 +128,7 @@ public class FeatureVector {
         this.startLat = scanResult.getLocationScans().get(0).getLatitude();
         this.startLon = scanResult.getLocationScans().get(0).getLongitude();
         this.endLat = scanResult.getLocationScans().get(scanResult.getLocationScans().size()-1).getLatitude();
-        this.endLat = scanResult.getLocationScans().get(scanResult.getLocationScans().size()-1).getLongitude();
+        this.endLon = scanResult.getLocationScans().get(scanResult.getLocationScans().size()-1).getLongitude();
 
         features = new HashMap<>();
 
