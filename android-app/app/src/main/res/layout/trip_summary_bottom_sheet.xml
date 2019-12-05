@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_top_corners"
     android:orientation="vertical"
+    android:transitionName="@string/transition_trip_info"
     app:behavior_hideable="false"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     tools:showIn="@layout/activity_trip_completed">
@@ -16,8 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/default_padding"
-        android:orientation="vertical"
-        android:transitionName="trip_info">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
