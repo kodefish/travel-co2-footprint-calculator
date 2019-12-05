@@ -68,9 +68,9 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
         // Load most prominent trip type icon
         Picasso.get().load(TripType.getTripTypeIconResource(t.getModesUsedDescOrder().get(0))).into(icon);
         dateView.setText(t.getDateAsString());
-        distanceView.setText(t.getTotalDistanceAsString());
+        distanceView.setText(t.getTotalDistanceAsString() + "m");
         modesView.setText("Modes used: " + t.getModesAsString());
-        footprintView.setText(t.getTotalFootprintAsString());
+        footprintView.setText(t.getTotalFootprintAsString() + "g");
         durationView.setText(t.getTotalTimeAsString());
 
         // Init swipe layout (swipe to reveal delete)
