@@ -3,7 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimary">@color/primaryDarkColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/primaryLightColor</item>
     </style>
@@ -13,10 +13,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="colorPrimary">@android:color/transparent</item>
-        <item name="android:elevation">0dp</item>
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.DayNight.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -58,6 +55,16 @@
     <style name="home_text_view_label" parent="home_text_view_big">
         <item name="android:textColor">@color/primaryDarkColor</item>
         <item name="android:textSize">30sp</item>
+    </style>
+
+    <style name="summary_text_view_value" parent="home_text_view_value">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">25sp</item>
+    </style>
+
+    <style name="summary_text_view_label" parent="home_text_view_label">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle"></item>
     </style>
 
     <style name="EqualSpacingCenterVerticalLL">
