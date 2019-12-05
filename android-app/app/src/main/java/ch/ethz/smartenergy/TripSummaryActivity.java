@@ -1,6 +1,7 @@
 package ch.ethz.smartenergy;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
@@ -102,10 +103,12 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
     public void onMapReady(GoogleMap googleMap) {
         GoogleMap mMap = googleMap;
 
-        // Draw Polyline for the trip
-        PolylineOptions polylineOptions = new PolylineOptions();
+        // Draw trip
+        // Compute bounds (to display the entire trip)
         LatLngBounds.Builder latLngBounds = new LatLngBounds.Builder();
         for (Leg l : completedTrip.getLegs()) {
+            PolylineOptions polylineOptions = new PolylineOptions();
+            polylineOptions.color(ResourcesCompat.getColor(getResources(), R.color.primaryColor, null));
             // Only add start, since end is the start of the next
             for (FeatureVector p : l.getFeatureVectorList()) {
                 LatLng start = new LatLng(p.getStartLat(), p.getStartLon());
@@ -117,10 +120,11 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
             LatLng end = new LatLng(lastFeatureVec.getEndLat(), lastFeatureVec.getEndLon());
             polylineOptions.add(end);
             latLngBounds.include(end);
+
+            // Draw the leg
+            mMap.addPolyline(polylineOptions);
         }
 
-        // Draw the journey
-        mMap.addPolyline(polylineOptions);
         // Set the camera to the greatest possible zoom level that includes the bounds
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 0));
     }
