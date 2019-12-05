@@ -107,6 +107,8 @@ python visualization.py
 The script will open the generated plots in a new browser tab. You can play
 around (pan and zoom) with the graph in the grid mode (for some reason, tools are not available
 yet in the column view).
+
+Additionally the script visualization_mode.py will generate graphs that compare features that are aggregated in the features.csv. Each graph will compare a given feature between all different transport modes.
        
 **** Windowing
 To aggregate the data into windows of a fixed size call the script windowing.py (with the optional parameter "window_size" which is the window lenght in milliseconds).
