@@ -166,8 +166,8 @@ public class HomeFragment extends Fragment {
                 if (scan != null) {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
-                    //if (featureVec.isMoving()) {
-                    if (true) {
+                    if (featureVec.isMoving()) {
+                    //if (true) {
                         // Reset the counter
                         immobileFeatureVecCounter = 0;
 
@@ -404,7 +404,6 @@ public class HomeFragment extends Fragment {
                     new Pair<>(tripDistanceTravelledLabel, getString(R.string.transition_trip_info_distance_label)),
                     new Pair<>(tripTimeChronometer, getString(R.string.transition_trip_info_duration_value)),
                     new Pair<>(tripTimeChronometerLabel, getString(R.string.transition_trip_info_duration_label))
-
             );
             startActivity(startSummary, options.toBundle());
         }

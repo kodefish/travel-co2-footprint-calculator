@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
@@ -10,109 +9,95 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_above="@+id/button_start"
+        android:background="@color/primaryDarkColor"
+        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:background="@color/primaryDarkColor">
+        android:padding="@dimen/default_padding">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.4">
+        <TextView
+            style="@style/home_text_view_label"
+            android:singleLine="true"
+            android:text="@string/ongoing_trip"
+            android:textColor="@android:color/white"
+            android:textStyle="" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:padding="@dimen/default_padding">
+        <TextView
+            android:id="@+id/home_current_mode"
+            style="@style/home_text_view_big"
+            android:text="mode"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/material_text_display3" />
 
-                <TextView
-                    style="@style/home_text_view_label"
-                    android:text="@string/ongoing_trip"
-                    android:singleLine="true"
-                    android:textColor="@android:color/white"
-                    android:textStyle="" />
-
-                <TextView
-                    android:id="@+id/home_current_mode"
-                    style="@style/home_text_view_big"
-                    android:text="mode"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/material_text_display3" />
-
-                <TextView
-                    android:id="@+id/home_text_view_date"
-                    style="@style/home_text_view_big"
-                    android:textColor="@android:color/white"
-                    android:text="05 December"
-                    android:textSize="@dimen/material_text_display1"
-                    android:textStyle="" />
+        <TextView
+            android:id="@+id/home_text_view_date"
+            style="@style/home_text_view_big"
+            android:text="05 December"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/material_text_display1"
+            android:textStyle="" />
 
 
-            </LinearLayout>
+    </LinearLayout>
 
-        </FrameLayout>
+    <LinearLayout
+        android:id="@+id/home_trip_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_start"
+        android:background="@drawable/rounded_top_corners"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="@dimen/default_padding"
+        android:transitionName="@string/transition_trip_info">
 
-        <LinearLayout
-            android:id="@+id/home_trip_info"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:background="@drawable/rounded_top_corners"
-            android:padding="@dimen/default_padding"
-            android:transitionName="@string/transition_trip_info">
+        <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
 
-            <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
+            <TextView
+                android:id="@+id/home_emissions"
+                style="@style/summary_text_view_value"
+                android:text="@string/home_emissions"
+                android:transitionName="@string/transition_trip_info_emissions_value" />
 
-                <TextView
-                    android:id="@+id/home_emissions"
-                    android:transitionName="@string/transition_trip_info_emissions_value"
-                    style="@style/home_text_view_value"
-                    android:text="@string/home_emissions" />
-
-                <TextView
-                    android:id="@+id/home_emissions_label"
-                    style="@style/home_text_view_label"
-                    android:transitionName="@string/transition_trip_info_emissions_value"
-                    android:text="grams" />
-
-            </LinearLayout>
-
-            <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
-
-                <TextView
-                    android:id="@+id/home_distance_travelled"
-                    android:transitionName="@string/transition_trip_info_distance_value"
-                    style="@style/home_text_view_value"
-                    android:text="@string/home_distance_travelled" />
-
-                <TextView
-                    android:id="@+id/home_distance_travelled_label"
-                    style="@style/home_text_view_label"
-                    android:transitionName="@string/transition_trip_info_distance_label"
-                    android:text="meters" />
-
-            </LinearLayout>
-
-            <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
-
-                <Chronometer
-                    android:id="@+id/home_chronometer"
-                    android:transitionName="@string/transition_trip_info_duration_value"
-                    style="@style/home_text_view_value" />
-
-                <TextView
-                    android:id="@+id/home_chronometer_label"
-                    style="@style/home_text_view_label"
-                    android:transitionName="@string/transition_trip_info_duration_label"
-                    android:text="minutes" />
-
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/home_emissions_label"
+                style="@style/summary_text_view_label"
+                android:text="grams"
+                android:transitionName="@string/transition_trip_info_emissions_label" />
 
         </LinearLayout>
+
+        <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
+
+            <TextView
+                android:id="@+id/home_distance_travelled"
+                style="@style/summary_text_view_value"
+                android:text="@string/home_distance_travelled"
+                android:transitionName="@string/transition_trip_info_distance_value" />
+
+            <TextView
+                android:id="@+id/home_distance_travelled_label"
+                style="@style/summary_text_view_label"
+                android:text="meters"
+                android:transitionName="@string/transition_trip_info_distance_label" />
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/EqualSpacingCenterVerticalLL">
+
+            <Chronometer
+                android:id="@+id/home_chronometer"
+                style="@style/summary_text_view_value"
+                android:transitionName="@string/transition_trip_info_duration_value" />
+
+            <TextView
+                android:id="@+id/home_chronometer_label"
+                style="@style/summary_text_view_label"
+                android:text="minutes"
+                android:transitionName="@string/transition_trip_info_duration_label" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
@@ -121,6 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_padding"
+        android:layout_alignParentBottom="true"
         android:background="@color/primaryColor"
         android:textColor="@color/primaryTextColor"
         android:textOff="@string/start_scanning"
@@ -129,4 +115,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-</LinearLayout>
+</RelativeLayout>
