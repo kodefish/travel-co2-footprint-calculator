@@ -64,4 +64,5 @@
     <string name="onboarding_3_subtitle">
         Stay under the carbon budget of allocated by the Paris Agreement to help reduce the worldwide carbon emissions.
     </string>
+    <string name="emissions_budget_format">%.0fg/%.0fg</string>
 </resources>

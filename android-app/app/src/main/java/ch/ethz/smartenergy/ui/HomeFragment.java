@@ -8,11 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -44,10 +44,12 @@ public class HomeFragment extends Fragment {
     // Constants
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final int PERMISSION_ALL = 4242;
+    private static final float MAX_DAILY_FOOTPRINT = 6301.36986f;
     private int locationRequestCount = 0;
 
-    // Progress bar
+    // Progress bar & budget
     RoundCornerProgressBar roundCornerProgressBar;
+    TextView budget;
 
     // Trips
     TripStorage tripStorage;
@@ -56,11 +58,10 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        roundCornerProgressBar = root.findViewById(R.id.home_progress_day);
 
-        // TODO: let user set this in onboarding, for now Paris agreement max per day in grams
-        float maxDailyFootprint = 6301.36986f;
-        roundCornerProgressBar.setMax(maxDailyFootprint);
+        roundCornerProgressBar = root.findViewById(R.id.home_progress_day);
+        roundCornerProgressBar.setMax(MAX_DAILY_FOOTPRINT);
+        budget = root.findViewById(R.id.home_emission_budget);
 
         View fab = root.findViewById(R.id.home_fab);
         fab.setOnClickListener(v -> {
@@ -97,6 +98,7 @@ public class HomeFragment extends Fragment {
         for (Trip t : todaysTrips) {
             totalFootprint += t.getTotalFootprint();
         }
+        budget.setText(getString(R.string.emissions_budget_format, totalFootprint, MAX_DAILY_FOOTPRINT));
         roundCornerProgressBar.setProgress((float) totalFootprint);
     }
 
