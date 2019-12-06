@@ -1,6 +1,7 @@
 package ch.ethz.smartenergy.persistence;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -76,11 +77,11 @@ public class TripStorage {
     public List<Trip> getAllStoredTrips() {
         if (storedTrips == null) {
             // Read json file to get list of trips
-            Type listOfTripsType = new TypeToken<ArrayList<Trip>>() {
-            }.getType();
+            Type listOfTripsType = new TypeToken<ArrayList<Trip>>() {}.getType();
             Gson gson = new Gson();
             storedTrips = gson.fromJson(bufferedReader, listOfTripsType);
             if (storedTrips == null) storedTrips = new ArrayList<>();
+            Log.i("TripStorage", "read " + storedTrips.size() + " trips from storage");
 
             // close the file as the trips are now in memory
             try {

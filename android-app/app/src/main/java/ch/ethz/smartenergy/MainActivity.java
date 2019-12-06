@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         // Check for onboarding first
         SharedPreferences sharedPreferences =
@@ -38,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
                 OnboardingActivity.COMPLETED_ONBOARDING_PREF_NAME, false)) {
             // The user hasn't seen the OnboardingFragment yet, so show it
             startActivityForResult(new Intent(this, OnboardingActivity.class), RESULT_ONBOARDING);
+        } else {
+            // Load main UI
+            setupMainUI();
         }
-
-        // Load main UI
-        setupMainUI();
     }
 
     @Override
@@ -68,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupMainUI() {
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
