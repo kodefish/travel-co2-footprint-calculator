@@ -43,6 +43,7 @@ public class HistoryFragment extends Fragment {
         final TripAdapter adapter = new TripAdapter(getContext(),-1);
         adapter.setTrips(pastTrips);
         adapter.setOnDeleteClickListener(position -> {
+            MaterialDial
             AlertDialog deleteConfirmDialog = new AlertDialog.Builder(getContext())
                     // set message, title, and icon
                     .setTitle("Delete")
