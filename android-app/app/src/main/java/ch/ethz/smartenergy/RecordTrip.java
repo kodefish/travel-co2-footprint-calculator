@@ -151,8 +151,7 @@ public class RecordTrip extends Activity {
                 if (scan != null) {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
-                    //if (featureVec.isMoving()) {
-                    if (true) {
+                    if (featureVec.isMoving()) {
                         // Reset the counter
                         immobileFeatureVecCounter = 0;
 
