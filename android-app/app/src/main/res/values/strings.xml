@@ -52,10 +52,16 @@
     <string name="title_activity_onboarding">Onboarding</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
-    <string name="onboarding_1_title">Track your carbon, easily</string>
-    <string name="onboarding_1_subtitle">Let the app automatically determine your mode of transportation.</string>
-    <string name="onboarding_2_title">For the lazy nature warrior</string>
-    <string name="onboarding_2_subtitle">Track your carbon emissions without the hassle of having to annotate your trip</string>
-    <string name="onboarding_3_title">Reach your goals</string>
-    <string name="onboarding_3_subtitle">Set carbon goals and track your progress</string>
+    <string name="onboarding_1_title">Help fight global warming!</string>
+    <string name="onboarding_1_subtitle">
+         Transportation is responsible for 15% of the global greenhouse gas emissions.
+    </string>
+    <string name="onboarding_2_title">Understand Your Behavior</string>
+    <string name="onboarding_2_subtitle">
+        By tracking your journeys, you will gain a better understanding of your own habits.
+    </string>
+    <string name="onboarding_3_title">Save the Polar Bears!</string>
+    <string name="onboarding_3_subtitle">
+        Stay under the carbon budget of allocated by the Paris Agreement to help reduce the worldwide carbon emissions.
+    </string>
 </resources>

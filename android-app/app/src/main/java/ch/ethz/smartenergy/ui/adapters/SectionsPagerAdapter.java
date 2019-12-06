@@ -34,22 +34,22 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
                 return PlaceholderFragment.newInstance(
-                        R.raw.lottie_roll_it_tractor,
+                        R.drawable.icon_sustainability,
                         context.getString(R.string.onboarding_1_title),
                         context.getString(R.string.onboarding_1_subtitle)
                 );
             case 1:
                 return PlaceholderFragment.newInstance(
-                        R.raw.lottie_car,
+                        R.drawable.icon_lightbulb,
                         context.getString(R.string.onboarding_2_title),
                         context.getString(R.string.onboarding_2_subtitle)
                 );
             case 2:
             default:
             return PlaceholderFragment.newInstance(
-                        R.raw.lottie_favorite,
-                        context.getString(R.string.onboarding_3_title),
-                        context.getString(R.string.onboarding_3_subtitle)
+                    R.drawable.icon_polar_bear,
+                    context.getString(R.string.onboarding_3_title),
+                    context.getString(R.string.onboarding_3_subtitle)
                 );
         }
     }
