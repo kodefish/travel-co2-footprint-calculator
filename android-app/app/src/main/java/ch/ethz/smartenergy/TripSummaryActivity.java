@@ -4,9 +4,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -55,6 +58,7 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
     private static final List<PatternItem> PATTERN_POLYLINE_DOTTED = Arrays.asList(GAP, DOT);
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +105,6 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
                     selectedPolyline = legPolylines.get(position);
 
                     selectedPolyline.setPattern(PATTERN_POLYLINE_DOTTED);
-                    toggleDottedPattern(selectedPolyline);
 
                     // Focus on selected leg
                     LatLngBounds.Builder bounds = new LatLngBounds.Builder();
@@ -117,18 +120,29 @@ public class TripSummaryActivity extends FragmentActivity implements OnMapReadyC
             }
         };
 
+        // Set close button
+        findViewById(R.id.trip_completed_close).setOnClickListener(v -> finish());
+
         LegAdapter legAdapter = new LegAdapter(this, -1, completedTrip.getLegs(), onItemClickListener);
         ListView legsListView = findViewById(R.id.trip_completed_legs_list);
         legsListView.setAdapter(legAdapter);
+        // Make sure we scroll listview instead of bottom sheet
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback(){
+            @Override
+            public void onStateChanged(View bottomSheet, int newState) {
+                boolean listIsAtTop = legsListView.getChildCount() == 0
+                        || legsListView.getChildAt(0).getTop() == 0 && legsListView.getFirstVisiblePosition() ==0;
+                if (newState == BottomSheetBehavior.STATE_DRAGGING && !listIsAtTop){
+                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                }
+            }
+            @Override
+            public void onSlide(View bottomSheet, float slideOffset) {}});
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
-
-    private void toggleDottedPattern(Polyline polyline) {
-
     }
 
     /**

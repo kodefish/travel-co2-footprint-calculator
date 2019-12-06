@@ -8,8 +8,9 @@
     android:background="@drawable/rounded_top_corners"
     android:orientation="vertical"
     android:transitionName="@string/transition_trip_info"
+    android:elevation="8dp"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="130dp"
+    app:behavior_peekHeight="146dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     tools:showIn="@layout/activity_trip_completed">
 
