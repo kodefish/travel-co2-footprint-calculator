@@ -45,34 +45,16 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/home_fab"
-        android:clickable="true"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:orientation="horizontal"
-        android:padding="@dimen/default_padding"
-        android:background="@drawable/floating_record_button"
-        android:transitionName="@string/transition_start_trip">
-
-        <ImageView
-            android:layout_width="@dimen/material_text_title"
-            android:layout_height="@dimen/material_text_title"
-            android:src="@drawable/icon_record"
-            android:tint="@android:color/white"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="8sp"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/material_text_subhead"
-            android:text="@string/start_scanning"
-            android:textAllCaps="true" />
-    </LinearLayout>
-
+        android:layout_margin="8sp"
+        android:text="@string/start_scanning"
+        android:transitionName="@string/transition_start_trip"
+        app:icon="@drawable/icon_record"
+        app:iconSize="@dimen/material_text_title" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

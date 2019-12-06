@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -36,6 +35,9 @@ import ch.ethz.smartenergy.service.DataCollectionService;
 import ch.ethz.smartenergy.ui.adapters.PredictionAdapter;
 
 public class RecordTrip extends Activity {
+
+    // Constants
+    private static final int RESULT_SUMMARY = 0;
 
     // ML classifier
     private Predictor predictor;
@@ -83,6 +85,8 @@ public class RecordTrip extends Activity {
          */
 
         // Register button clicks to stop scanning
+        findViewById(R.id.button_start).setOnClickListener(v -> stopScanning());
+        /*
         ((ToggleButton) findViewById(R.id.button_start)).setOnCheckedChangeListener(
                 (buttonView, checked) -> {
                     if (checked) {
@@ -91,6 +95,7 @@ public class RecordTrip extends Activity {
                         stopScanning();
                     }
                 });
+         */
 
         // Load ML stuff
         try {
@@ -132,7 +137,8 @@ public class RecordTrip extends Activity {
                 if (scan != null) {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
-                    if (featureVec.isMoving()) {
+                    //if (featureVec.isMoving()) {
+                    if (true) {
                         // Reset the counter
                         immobileFeatureVecCounter = 0;
 
@@ -269,7 +275,7 @@ public class RecordTrip extends Activity {
                     new Pair<>(tripTimeChronometerLabel, getString(R.string.transition_trip_info_duration_label))
             );
 
-            startActivity(startSummary, options.toBundle());
+            startActivityForResult(startSummary, RESULT_SUMMARY, options.toBundle());
         } else {
             Toast.makeText(this, getText(R.string.empty_trip), Toast.LENGTH_SHORT).show();
             finish();
@@ -309,4 +315,12 @@ public class RecordTrip extends Activity {
         return new Trip(legs);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_SUMMARY) {
+            // Summary shown and we can close this activity
+            finish();
+        }
+    }
 }
