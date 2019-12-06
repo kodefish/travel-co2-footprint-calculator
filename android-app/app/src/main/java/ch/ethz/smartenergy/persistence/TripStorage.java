@@ -13,6 +13,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import ch.ethz.smartenergy.footprint.Trip;
@@ -141,7 +143,22 @@ public class TripStorage {
     }
 
     public List<Trip> getTripByDate(long timeInMillis) {
-        // TODO get trip by date (just see which one started on the same day
-        return getAllStoredTrips();
+        List<Trip> sameDayTrips = new ArrayList<>();
+        for (Trip t : getAllStoredTrips()) {
+            Date date = new Date();
+            date.setTime(timeInMillis);
+
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+            cal1.setTime(date);
+            cal2.setTime(t.getDate());
+
+            boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                    cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+
+            if (sameDay)
+                sameDayTrips.add(t);
+        }
+        return sameDayTrips;
     }
 }
