@@ -15,6 +15,7 @@ import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.ArraySwipeAdapter;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.smartenergy.R;
@@ -25,7 +26,7 @@ import ch.ethz.smartenergy.ui.util.OnItemClickListener;
 
 public class TripAdapter extends ArraySwipeAdapter<Trip> {
 
-    private List<Trip> trips;
+    private List<Trip> trips = new ArrayList<>();
     private OnDeleteListener onDeleteClickListener;
     private OnItemClickListener onItemClickListener;
 
@@ -34,7 +35,7 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
     }
 
     public void setTrips(List<Trip> trips) {
-        this.trips = trips;
+        this.trips = new ArrayList<>(trips);
     }
 
     public void setOnDeleteClickListener(OnDeleteListener onDeleteClickListener) {
@@ -93,4 +94,6 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
         return trips.size();
     }
 
+    @Override
+    public Trip getItem(int position) { return trips.get(position); }
 }

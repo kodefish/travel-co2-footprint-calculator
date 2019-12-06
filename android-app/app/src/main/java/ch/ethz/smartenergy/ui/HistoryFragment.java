@@ -66,7 +66,7 @@ public class HistoryFragment extends Fragment {
         });
         adapter.setOnItemClickListener(position -> {
             Intent tripSummaryIntent = new Intent(HistoryFragment.this.getContext(), TripSummaryActivity.class);
-            tripSummaryIntent.putExtra(TripSummaryActivity.EXTRA_TRIP_ID, position);
+            tripSummaryIntent.putExtra(TripSummaryActivity.EXTRA_TRIP_ID, adapter.getItem(position).getId());
             startActivity(tripSummaryIntent);
         });
 

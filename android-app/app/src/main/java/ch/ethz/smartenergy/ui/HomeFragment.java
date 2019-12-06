@@ -26,10 +26,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Calendar;
+import java.util.List;
+
 import ch.ethz.smartenergy.R;
 
 import ch.ethz.smartenergy.RecordTrip;
+import ch.ethz.smartenergy.TripSummaryActivity;
+import ch.ethz.smartenergy.footprint.Trip;
+import ch.ethz.smartenergy.persistence.TripStorage;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
+import ch.ethz.smartenergy.ui.adapters.TripAdapter;
 
 public class HomeFragment extends Fragment {
 
@@ -37,6 +44,10 @@ public class HomeFragment extends Fragment {
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
     private static final int PERMISSION_ALL = 4242;
     private int locationRequestCount = 0;
+
+    // Trips
+    TripStorage tripStorage;
+    TripAdapter tripAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +61,26 @@ public class HomeFragment extends Fragment {
         FloatingActionButton fab = root.findViewById(R.id.home_fab);
         fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), RecordTrip.class)));
 
+        tripStorage = TripStorage.getInstance(getContext());
+
+        tripAdapter = new TripAdapter(getContext(), -1);
+        tripAdapter.setOnItemClickListener(position -> {
+            Intent openSummary = new Intent(getActivity(), TripSummaryActivity.class);
+            openSummary.putExtra(TripSummaryActivity.EXTRA_TRIP_ID,
+                    tripAdapter.getItem(position).getId());
+            startActivity(openSummary);
+        });
+        listDayTrips.setAdapter(tripAdapter);
+
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        List<Trip> todaysTrips = tripStorage.getTripByDate(Calendar.getInstance().getTimeInMillis());
+        tripAdapter.setTrips(todaysTrips);
+        tripAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -58,7 +88,6 @@ public class HomeFragment extends Fragment {
         super.onStart();
         askPermissions();
     }
-
 
     /**
      * Ask for fine location permissions

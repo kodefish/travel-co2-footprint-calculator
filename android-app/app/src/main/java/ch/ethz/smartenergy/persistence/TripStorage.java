@@ -97,6 +97,9 @@ public class TripStorage {
      * @throws IOException
      */
     private void writeTrips(List<Trip> trips) throws IOException {
+        for (int i = 0; i < trips.size(); i++) {
+            trips.get(i).setId(i);
+        }
         Gson gson = new Gson();
         FileWriter writer = new FileWriter(jsonFile);
         writer.write(gson.toJson(trips));
@@ -135,5 +138,10 @@ public class TripStorage {
         this.storedTrips.remove(i);
         writeTrips(this.storedTrips);
         return this.storedTrips;
+    }
+
+    public List<Trip> getTripByDate(long timeInMillis) {
+        // TODO get trip by date (just see which one started on the same day
+        return getAllStoredTrips();
     }
 }

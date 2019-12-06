@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class Trip {
+    private int id;
     private List<Leg> legs;
     private Double totalFootprint = null;
     private Double totalDistance = null;
@@ -219,5 +220,13 @@ public class Trip {
     public String toString() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(this);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
