@@ -169,7 +169,7 @@ public class TripSummaryActivity extends FragmentActivity {
         }
 
         // Set the camera to the greatest possible zoom level that includes the bounds
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), MAP_BOUNDS_PADDING_AMOUNT));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), MAP_BOUNDS_PADDING_AMOUNT));
     }
 }
 
