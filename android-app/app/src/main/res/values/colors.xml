@@ -6,4 +6,5 @@
   <color name="primaryTextColor">#ffffff</color>
   <color name="primaryTextColorInverted">#000000</color>
   <color name="primaryRed">#d11a2a</color>
+  <color name="primaryLightGray">#eeeeee</color>
 </resources>

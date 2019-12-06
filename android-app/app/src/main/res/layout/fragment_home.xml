@@ -26,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="20dp"
             app:rcBackgroundPadding="5dp"
-            app:rcProgressColor="@color/primaryDarkColor"
+            app:rcProgressColor="@color/primaryLightColor"
+            app:rcBackgroundColor="@color/primaryLightGray"
             />
 
         <TextView
@@ -35,7 +36,7 @@
 
         <TextView
             style="@style/material_title"
-            android:text="Trips" />
+            android:text="Today's Trips" />
 
         <ListView
             android:id="@+id/home_day_trips"
