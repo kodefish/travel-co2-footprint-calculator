@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/primaryLightColor</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowEnterAnimation">@transition/change_bounds</item>
-        <item name="android:windowExitAnimation">@transition/change_bounds</item>
+        <item name="android:windowExitAnimation">@null</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
     </style>
@@ -76,5 +76,31 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="material_title">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/material_text_title</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingTop">@dimen/default_padding</item>
+        <item name="android:paddingBottom">@dimen/default_padding</item>
+        <item name="android:textColor">@color/primaryTextColorInverted</item>
+    </style>
+
+    <style name="material_headline" parent="material_title">
+        <item name="android:textSize">@dimen/material_text_headline</item>
+    </style>
+
+    <style name="material_subhead" parent="material_title">
+        <item name="android:textStyle"></item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textSize">@dimen/material_text_subhead</item>
+    </style>
+
+    <style name="material_body" parent="material_title">
+        <item name="android:textSize">@dimen/material_text_body1</item>
+        <item name="android:textStyle"></item>
     </style>
 </resources>

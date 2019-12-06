@@ -2,31 +2,21 @@ package ch.ethz.smartenergy.ui;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -34,29 +24,12 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import biz.k11i.xgboost.Predictor;
-import biz.k11i.xgboost.util.FVec;
-import ch.ethz.smartenergy.Constants;
 import ch.ethz.smartenergy.R;
-import ch.ethz.smartenergy.TripSummaryActivity;
-import ch.ethz.smartenergy.footprint.Leg;
-import ch.ethz.smartenergy.footprint.Trip;
-import ch.ethz.smartenergy.footprint.TripType;
-import ch.ethz.smartenergy.model.FeatureVector;
-import ch.ethz.smartenergy.model.ScanResult;
-import ch.ethz.smartenergy.persistence.TripStorage;
-import ch.ethz.smartenergy.service.DataCollectionService;
+
+import ch.ethz.smartenergy.RecordTrip;
 import ch.ethz.smartenergy.service.SensorScanPeriod;
-import ch.ethz.smartenergy.ui.adapters.PredictionAdapter;
 
 public class HomeFragment extends Fragment {
 
@@ -65,78 +38,18 @@ public class HomeFragment extends Fragment {
     private static final int PERMISSION_ALL = 4242;
     private int locationRequestCount = 0;
 
-    // ML classifier
-    private Predictor predictor;
-    private List<FeatureVector> tripReadings;
-
-    // UI
-    private TextView tripCurrentMode;
-    private TextView tripEmissions;
-    private double tripEmissionsCounter = 0;
-    private TextView tripDistanceTravelled;
-    private double tripDistanceCounter = 0;
-    private Chronometer tripTimeChronometer;
-    private PredictionAdapter predictionAdapter;
-
-    // App background
-    private Intent serviceIntent;
-    private TripStorage tripStorage;
-
-    // Counts how many feature vectors in a row the user hasn't moved
-    private int immobileFeatureVecCounter = 0;
-    private View tripInfoWrapper, tripEmissionsLabel, tripDistanceTravelledLabel, tripTimeChronometerLabel;
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+        RoundCornerProgressBar roundCornerProgressBar = root.findViewById(R.id.home_progress_day);
 
-        // Setup display
-        tripCurrentMode = root.findViewById(R.id.home_current_mode);
-        tripEmissions = root.findViewById(R.id.home_emissions);
-        tripDistanceTravelled = root.findViewById(R.id.home_distance_travelled);
-        tripTimeChronometer = root.findViewById(R.id.home_chronometer);
-        TextView currentDateTv = root.findViewById(R.id.home_text_view_date);
-        Date date = new Date();
-        date.setTime(Calendar.getInstance().getTimeInMillis());
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM");
-        currentDateTv.setText(sdf.format(date));
+        ListView listDayTrips = root.findViewById(R.id.home_day_trips);
+        View emptyView = inflater.inflate(R.layout.empty_list_view, container, false);
+        listDayTrips.setEmptyView(emptyView);
 
-        // Load shared elems
-        tripInfoWrapper = root.findViewById(R.id.home_trip_info);
-        tripEmissionsLabel = root.findViewById(R.id.home_emissions_label);
-        tripDistanceTravelledLabel = root.findViewById(R.id.home_distance_travelled_label);
-        tripTimeChronometerLabel = root.findViewById(R.id.home_chronometer_label);
+        FloatingActionButton fab = root.findViewById(R.id.home_fab);
+        fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), RecordTrip.class)));
 
-        /*
-        GridView predictionGridView = root.findViewById(R.id.home_predictions);
-        predictionAdapter = new PredictionAdapter(getContext(), -1);
-        predictionGridView.setAdapter(predictionAdapter);
-         */
-
-        // Register button clicks to start scanning
-        ((ToggleButton)root.findViewById(R.id.button_start)).setOnCheckedChangeListener(
-                (buttonView, isChecked) -> {
-                    if (isChecked) {
-                        startScanning();
-                    } else {
-                        // If trip isn't empty, show summary
-                        stopScanning();
-                    }});
-
-        // Load ML stuff
-        try {
-            // load pretrained predictor
-            InputStream model = getResources().openRawResource(R.raw.xgboost);
-            predictor = new Predictor(model);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        // Load trip storage utility
-        tripStorage = TripStorage.getInstance(getContext());
-
-        // Start listening for sensor scans
-        registerReceiver();
         return root;
     }
 
@@ -146,98 +59,6 @@ public class HomeFragment extends Fragment {
         askPermissions();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        // Stop service if it was launched
-        if (serviceIntent != null) stopScanning();
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mReceiver);
-    }
-
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle data = intent.getExtras();
-            if (data == null) return;
-
-            if (data.containsKey(Constants.WindowBroadcastExtraName)) {
-                ScanResult scan = (ScanResult) data.getSerializable(Constants.WindowBroadcastExtraName);
-                if (scan != null) {
-                    // Build feature vector
-                    FeatureVector featureVec = new FeatureVector(scan);
-                    if (featureVec.isMoving()) {
-                        // Reset the counter
-                        immobileFeatureVecCounter = 0;
-
-                        // Get prediction results
-                        float[] predictions = predict(featureVec);
-                        featureVec.setPredictions(predictions);
-
-                        // Show live info
-                        updateUI(featureVec);
-
-                        tripReadings.add(featureVec);
-                    } else {
-                        immobileFeatureVecCounter++;
-
-                        if (immobileFeatureVecCounter > 3) {
-                            immobileFeatureVecCounter = 0;
-                            askStopScanning();
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    private void askStopScanning() {
-        AlertDialog stopTripDialog = new AlertDialog.Builder(getContext())
-                // set message, title, and icon
-                .setTitle("End Trip")
-                .setMessage("It seems you haven't moved in a while, would you like to stop your trip?")
-                .setIcon(R.drawable.icon_trash)
-
-                .setPositiveButton("Stop", (dialog, whichButton) -> stopScanning())
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .create();
-
-        stopTripDialog.show();
-    }
-
-    private float[] predict(FeatureVector features) {
-        // Build features vector
-        FVec features_vector = FVec.Transformer.fromArray(features.getFeatureVec(), false);
-
-        // Predict
-        float[] predictions = predictor.predict(features_vector);
-        return predictions;
-    }
-
-    private void updateUI(FeatureVector featureVector) {
-        // Update mode
-        tripCurrentMode.setText(featureVector.mostProbableTripType().toString());
-
-        // Update emissions
-        tripEmissionsCounter += featureVector.getFootprint();
-        tripEmissions.setText(Trip.getFootprintAsString(tripEmissionsCounter));
-
-        // Update distance
-        tripDistanceCounter += featureVector.getDistanceCovered();
-        tripDistanceTravelled.setText(Trip.getFootprintAsString(tripDistanceCounter));
-
-        // Update predictions
-        // predictionAdapter.setPredictions(featureVector.getPredictions());
-    }
-
-    /**
-     * Register broadcast receiver
-     */
-    private void registerReceiver() {
-        IntentFilter it = new IntentFilter();
-        it.addAction(Constants.WindowBroadcastActionName);
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mReceiver, it);
-    }
 
     /**
      * Ask for fine location permissions
@@ -342,102 +163,4 @@ public class HomeFragment extends Fragment {
         alertDialog.create().show();
     }
 
-    /**
-     * Start collecting data on button click
-     */
-    public void startScanning() {
-        // Start timer, set emissions and distance counters to 0
-        tripTimeChronometer.setBase(SystemClock.elapsedRealtime());
-        tripTimeChronometer.start();
-
-        tripEmissions.setText(getString(R.string.home_emissions));
-        tripEmissionsCounter = 0;
-        tripDistanceTravelled.setText(R.string.home_distance_travelled);
-        tripDistanceCounter = 0;
-
-        // Start data collection service
-        serviceIntent = new Intent(getContext(), DataCollectionService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getActivity().startForegroundService(serviceIntent);
-        } else {
-            getActivity().startService(serviceIntent);
-        }
-
-        // Start new trip reading (collect all the feature vectors)
-        tripReadings = new ArrayList<>();
-    }
-
-    /**
-     * Stops the scanning service, computes the trip from feature vectors, persists the trip
-     * @return true if trip not empty
-     */
-    public void stopScanning() {
-        // Stop timer
-        tripTimeChronometer.stop();
-
-        getActivity().stopService(serviceIntent);
-        serviceIntent = null;
-
-        // Convert trip's sensor readings into a proper trip
-        Trip trip = computeTripFromReadings();
-
-        if (!trip.getLegs().isEmpty()) {
-            // Persist the trip
-            try {
-                tripStorage.persistTrip(trip);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(getContext(), getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
-        }
-
-        
-        if (!trip.getLegs().isEmpty()) {
-            Intent startSummary = new Intent(getActivity(), TripSummaryActivity.class);
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                    new Pair<>(tripInfoWrapper, getString(R.string.transition_trip_info)),
-                    new Pair<>(tripEmissions, getString(R.string.transition_trip_info_emissions_value)),
-                    new Pair<>(tripEmissionsLabel, getString(R.string.transition_trip_info_emissions_label)),
-                    new Pair<>(tripDistanceTravelled, getString(R.string.transition_trip_info_distance_value)),
-                    new Pair<>(tripDistanceTravelledLabel, getString(R.string.transition_trip_info_distance_label)),
-                    new Pair<>(tripTimeChronometer, getString(R.string.transition_trip_info_duration_value)),
-                    new Pair<>(tripTimeChronometerLabel, getString(R.string.transition_trip_info_duration_label))
-            );
-            startActivity(startSummary, options.toBundle());
-        }
-    }
-
-    private Trip computeTripFromReadings() {
-        List<Leg> legs = new ArrayList<>();
-        if (!tripReadings.isEmpty()) {
-            List<FeatureVector> legFeatures = new ArrayList<>();
-            TripType previousTripType = tripReadings.get(0).mostProbableTripType();
-
-            for (int i = 0; i < tripReadings.size(); i++) {
-                FeatureVector featureVec = tripReadings.get(i);
-                TripType currentTripType = featureVec.mostProbableTripType();
-
-                // TODO more sophisticated way of computing a leg
-                if (currentTripType.equals(previousTripType)) {
-                    // If the current window is of the same type as the previous, then the leg is
-                    // probably the same
-                    legFeatures.add(featureVec);
-
-                    // If last feature vec, then create leg and add it
-                    if (i == tripReadings.size() - 1) legs.add(new Leg(legFeatures));
-                } else {
-                    // Finalize current leg
-                    legs.add(new Leg(legFeatures));
-
-                    // Reset leg and add current features to new leg
-                    legFeatures.clear();
-                    previousTripType = currentTripType;
-                    legFeatures.add(featureVec);
-
-                }
-            }
-        }
-        return new Trip(legs);
-    }
 }

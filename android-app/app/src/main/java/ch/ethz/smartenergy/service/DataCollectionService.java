@@ -26,6 +26,7 @@ import java.util.Calendar;
 import ch.ethz.smartenergy.Constants;
 import ch.ethz.smartenergy.MainActivity;
 import ch.ethz.smartenergy.R;
+import ch.ethz.smartenergy.RecordTrip;
 import ch.ethz.smartenergy.model.BluetoothScan;
 import ch.ethz.smartenergy.model.LocationScan;
 import ch.ethz.smartenergy.model.ScanResult;
@@ -151,7 +152,7 @@ public class DataCollectionService extends Service {
         }
 
         // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(this, MainActivity.class)
+        Intent intent = new Intent(this, RecordTrip.class)
                 .setAction(Intent.ACTION_VIEW)
                 .addCategory(Intent.CATEGORY_DEFAULT)
                 .addCategory(Intent.CATEGORY_BROWSABLE)

@@ -43,6 +43,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation "com.daimajia.swipelayout:library:1.2.0@aar"
     implementation 'com.google.gms:google-services:4.3.3'
+    implementation 'com.akexorcist:RoundCornerProgressBar:2.0.3'
 
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
