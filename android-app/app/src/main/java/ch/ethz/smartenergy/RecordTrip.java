@@ -1,8 +1,9 @@
 package ch.ethz.smartenergy;
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +68,10 @@ public class RecordTrip extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_trip);
 
+        // Enable animations
+        ((ViewGroup) findViewById(R.id.record_root)).getLayoutTransition()
+                .enableTransitionType(LayoutTransition.CHANGING);
+
         // Setup display
         tripCurrentMode = findViewById(R.id.home_current_mode);
         tripEmissions = findViewById(R.id.home_emissions);
@@ -85,7 +91,7 @@ public class RecordTrip extends Activity {
          */
 
         // Register button clicks to stop scanning
-        findViewById(R.id.button_start).setOnClickListener(v -> stopScanning());
+        findViewById(R.id.button_start).setOnClickListener(v -> finalizeTrip());
         /*
         ((ToggleButton) findViewById(R.id.button_start)).setOnCheckedChangeListener(
                 (buttonView, checked) -> {
@@ -120,7 +126,7 @@ public class RecordTrip extends Activity {
     public void onDestroy() {
         super.onDestroy();
 
-        // Stop service if it was launched
+        // Stop service if it was launched (without saving the trip)
         if (serviceIntent != null) stopScanning();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
     }
@@ -170,7 +176,7 @@ public class RecordTrip extends Activity {
                 .setMessage("It seems you haven't moved in a while, would you like to stop your trip?")
                 .setIcon(R.drawable.icon_trash)
 
-                .setPositiveButton("Stop", (dialog, whichButton) -> stopScanning())
+                .setPositiveButton("Stop", (dialog, whichButton) -> finalizeTrip())
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .create();
 
@@ -188,6 +194,7 @@ public class RecordTrip extends Activity {
 
     private void updateUI(FeatureVector featureVector) {
         // Update mode
+        tripCurrentMode.setVisibility(View.VISIBLE);
         tripCurrentMode.setText(featureVector.mostProbableTripType().toString());
 
         // Update emissions
@@ -241,7 +248,7 @@ public class RecordTrip extends Activity {
      * Stops the scanning service, computes the trip from feature vectors, persists the trip
      * @return true if trip not empty
      */
-    public void stopScanning() {
+    public Trip stopScanning() {
         // Stop timer
         tripTimeChronometer.stop();
 
@@ -249,37 +256,8 @@ public class RecordTrip extends Activity {
         serviceIntent = null;
 
         // Convert trip's sensor readings into a proper trip
-        Trip trip = computeTripFromReadings();
+        return computeTripFromReadings();
 
-        if (!trip.getLegs().isEmpty()) {
-            // Persist the trip
-            try {
-                tripStorage.persistTrip(trip);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(this, getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
-        }
-
-
-        if (!trip.getLegs().isEmpty()) {
-            Intent startSummary = new Intent(this, TripSummaryActivity.class);
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
-                    new Pair<>(tripInfoWrapper, getString(R.string.transition_trip_info)),
-                    new Pair<>(tripEmissions, getString(R.string.transition_trip_info_emissions_value)),
-                    new Pair<>(tripEmissionsLabel, getString(R.string.transition_trip_info_emissions_label)),
-                    new Pair<>(tripDistanceTravelled, getString(R.string.transition_trip_info_distance_value)),
-                    new Pair<>(tripDistanceTravelledLabel, getString(R.string.transition_trip_info_distance_label)),
-                    new Pair<>(tripTimeChronometer, getString(R.string.transition_trip_info_duration_value)),
-                    new Pair<>(tripTimeChronometerLabel, getString(R.string.transition_trip_info_duration_label))
-            );
-
-            startActivityForResult(startSummary, RESULT_SUMMARY, options.toBundle());
-        } else {
-            Toast.makeText(this, getText(R.string.empty_trip), Toast.LENGTH_SHORT).show();
-            finish();
-        }
     }
 
     private Trip computeTripFromReadings() {
@@ -313,6 +291,40 @@ public class RecordTrip extends Activity {
             }
         }
         return new Trip(legs);
+    }
+
+    private void finalizeTrip() {
+        Trip trip = stopScanning();
+
+        if (!trip.getLegs().isEmpty()) {
+            // Persist the trip
+            try {
+                tripStorage.persistTrip(trip);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
+        }
+
+
+        if (!trip.getLegs().isEmpty()) {
+            Intent startSummary = new Intent(this, TripSummaryActivity.class);
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
+                    new Pair<>(tripInfoWrapper, getString(R.string.transition_trip_info)),
+                    new Pair<>(tripEmissions, getString(R.string.transition_trip_info_emissions_value)),
+                    new Pair<>(tripEmissionsLabel, getString(R.string.transition_trip_info_emissions_label)),
+                    new Pair<>(tripDistanceTravelled, getString(R.string.transition_trip_info_distance_value)),
+                    new Pair<>(tripDistanceTravelledLabel, getString(R.string.transition_trip_info_distance_label)),
+                    new Pair<>(tripTimeChronometer, getString(R.string.transition_trip_info_duration_value)),
+                    new Pair<>(tripTimeChronometerLabel, getString(R.string.transition_trip_info_duration_label))
+            );
+
+            startActivityForResult(startSummary, RESULT_SUMMARY, options.toBundle());
+        } else {
+            Toast.makeText(this, getText(R.string.empty_trip), Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     @Override
