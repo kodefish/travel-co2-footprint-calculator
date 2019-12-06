@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -77,8 +78,7 @@ public class CarbonConsumptionStatsFragment extends Fragment {
 
         // Create data set
         BarDataSet dataSet = new BarDataSet(entries, "C02 Consumption");
-        dataSet.setColor(getContext().getColor(R.color.primaryColor));
-        dataSet.setColors(ColorTemplate.PASTEL_COLORS);
+        dataSet.setColor(ColorTemplate.PASTEL_COLORS[0]);
 
         // Format x-axis data as string date
         IndexAxisValueFormatter xAxisValueFormatter = new IndexAxisValueFormatter() {
@@ -92,6 +92,10 @@ public class CarbonConsumptionStatsFragment extends Fragment {
 
         // Load data into chart
         BarData barData = new BarData(dataSet);
+
+        Description d = new Description();
+        d.setText("");
+        barChart.setDescription(d);
         barChart.setData(barData);
         barChart.setPinchZoom(true);
         barChart.invalidate();
