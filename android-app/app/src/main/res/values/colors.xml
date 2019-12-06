@@ -7,4 +7,5 @@
   <color name="primaryTextColorInverted">#000000</color>
   <color name="primaryRed">#d11a2a</color>
   <color name="primaryLightGray">#eeeeee</color>
+  <color name="primaryDarkGray">#757575</color>
 </resources>

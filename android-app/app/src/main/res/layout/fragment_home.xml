@@ -45,13 +45,33 @@
 
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <LinearLayout
         android:id="@+id/home_fab"
+        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_menu_send"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        android:padding="@dimen/default_padding"
+        android:background="@drawable/floating_record_button">
+
+        <ImageView
+            android:layout_width="@dimen/material_text_title"
+            android:layout_height="@dimen/material_text_title"
+            android:src="@drawable/icon_record"
+            android:tint="@android:color/white"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8sp"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/material_text_subhead"
+            android:text="@string/start_scanning"
+            android:textAllCaps="true" />
+    </LinearLayout>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

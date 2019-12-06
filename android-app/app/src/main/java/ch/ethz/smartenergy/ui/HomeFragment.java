@@ -66,7 +66,7 @@ public class HomeFragment extends Fragment {
         View emptyView = inflater.inflate(R.layout.empty_list_view, container, false);
         listDayTrips.setEmptyView(emptyView);
 
-        FloatingActionButton fab = root.findViewById(R.id.home_fab);
+        View fab = root.findViewById(R.id.home_fab);
         fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), RecordTrip.class)));
 
         tripStorage = TripStorage.getInstance(getContext());
