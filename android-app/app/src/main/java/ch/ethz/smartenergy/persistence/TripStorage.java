@@ -25,7 +25,7 @@ public class TripStorage {
     private static TripStorage tripStorage = null;
 
     // Filename of json file that stores all the tips made by the user
-    private final String JSON_TRIP_STORAGE_FILENAME = "trips.json";
+    private final String JSON_TRIP_STORAGE_FILENAME = "stored_trips.json";
 
     private final File jsonFile;
     private BufferedReader bufferedReader;
