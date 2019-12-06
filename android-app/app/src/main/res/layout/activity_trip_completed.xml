@@ -7,14 +7,16 @@
     android:orientation="vertical"
     tools:context=".TripSummaryActivity">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageButton
         android:id="@+id/trip_completed_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_clear"
         android:layout_margin="@dimen/default_padding"
-        android:elevation="0dp"
-        android:backgroundTint="@android:color/white" />
+        android:backgroundTint="@android:color/white"
+        android:background="@drawable/circle_background"
+        android:padding="4sp"
+        android:elevation="1dp"/>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
