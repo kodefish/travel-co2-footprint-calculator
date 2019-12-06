@@ -15,7 +15,7 @@
     <RelativeLayout
         android:id="@+id/onboarding_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40sp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:gravity="center"
+            android:layout_marginEnd="@dimen/default_padding"
             android:tint="@color/primaryColor"
             app:icon="@drawable/icon_arrow_right"/>
 
