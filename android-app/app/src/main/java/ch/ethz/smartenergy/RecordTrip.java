@@ -120,11 +120,10 @@ public class RecordTrip extends Activity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         // Stop service if it was launched (without saving the trip)
         if (serviceIntent != null) stopScanning();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -330,7 +329,7 @@ public class RecordTrip extends Activity {
             startActivityForResult(startSummary, RESULT_SUMMARY, options.toBundle());
         } else {
             Toast.makeText(this, getText(R.string.empty_trip), Toast.LENGTH_SHORT).show();
-            finish();
+            finishAfterTransition();
         }
     }
 
