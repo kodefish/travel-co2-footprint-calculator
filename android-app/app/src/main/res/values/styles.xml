@@ -58,7 +58,7 @@
     </style>
 
     <style name="home_text_view_label" parent="home_text_view_big">
-        <item name="android:textColor">@color/primaryDarkColor</item>
+        <item name="android:textColor">@color/primaryColor</item>
         <item name="android:textSize">@dimen/material_text_display1</item>
     </style>
 

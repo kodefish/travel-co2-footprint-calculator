@@ -78,6 +78,8 @@ public class TripAdapter extends ArraySwipeAdapter<Trip> {
         SwipeLayout swipeLayout = v.findViewById(R.id.item_trip_swipe_layout);
         swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
         swipeLayout.addDrag(SwipeLayout.DragEdge.Right, v.findViewById(R.id.bottom_wrapper));
+        // Only enable if the delete listner is set
+        swipeLayout.setSwipeEnabled(onDeleteClickListener != null);
 
         // Set on click listener on trip (swipe layout blocks the event for some reason)
         v.findViewById(R.id.top_wrapper).setOnClickListener(view -> onItemClickListener.onItemClickListener(position));

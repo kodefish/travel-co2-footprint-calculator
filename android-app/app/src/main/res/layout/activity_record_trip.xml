@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/button_start"
-        android:background="@color/primaryDarkColor"
+        android:background="@color/primaryColor"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="@dimen/default_padding">
