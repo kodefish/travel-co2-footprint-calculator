@@ -31,11 +31,8 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_history, container, false);
-
         TripStorage storage = TripStorage.getInstance(getContext());
         pastTrips = storage.getAllStoredTrips();
-
-        Log.i("History", "loaded : " + pastTrips.size());
 
         Collections.reverse(pastTrips);
 

@@ -62,10 +62,6 @@ public class HomeFragment extends Fragment {
         float maxDailyFootprint = 6301.36986f;
         roundCornerProgressBar.setMax(maxDailyFootprint);
 
-        ListView listDayTrips = root.findViewById(R.id.home_day_trips);
-        View emptyView = inflater.inflate(R.layout.empty_list_view, container, false);
-        listDayTrips.setEmptyView(emptyView);
-
         View fab = root.findViewById(R.id.home_fab);
         fab.setOnClickListener(v -> {
             Intent startRecording = new Intent(getActivity(), RecordTrip.class);
@@ -83,6 +79,7 @@ public class HomeFragment extends Fragment {
                     tripAdapter.getItem(position).getId());
             startActivity(openSummary);
         });
+        ListView listDayTrips = root.findViewById(R.id.home_day_trips);
         listDayTrips.setAdapter(tripAdapter);
 
         return root;
