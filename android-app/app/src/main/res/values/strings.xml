@@ -49,4 +49,13 @@
     <string name="cancel_trip_text">Going back will cancel your trip.  Are you sure you want to stop this trip?</string>
     <string name="cancel_trip_ok">Stop Trip</string>
     <string name="cancel_trip_negative">Continue Trip</string>
+    <string name="title_activity_onboarding">Onboarding</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="onboarding_1_title">Track your carbon, easily</string>
+    <string name="onboarding_1_subtitle">Let the app automatically determine your mode of transportation.</string>
+    <string name="onboarding_2_title">For the lazy nature warrior</string>
+    <string name="onboarding_2_subtitle">Track your carbon emissions without the hassle of having to annotate your trip</string>
+    <string name="onboarding_3_title">Reach your goals</string>
+    <string name="onboarding_3_subtitle">Set carbon goals and track your progress</string>
 </resources>

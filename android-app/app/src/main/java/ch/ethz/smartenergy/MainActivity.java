@@ -1,7 +1,11 @@
 package ch.ethz.smartenergy;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
+import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -17,12 +21,53 @@ import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int RESULT_ONBOARDING = 0;
+
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Check for onboarding first
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        // Check if we need to display our OnboardingFragment
+        if (!sharedPreferences.getBoolean(
+                OnboardingActivity.COMPLETED_ONBOARDING_PREF_NAME, false)) {
+            // The user hasn't seen the OnboardingFragment yet, so show it
+            startActivityForResult(new Intent(this, OnboardingActivity.class), RESULT_ONBOARDING);
+        }
+
+        // Load main UI
+        setupMainUI();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_ONBOARDING) {
+            if (resultCode == RESULT_OK) {
+                SharedPreferences.Editor sharedPreferencesEditor =
+                        PreferenceManager.getDefaultSharedPreferences(this).edit();
+                sharedPreferencesEditor.putBoolean(
+                        OnboardingActivity.COMPLETED_ONBOARDING_PREF_NAME, true);
+                sharedPreferencesEditor.apply();
+            }
+
+            setupMainUI();
+        }
+    }
+
+    private void setupMainUI() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -37,10 +82,4 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
 }
