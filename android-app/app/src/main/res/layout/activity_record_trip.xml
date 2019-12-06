@@ -23,6 +23,7 @@
 
         <TextView
             android:id="@+id/home_current_mode"
+            android:visibility="invisible"
             style="@style/home_text_view_big"
             android:text="mode"
             android:textColor="@android:color/white"
