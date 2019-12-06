@@ -68,10 +68,6 @@ public class RecordTrip extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_trip);
 
-        // Enable animations
-        ((ViewGroup) findViewById(R.id.record_root)).getLayoutTransition()
-                .enableTransitionType(LayoutTransition.CHANGING);
-
         // Setup display
         tripCurrentMode = findViewById(R.id.home_current_mode);
         tripEmissions = findViewById(R.id.home_emissions);
@@ -131,6 +127,18 @@ public class RecordTrip extends Activity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
     }
 
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(R.string.cancel_trip)
+                .setMessage(R.string.cancel_trip_text)
+                .setPositiveButton(R.string.cancel_trip_ok, (dialog, which) -> {
+                    dialog.dismiss();
+                    super.onBackPressed();
+                })
+                .setNegativeButton(R.string.cancel_trip_negative, (dialog, which) -> dialog.dismiss());
+        builder.create().show();
+    }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override

@@ -45,4 +45,8 @@
     <string name="ongoing_trip">Ongoing Trip</string>
     <string name="empty_list">No trips yet.</string>
     <string name="transition_start_trip">transition_start_trip</string>
+    <string name="cancel_trip">Cancel Trip</string>
+    <string name="cancel_trip_text">Going back will cancel your trip.  Are you sure you want to stop this trip?</string>
+    <string name="cancel_trip_ok">Stop Trip</string>
+    <string name="cancel_trip_negative">Continue Trip</string>
 </resources>
