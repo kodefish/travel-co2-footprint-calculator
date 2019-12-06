@@ -22,6 +22,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/onboarding_skip"
             style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@android:color/black"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="skip"/>
@@ -31,10 +32,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            app:piv_animationType="scale"
+            app:piv_animationType="worm"
             app:piv_dynamicCount="true"
             app:piv_interactiveAnimation="true"
-            app:piv_selectedColor="@color/primaryColor"
+            app:piv_selectedColor="@color/primaryLightColor"
             app:piv_unselectedColor="@color/primaryLightGray"
             app:piv_viewPager="@id/onboarding_viewpager"
             attrs:piv_padding="12dp"
@@ -47,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="@dimen/default_padding"
-            android:tint="@color/primaryColor"
+            app:iconTint="@android:color/black"
             app:icon="@drawable/icon_arrow_right"/>
 
     </RelativeLayout>
