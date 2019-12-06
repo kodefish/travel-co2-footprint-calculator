@@ -54,7 +54,8 @@
         android:layout_margin="16dp"
         android:orientation="horizontal"
         android:padding="@dimen/default_padding"
-        android:background="@drawable/floating_record_button">
+        android:background="@drawable/floating_record_button"
+        android:transitionName="@string/transition_start_trip">
 
         <ImageView
             android:layout_width="@dimen/material_text_title"

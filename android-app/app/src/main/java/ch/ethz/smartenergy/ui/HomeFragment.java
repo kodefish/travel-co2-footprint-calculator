@@ -2,6 +2,7 @@ package ch.ethz.smartenergy.ui;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +26,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 import java.util.List;
@@ -67,7 +67,12 @@ public class HomeFragment extends Fragment {
         listDayTrips.setEmptyView(emptyView);
 
         View fab = root.findViewById(R.id.home_fab);
-        fab.setOnClickListener(v -> startActivity(new Intent(getActivity(), RecordTrip.class)));
+        fab.setOnClickListener(v -> {
+            Intent startRecording = new Intent(getActivity(), RecordTrip.class);
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(getActivity(), fab, getString(R.string.transition_start_trip));
+            startActivity(startRecording, options.toBundle());
+        });
 
         tripStorage = TripStorage.getInstance(getContext());
 

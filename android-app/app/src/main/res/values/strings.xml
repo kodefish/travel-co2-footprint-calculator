@@ -44,4 +44,5 @@
     <string name="transition_trip_info_duration_label">transition_trip_info_duration_label</string>
     <string name="ongoing_trip">Ongoing Trip</string>
     <string name="empty_list">No trips yet.</string>
+    <string name="transition_start_trip">transition_start_trip</string>
 </resources>
