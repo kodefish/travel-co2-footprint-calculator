@@ -45,6 +45,9 @@ public class HomeFragment extends Fragment {
     private static final int PERMISSION_ALL = 4242;
     private int locationRequestCount = 0;
 
+    // Progress bar
+    RoundCornerProgressBar roundCornerProgressBar;
+
     // Trips
     TripStorage tripStorage;
     TripAdapter tripAdapter;
@@ -52,7 +55,11 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        RoundCornerProgressBar roundCornerProgressBar = root.findViewById(R.id.home_progress_day);
+        roundCornerProgressBar = root.findViewById(R.id.home_progress_day);
+
+        // TODO: let user set this in onboarding, for now Paris agreement max per day in grams
+        float maxDailyFootprint = 6301.36986f;
+        roundCornerProgressBar.setMax(maxDailyFootprint);
 
         ListView listDayTrips = root.findViewById(R.id.home_day_trips);
         View emptyView = inflater.inflate(R.layout.empty_list_view, container, false);
@@ -81,6 +88,13 @@ public class HomeFragment extends Fragment {
         List<Trip> todaysTrips = tripStorage.getTripByDate(Calendar.getInstance().getTimeInMillis());
         tripAdapter.setTrips(todaysTrips);
         tripAdapter.notifyDataSetChanged();
+
+        // Compute daily footprint
+        double totalFootprint = 0;
+        for (Trip t : todaysTrips) {
+            totalFootprint += t.getTotalFootprint();
+        }
+        roundCornerProgressBar.setProgress((float) totalFootprint);
     }
 
     @Override
