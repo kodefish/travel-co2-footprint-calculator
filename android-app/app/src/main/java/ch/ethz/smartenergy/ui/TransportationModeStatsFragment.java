@@ -6,20 +6,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.chip.ChipGroup;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,10 @@ import ch.ethz.smartenergy.footprint.TripType;
 import ch.ethz.smartenergy.persistence.TripStorage;
 
 public class TransportationModeStatsFragment extends Fragment {
+
+    private PieChart pieChart;
+    private Date today, minusOneMonth, minusThreeMonths, minusSixMonths, minusOneYear;
+    private TripStorage tripStorage;
 
     // newInstance constructor for creating fragment with arguments
     public static TransportationModeStatsFragment newInstance() {
@@ -48,12 +54,44 @@ public class TransportationModeStatsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_transportation_modes_stats, container, false);
 
-        // Get the views
-        PieChart pieChart = view.findViewById(R.id.transportation_modes_pie_chart);
+        // Setup timeframes
+        ZonedDateTime now = ZonedDateTime.now();
+        today = Date.from(now.toInstant());
+        minusOneMonth = Date.from(now.minusMonths(1).toInstant());
+        minusThreeMonths = Date.from(now.minusMonths(3).toInstant());
+        minusSixMonths = Date.from(now.minusMonths(6).toInstant());
+        minusOneYear = Date.from(now.minusYears(1).toInstant());
 
+        // Get the views
+        pieChart = view.findViewById(R.id.transportation_modes_pie_chart);
+        ChipGroup chipGroup = view.findViewById(R.id.statistics_date_filter);
+        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.statistics_one_month_button:
+                    setupChart(minusOneMonth, today);
+                    break;
+                case R.id.statistics_three_months_button:
+                    setupChart(minusThreeMonths, today);
+                    break;
+                case R.id.statistics_six_months_button:
+                    setupChart(minusSixMonths, today);
+                    break;
+                case R.id.statistics_one_year_button:
+                    setupChart(minusOneYear, today);
+                    break;
+            }
+        });
+
+        // Init with data from last month
+        tripStorage = TripStorage.getInstance(getContext());
+        setupChart(minusOneMonth, today);
+
+        return view;
+    }
+
+    private void setupChart(Date start, Date end) {
         // Get trips
-        TripStorage tripStorage = TripStorage.getInstance(getContext());
-        List<Trip> allTrips = tripStorage.getAllStoredTrips();
+        List<Trip> allTrips = tripStorage.getTripsBetween(start, end);
 
         // Fill with information
         TripType[] tripTypes = TripType.values();
@@ -89,7 +127,5 @@ public class TransportationModeStatsFragment extends Fragment {
         pieChart.animateXY(1000, 1000);
         pieChart.setData(pieData);
         pieChart.invalidate();
-
-        return view;
     }
 }

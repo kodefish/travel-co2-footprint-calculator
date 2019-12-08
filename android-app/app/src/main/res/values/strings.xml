@@ -65,4 +65,8 @@
         Stay under the carbon budget of allocated by the Paris Agreement to help reduce the worldwide carbon emissions.
     </string>
     <string name="emissions_budget_format">%.0fg/%.0fg</string>
+    <string name="statistics_one_month_label">1 Month</string>
+    <string name="statistics_three_months_label">3 Months</string>
+    <string name="statistics_six_months_label">6 Months</string>
+    <string name="statistics_one_year_label">1 Year</string>
 </resources>

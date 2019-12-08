@@ -162,4 +162,14 @@ public class TripStorage {
         }
         return sameDayTrips;
     }
+
+    public List<Trip> getTripsBetween(Date start, Date end) {
+        List<Trip> tripsInTimeframe = new ArrayList<>();
+        for (Trip t : getAllStoredTrips()) {
+            if (start.before(t.getDate()) && end.after(t.getDate()))  {
+                tripsInTimeframe.add(t);
+            }
+        }
+        return tripsInTimeframe;
+    }
 }
