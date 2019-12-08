@@ -21,8 +21,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.chip.ChipGroup;
 
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +36,11 @@ import ch.ethz.smartenergy.persistence.TripStorage;
 
 public class CarbonConsumptionStatsFragment extends Fragment {
 
+    private BarChart barChart;
+    private TextView distanceTravelledTv, carbonEmittedTv;
+    private Date today, minusOneMonth, minusThreeMonths, minusSixMonths, minusOneYear;
+    private TripStorage tripStorage;
+
     // newInstance constructor for creating fragment with arguments
     public static CarbonConsumptionStatsFragment newInstance() {
         CarbonConsumptionStatsFragment fragmentFirst = new CarbonConsumptionStatsFragment();
@@ -44,6 +51,18 @@ public class CarbonConsumptionStatsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Setup timeframes
+        ZonedDateTime now = ZonedDateTime.now();
+        today = Date.from(now.toInstant());
+        minusOneMonth = Date.from(now.minusMonths(1).toInstant());
+        minusThreeMonths = Date.from(now.minusMonths(3).toInstant());
+        minusSixMonths = Date.from(now.minusMonths(6).toInstant());
+        minusOneYear = Date.from(now.minusYears(1).toInstant());
+
+
+        // Init trip storage
+        tripStorage = TripStorage.getInstance(getContext());
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -53,19 +72,42 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_carbon_consumption_stats, container, false);
 
         // Get the views
-        BarChart barChart = view.findViewById(R.id.carbon_consumption_chart);
-        TextView distanceTravelledTv = view.findViewById(R.id.carbon_consumption_distance_travelled);
-        TextView carbonEmittedTv = view.findViewById(R.id.carbon_consumption_co2_emitted);
+        barChart = view.findViewById(R.id.carbon_consumption_chart);
+        distanceTravelledTv = view.findViewById(R.id.carbon_consumption_distance_travelled);
+        carbonEmittedTv = view.findViewById(R.id.carbon_consumption_co2_emitted);
 
+        ChipGroup chipGroup = view.findViewById(R.id.statistics_date_filter);
+        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.statistics_one_month_button:
+                    setupChart(minusOneMonth, today);
+                    break;
+                case R.id.statistics_three_months_button:
+                    setupChart(minusThreeMonths, today);
+                    break;
+                case R.id.statistics_six_months_button:
+                    setupChart(minusSixMonths, today);
+                    break;
+                case R.id.statistics_one_year_button:
+                    setupChart(minusOneYear, today);
+                    break;
+            }
+        });
+
+        setupChart(minusOneMonth, today);
+
+        return view;
+    }
+
+    private void setupChart(Date start, Date end) {
         // Get trips
-        TripStorage tripStorage = TripStorage.getInstance(getContext());
-        List<Trip> allTrips = tripStorage.getAllStoredTrips();
+        List<Trip> trips = tripStorage.getTripsBetween(start, end);
 
         // Fill with information
         double totalDistance = 0;
         double totalFootprint = 0;
         List<BarEntry> entries = new ArrayList<>();
-        for (Trip t : allTrips) {
+        for (Trip t : trips) {
             totalDistance += t.getTotalDistance();
             totalFootprint += t.getTotalFootprint();
             BarEntry entry = new BarEntry(entries.size(), (float) t.getTotalFootprint());
@@ -84,7 +126,7 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         IndexAxisValueFormatter xAxisValueFormatter = new IndexAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return allTrips.get((int) value).getDateAsString();
+                return trips.get((int) value).getDateAsString();
             }
         };
         XAxis xAxis = barChart.getXAxis();
@@ -99,7 +141,5 @@ public class CarbonConsumptionStatsFragment extends Fragment {
         barChart.setData(barData);
         barChart.setPinchZoom(true);
         barChart.invalidate();
-
-        return view;
     }
 }

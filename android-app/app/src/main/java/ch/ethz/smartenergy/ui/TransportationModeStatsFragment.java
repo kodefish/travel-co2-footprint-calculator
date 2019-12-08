@@ -46,13 +46,6 @@ public class TransportationModeStatsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    // Inflate the view for the fragment based on layout XML
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_transportation_modes_stats, container, false);
 
         // Setup timeframes
         ZonedDateTime now = ZonedDateTime.now();
@@ -62,8 +55,19 @@ public class TransportationModeStatsFragment extends Fragment {
         minusSixMonths = Date.from(now.minusMonths(6).toInstant());
         minusOneYear = Date.from(now.minusYears(1).toInstant());
 
+        // Init trip storage
+        tripStorage = TripStorage.getInstance(getContext());
+    }
+
+    // Inflate the view for the fragment based on layout XML
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_transportation_modes_stats, container, false);
+
         // Get the views
         pieChart = view.findViewById(R.id.transportation_modes_pie_chart);
+
         ChipGroup chipGroup = view.findViewById(R.id.statistics_date_filter);
         chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
             switch (checkedId) {
@@ -83,7 +87,6 @@ public class TransportationModeStatsFragment extends Fragment {
         });
 
         // Init with data from last month
-        tripStorage = TripStorage.getInstance(getContext());
         setupChart(minusOneMonth, today);
 
         return view;
@@ -91,12 +94,12 @@ public class TransportationModeStatsFragment extends Fragment {
 
     private void setupChart(Date start, Date end) {
         // Get trips
-        List<Trip> allTrips = tripStorage.getTripsBetween(start, end);
+        List<Trip> trips = tripStorage.getTripsBetween(start, end);
 
         // Fill with information
         TripType[] tripTypes = TripType.values();
         int[] modeCount = new int[tripTypes.length];
-        for (Trip t : allTrips) {
+        for (Trip t : trips) {
             Map<TripType, Integer> types = t.getModesUsed();
             for (Map.Entry <TripType, Integer> type : types.entrySet()) {
                 modeCount[type.getKey().ordinal()] += type.getValue();
