@@ -121,7 +121,7 @@ public class RecordTrip extends Activity {
     @Override
     public void onDestroy() {
         // Stop service if it was launched (without saving the trip)
-        if (serviceIntent != null) stopScanning();
+        if (serviceIntent != null) finalizeTrip();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         super.onDestroy();
     }
@@ -252,7 +252,7 @@ public class RecordTrip extends Activity {
 
     /**
      * Stops the scanning service, computes the trip from feature vectors, persists the trip
-     * @return true if trip not empty
+     * @return the resulting trip
      */
     public Trip stopScanning() {
         // Stop timer
@@ -262,8 +262,21 @@ public class RecordTrip extends Activity {
         serviceIntent = null;
 
         // Convert trip's sensor readings into a proper trip
-        return computeTripFromReadings();
+        Trip trip = computeTripFromReadings();
 
+        // Persist the trip
+        if (!trip.getLegs().isEmpty()) {
+            // Persist the trip
+            try {
+                tripStorage.persistTrip(trip);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
+        }
+
+        return trip;
     }
 
     private Trip computeTripFromReadings() {
@@ -276,7 +289,6 @@ public class RecordTrip extends Activity {
                 FeatureVector featureVec = tripReadings.get(i);
                 TripType currentTripType = featureVec.mostProbableTripType();
 
-                // TODO more sophisticated way of computing a leg
                 if (currentTripType.equals(previousTripType)) {
                     // If the current window is of the same type as the previous, then the leg is
                     // probably the same
@@ -302,18 +314,7 @@ public class RecordTrip extends Activity {
     private void finalizeTrip() {
         Trip trip = stopScanning();
 
-        if (!trip.getLegs().isEmpty()) {
-            // Persist the trip
-            try {
-                tripStorage.persistTrip(trip);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Toast.makeText(this, getString(R.string.empty_trip), Toast.LENGTH_SHORT).show();
-        }
-
-
+        // Start summary activity with transition or go back to home if trip is empty
         if (!trip.getLegs().isEmpty()) {
             Intent startSummary = new Intent(this, TripSummaryActivity.class);
             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
