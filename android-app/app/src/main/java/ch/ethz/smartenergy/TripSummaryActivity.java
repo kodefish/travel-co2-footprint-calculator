@@ -11,6 +11,7 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -119,6 +120,22 @@ public class TripSummaryActivity extends FragmentActivity {
 
             }
         };
+
+        // Setup toggle bottom sheet button
+        ImageButton toggleBottomSheet = findViewById(R.id.trip_completed_toggle_bottom_sheet);
+        toggleBottomSheet.setOnClickListener(v -> {
+            if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                // Expand bottom sheet
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                // Set icon to down arrow
+                toggleBottomSheet.setImageResource(R.drawable.icon_expand_less);
+            } else {
+                // Expand bottom sheet
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                // Set icon to down arrow
+                toggleBottomSheet.setImageResource(R.drawable.icon_expand_more);
+            }
+        });
 
         // Set close button
         findViewById(R.id.trip_completed_close).setOnClickListener(v -> finish());
