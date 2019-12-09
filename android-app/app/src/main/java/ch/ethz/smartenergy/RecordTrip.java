@@ -180,8 +180,6 @@ public class RecordTrip extends Activity {
                 // set message, title, and icon
                 .setTitle("End Trip")
                 .setMessage("It seems you haven't moved in a while, would you like to stop your trip?")
-                .setIcon(R.drawable.icon_trash)
-
                 .setPositiveButton("Stop", (dialog, whichButton) -> finalizeTrip())
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .create();
