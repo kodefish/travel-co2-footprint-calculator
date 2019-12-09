@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class HistoryFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_history, container, false);
         TripStorage storage = TripStorage.getInstance(getContext());
-        pastTrips = storage.getAllStoredTrips();
+        pastTrips = new ArrayList<>(storage.getAllStoredTrips());
 
         Collections.reverse(pastTrips);
 
@@ -63,7 +64,8 @@ public class HistoryFragment extends Fragment {
         });
         adapter.setOnItemClickListener(position -> {
             Intent tripSummaryIntent = new Intent(HistoryFragment.this.getContext(), TripSummaryActivity.class);
-            tripSummaryIntent.putExtra(TripSummaryActivity.EXTRA_TRIP_ID, adapter.getItem(position).getId());
+            int id = adapter.getItem(position).getId();
+            tripSummaryIntent.putExtra(TripSummaryActivity.EXTRA_TRIP_ID, id);
             startActivity(tripSummaryIntent);
         });
 
