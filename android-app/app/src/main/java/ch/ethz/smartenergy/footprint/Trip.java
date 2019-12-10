@@ -1,7 +1,5 @@
 package ch.ethz.smartenergy.footprint;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -25,7 +23,6 @@ public class Trip {
     private Long totalTime = null;
     private Map<TripType, Integer> modesUsed = new HashMap<>();
     private List<TripType> modesUsedDescOrder = null;
-    private Integer numModesUsed = null;
     private Date date;
 
     /**
