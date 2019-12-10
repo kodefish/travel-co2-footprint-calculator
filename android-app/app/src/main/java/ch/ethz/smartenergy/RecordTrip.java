@@ -61,6 +61,7 @@ public class RecordTrip extends Activity {
     // Counts how many feature vectors in a row the user hasn't moved
     private int immobileFeatureVecCounter = 0;
     private View tripInfoWrapper, tripEmissionsLabel, tripDistanceTravelledLabel, tripTimeChronometerLabel;
+    private AlertDialog stopTripDialog;
 
 
     @Override
@@ -80,24 +81,17 @@ public class RecordTrip extends Activity {
         tripDistanceTravelledLabel = findViewById(R.id.home_distance_travelled_label);
         tripTimeChronometerLabel = findViewById(R.id.home_chronometer_label);
 
-        /*
-        GridView predictionGridView = root.findViewById(R.id.home_predictions);
-        predictionAdapter = new PredictionAdapter(getContext(), -1);
-        predictionGridView.setAdapter(predictionAdapter);
-         */
-
         // Register button clicks to stop scanning
         findViewById(R.id.button_start).setOnClickListener(v -> finalizeTrip());
-        /*
-        ((ToggleButton) findViewById(R.id.button_start)).setOnCheckedChangeListener(
-                (buttonView, checked) -> {
-                    if (checked) {
-                        startScanning();
-                    } else {
-                        stopScanning();
-                    }
-                });
-         */
+
+        // Setup inactivity dialog
+        stopTripDialog = new AlertDialog.Builder(this)
+                // set message, title, and icon
+                .setTitle("End Trip")
+                .setMessage("It seems you haven't moved in a while, would you like to stop your trip?")
+                .setPositiveButton("Stop", (dialog, whichButton) -> finalizeTrip())
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create();
 
         // Load ML stuff
         try {
@@ -151,6 +145,9 @@ public class RecordTrip extends Activity {
                     // Build feature vector
                     FeatureVector featureVec = new FeatureVector(scan);
                     if (featureVec.isMoving()) {
+                        // Hide inactivity dialog if showing
+                        if (stopTripDialog.isShowing()) stopTripDialog.dismiss();
+
                         // Reset the counter
                         immobileFeatureVecCounter = 0;
 
@@ -167,25 +164,13 @@ public class RecordTrip extends Activity {
 
                         if (immobileFeatureVecCounter > 3) {
                             immobileFeatureVecCounter = 0;
-                            askStopScanning();
+                            if (!stopTripDialog.isShowing()) stopTripDialog.show();
                         }
                     }
                 }
             }
         }
     };
-
-    private void askStopScanning() {
-        AlertDialog stopTripDialog = new AlertDialog.Builder(this)
-                // set message, title, and icon
-                .setTitle("End Trip")
-                .setMessage("It seems you haven't moved in a while, would you like to stop your trip?")
-                .setPositiveButton("Stop", (dialog, whichButton) -> finalizeTrip())
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                .create();
-
-        stopTripDialog.show();
-    }
 
     private float[] predict(FeatureVector features) {
         // Build features vector
