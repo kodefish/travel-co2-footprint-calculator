@@ -140,7 +140,6 @@ public class Leg {
     }
 
     public TripType getMostProbableLegType() {
-        // TODO more sophisticated way of computing the trip type (most frequent)
         if (mostProbableLegType == null)
             mostProbableLegType = featureVectorList.get(0).mostProbableTripType();
         return mostProbableLegType;
