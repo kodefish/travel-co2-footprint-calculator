@@ -1,48 +1,5 @@
 * Transportation Mode Classification Detection
-** Schedule
-*** 06.11
-**** DONE Data Extraction
-***** DONE Utility function that extracts data of all sensors given a =user= and a =leg=
-**** DONE Write Visualisation Pipeline
-***** DONE Dashboard to select data and plot it
-**** TODO Data Analysis
-***** TODO Denoising
-***** TODO Fourier Transform -> some kind of periodicity
-***** TODO Extract useful features and optimal window size(s)
-*** 13.11
-**** TODO App Frontend
-***** TODO MVP UI
-***** TODO Interaction with ML backend (decision tree only)
-***** TODO Wireframes for MVP and final UX/UI (final should contain the additional things we want to do on top of MVP)
-**** TODO App Backend
-***** TODO Footprint calculator (still need to define the API for this)
-***** TODO Database to store sensor readings for statistics
-**** TODO ML Pipeline and training
-***** TODO Data preprocessing based on the previously deterimned features
-***** TODO Decision Tree classification
-*** 20.11
-**** TODO Implement final app wireframes
-**** TODO Refine decision tree + app (solve any issues/bugs)
-** MVP
-*** Features and functionalities (scope)
-**** Start/Stop journey (via slider)
-**** Display currently used mode of transport
-**** Option to get feedback on performance
-**** Share trip/progress -> comptetion
-**** End of trip summary
-***** Distance travelled
-***** Total time elapsed
-***** CO2 footprint
-***** Calories burned/grade maybe?
-***** Most prevalent detected mode of transportation
-**** Summary over time (statistics) of performance and travels
-***** DB & API we can call
-**** Notification with information about current journey
-*** Wireframe
-#+CAPTION: Wireframe of MVP app
-#+NAME: fig-mvp-app-wireframe
- [[./dox/imgs/mvp_wireframe.jpeg]]
-** Usage
+** Machine Learning
 *** Data visualization
 Data processing and visualization is done via python scripts. In order to have
 everything working, you must have the following dependencies installed:
@@ -56,7 +13,7 @@ You can install all these packages using =conda=:
 conda install bokeh pandas tqdm
 #+END_SRC
 
-**** Data Processing
+*** Data Processing
 To visualize the data, first process it. This can be done using the
 =process_data.py= script. It will parse the =legs.csv= folder, extract all the
 user ids, then ask which user you would like to process. Then it will ask which
@@ -82,7 +39,7 @@ To start processing the data, call:
 python process_data.py
 #+END_SRC
        
-**** Data Visualization
+*** Data Visualization
 Once the data has been processes, visualizing it can be done via the
 =visualization.py= script. The script will first ask which user's journey and
 which journey in particular you want to see. It will then plot the data from
@@ -110,16 +67,16 @@ yet in the column view).
 
 Additionally the script visualization_mode.py will generate graphs that compare features that are aggregated in the features.csv. Each graph will compare a given feature between all different transport modes.
        
-**** Windowing
+*** Windowing
 To aggregate the data into windows of a fixed size call the script windowing.py (with the optional parameter "window_size" which is the window lenght in milliseconds).
 This will read out the folder "processed_data" so make sure you have all data processed before!
 The resulting windows will be saved in the file "features.csv".
 
     
-**** Machine Learning
+*** Machine Learning
 To test the accuracy of the features extracted from the data and saved in "features.csv" you can simply invoke machine.py which will split the data into test and training set and then perform ML and report the resulting accuracy.
 
-**** Features
+*** Features
 List of all features used (in order):
 + acc_mean (mean of the accelerator's magnitude over all axis)
 + avg_con_bt (average of connected bluetooth devices over all scans that were done within this window)
