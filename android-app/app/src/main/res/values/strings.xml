@@ -11,7 +11,7 @@
     <string name="menu_history">History</string>
     <string name="menu_statistics">Statistics</string>
 
-    <string name="notification_service_text">Gathering Sensor Data…</string>
+    <string name="notification_service_text">Watching your every move</string>
     <string name="locations_required_title">Locations required</string>
     <string name="locations_required_goodbye">You didn\'t accept the location request. Unfortunately without locations, the application cannot work as intended. Goodbye!</string>
     <string name="locations_required_text">Without location access, the app cannot work as intended. Please accept the location request.</string>
