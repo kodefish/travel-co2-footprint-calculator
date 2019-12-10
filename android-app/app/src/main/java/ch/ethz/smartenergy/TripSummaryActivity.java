@@ -127,13 +127,9 @@ public class TripSummaryActivity extends FragmentActivity {
             if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                 // Expand bottom sheet
                 behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                // Set icon to down arrow
-                toggleBottomSheet.setImageResource(R.drawable.icon_expand_less);
             } else {
                 // Expand bottom sheet
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                // Set icon to down arrow
-                toggleBottomSheet.setImageResource(R.drawable.icon_expand_more);
             }
         });
 
@@ -144,17 +140,32 @@ public class TripSummaryActivity extends FragmentActivity {
         ListView legsListView = findViewById(R.id.trip_completed_legs_list);
         legsListView.setAdapter(legAdapter);
         // Make sure we scroll listview instead of bottom sheet
-        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback(){
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(View bottomSheet, int newState) {
-                boolean listIsAtTop = legsListView.getChildCount() == 0
-                        || legsListView.getChildAt(0).getTop() == 0 && legsListView.getFirstVisiblePosition() ==0;
-                if (newState == BottomSheetBehavior.STATE_DRAGGING && !listIsAtTop){
-                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        boolean listIsAtTop = legsListView.getChildCount() == 0
+                                || legsListView.getChildAt(0).getTop() == 0 && legsListView.getFirstVisiblePosition() == 0;
+                        if (!listIsAtTop) {
+                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        }
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        // Set icon to down arrow
+                        toggleBottomSheet.setImageResource(R.drawable.icon_expand_less);
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        // Set icon to up arrow
+                        toggleBottomSheet.setImageResource(R.drawable.icon_expand_more);
+                        break;
                 }
             }
+
             @Override
-            public void onSlide(View bottomSheet, float slideOffset) {}});
+            public void onSlide(View bottomSheet, float slideOffset) {
+            }
+        });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
